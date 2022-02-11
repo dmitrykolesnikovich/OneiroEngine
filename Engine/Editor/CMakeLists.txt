@@ -3,12 +3,9 @@ project(Engine.Editor)
 
 set(CMAKE_CXX_STANDARD 14)
 
-file(GLOB ${PROJECT_NAME}_SRC
-        "Source/*.cpp"
-        )
+file(GLOB ${PROJECT_NAME}_SRC "Source/*.cpp")
 
 include_directories(../ThirdParty/DZL/include)
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SRC})
-target_include_directories(${PROJECT_NAME} PUBLIC
-        Include/
-        )
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+target_include_directories(${PROJECT_NAME} PUBLIC Include/)
