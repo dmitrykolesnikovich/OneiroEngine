@@ -18,7 +18,7 @@ namespace oe
         {
         public:
             ~VertexBuffer();
-            void Create(dzl::uint32_t size, const float* pVertices, dzl::int16_t type);
+            void Create(dzl::uint32_t size, const float* pVertices);
             void Bind() const;
             void UnBind() const;
 

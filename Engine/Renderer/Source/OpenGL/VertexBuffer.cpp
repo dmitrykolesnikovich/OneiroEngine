@@ -11,11 +11,11 @@ oe::Renderer::VertexBuffer::~VertexBuffer()
     gl::DeleteBuffers(1, &mID);
 }
 
-void oe::Renderer::VertexBuffer::Create(dzl::uint32_t size, const float* pVertices, dzl::int16_t type = gl::STATIC_DRAW)
+void oe::Renderer::VertexBuffer::Create(dzl::uint32_t size, const float* pVertices)
 {
     gl::GenBuffers(1, &mID);
     Bind();
-    gl::BufferData(gl::ARRAY_BUFFER, size, pVertices, type);
+    gl::BufferData(gl::ARRAY_BUFFER, size, pVertices, gl::STATIC_DRAW);
 }
 
 void oe::Renderer::VertexBuffer::Bind() const

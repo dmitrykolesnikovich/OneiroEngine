@@ -8,6 +8,7 @@
 #ifndef ENGINE_CORE_WINDOW_HPP
 #define ENGINE_CORE_WINDOW_HPP
 
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "DZL/string.hpp"
 

@@ -23,6 +23,7 @@ bool oe::Renderer::Texture::Load(const dzl::string& path)
 {
     if (PreLoad(path)) {
         GenerateTexture();
+        return true;
     } else {
         return false;
     }

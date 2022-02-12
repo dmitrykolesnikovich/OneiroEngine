@@ -13,6 +13,8 @@ bool oe::Core::Window::Create(dzl::uint16_t width, dzl::uint16_t height, const d
 
     mWindow = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
+    glfwMakeContextCurrent(mWindow);
+
     if (mWindow == nullptr)
         return false;
 

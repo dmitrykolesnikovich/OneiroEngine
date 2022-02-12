@@ -8,7 +8,7 @@
 #ifndef ENGINE_SHADER_HPP
 #define ENGINE_SHADER_HPP
 
-#include <map>
+#include <unordered_map>
 #include "OpenGL/gl_core_4_5.hpp"
 #include "DZL/string.hpp"
 #include "glm/vec3.hpp"
@@ -32,7 +32,7 @@ namespace oe
             void SetUniform(const char* uName, const glm::vec3& uVal);
         private:
             GLint GetUniformLocation(const char* name);
-            mutable std::map<const char*, GLint> mUniformLocationCache;
+            mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
             dzl::uint32_t mID{};
         };
     }

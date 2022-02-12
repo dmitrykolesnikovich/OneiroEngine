@@ -6,20 +6,22 @@
 #ifndef ENGINE_APPLICATION_HPP
 #define ENGINE_APPLICATION_HPP
 
+#include <memory>
 #include "Core/Window.hpp"
 
 namespace oe
 {
-    namespace runtime
+    namespace Runtime
     {
         class Application
         {
         public:
-            void Init();
             void Run();
         private:
             Core::Window mWindow;
         };
+
+        std::shared_ptr<Application> CreateApplication();
     }
 }
 

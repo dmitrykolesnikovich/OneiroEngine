@@ -3,18 +3,9 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include <iostream>
-#include "Runtime/Engine.hpp"
+#include "Runtime/EntryPoint.hpp"
 
-int main()
+std::shared_ptr<oe::Runtime::Application> oe::Runtime::CreateApplication()
 {
-    try
-    {
-        oe::runtime::Engine::Run();
-    }
-    catch (const std::exception& ex)
-    {
-        std::cerr << ex.what() << '\n';
-    }
-    return 0;
+    return std::make_shared<Application>();
 }

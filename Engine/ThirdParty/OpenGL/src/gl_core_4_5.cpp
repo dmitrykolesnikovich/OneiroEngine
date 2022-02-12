@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <string.h>
 #include <stddef.h>
-#include "gl_core_4_5.hpp"
+#include "OpenGL/gl_core_4_5.hpp"
 
 #if defined(__APPLE__)
 #include <dlfcn.h>
