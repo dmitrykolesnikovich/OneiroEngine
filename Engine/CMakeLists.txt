@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
 project(OneiroEngine)
-
 add_subdirectory(Runtime/)
 include_directories(../ThirdParty/DZL/include)
-
-target_link_libraries(${CMAKE_PROJECT_NAME}
-        Engine.Runtime
-        )
+target_link_libraries(${CMAKE_PROJECT_NAME} Engine.Runtime)

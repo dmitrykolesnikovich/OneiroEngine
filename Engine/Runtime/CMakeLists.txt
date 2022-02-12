@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.21)
 project(Engine.Runtime)
 
 set(CMAKE_CXX_STANDARD 14)
-set(ENGINE ON)
 
 file(GLOB ${PROJECT_NAME}_SRC "Source/*.cpp")
 
