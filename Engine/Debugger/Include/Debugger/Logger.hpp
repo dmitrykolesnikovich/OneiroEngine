@@ -6,6 +6,7 @@
 #ifndef ENGINE_LOGGER_HPP
 #define ENGINE_LOGGER_HPP
 
+#include <iostream>
 #include <fstream>
 #include "DZL/string.hpp"
 

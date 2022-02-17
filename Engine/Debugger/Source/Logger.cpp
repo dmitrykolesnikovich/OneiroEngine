@@ -8,11 +8,13 @@
 
 void oe::Debugger::Logger::PrintWarning(const dzl::string& str) const
 {
+    std::cout << "[OE::WARNING] " << str << "\n";
     mFile << "[OE::WARNING] " << str << "\n";
 }
 
 void oe::Debugger::Logger::PrintError(const dzl::string& str) const
 {
+    std::cerr << "[OE::ERROR] " << str << "\n";
     mFile << "[OE::ERROR] " << str << "\n";
 }
 
@@ -29,5 +31,6 @@ oe::Debugger::Logger::~Logger()
 }
 void oe::Debugger::Logger::PrintMessage(const dzl::string& str) const
 {
+    std::cout << "[OE::MESSAGE] " << str << "\n";
     mFile << "[OE::MESSAGE] " << str << "\n";
 }

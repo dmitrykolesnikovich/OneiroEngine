@@ -8,20 +8,23 @@
 
 #include <memory>
 #include "Core/Window.hpp"
+#include "API/Application.hpp"
 
 namespace oe
 {
     namespace Runtime
     {
-        class Application
+        class Engine
         {
         public:
-            void Run();
+            static void Run();
+            static GLFWwindow* GetWindow() { return mWindow.GetWindow(); }
         private:
-            Core::Window mWindow;
+            static Core::Window mWindow;
+            static std::shared_ptr<API::Application> mApplication;
         };
 
-        std::shared_ptr<Application> CreateApplication();
+        std::shared_ptr<API::Application> CreateApplication();
     }
 }
 
