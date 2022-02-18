@@ -28,7 +28,7 @@ public:
 
     const glm::vec3& GetVec() { return vec; }
 private:
-    glm::vec3 vec{};
+    glm::vec3 vec{0.5f};
 };
 
 class SandBoxApp : public oe::Application
@@ -68,7 +68,6 @@ public:
         mVBO.Create(sizeof(vertices), vertices);
         oe::Renderer::VertexBuffer::PushLayout(0,3,3,0);
 
-        command = new BaseCommand;
         return true;
     }
 
@@ -92,7 +91,7 @@ public:
     }
 
 private:
-    BaseCommand* command{};
+    BaseCommand* command = new BaseCommand;
 
     oe::Renderer::Shader mShader{};
     oe::Renderer::VertexArray mVAO{};
