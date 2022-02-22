@@ -3,7 +3,7 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include "Renderer/Renderer.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 

@@ -5,17 +5,19 @@
 
 #pragma once
 
-#ifndef ENGINE_TEXTURE_HPP
-#define ENGINE_TEXTURE_HPP
+#ifndef ONEIRO_TEXTURE_HPP
+#define ONEIRO_TEXTURE_HPP
 
 #include "DZL/types.hpp"
 #include "DZL/string.hpp"
+#define OE_DLL_EXPORT
+#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
 {
     namespace Renderer
     {
-        class Texture
+        class OE_API Texture
         {
         public:
             ~Texture();
@@ -44,4 +46,4 @@ namespace oe
     }
 }
 
-#endif //ENGINE_TEXTURE_HPP
+#endif //ONEIRO_TEXTURE_HPP

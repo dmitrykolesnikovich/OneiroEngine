@@ -5,16 +5,18 @@
 
 #pragma once
 
-#ifndef ENGINE_VERTEXBUFFER_HPP
-#define ENGINE_VERTEXBUFFER_HPP
+#ifndef ONEIRO_VERTEXBUFFER_HPP
+#define ONEIRO_VERTEXBUFFER_HPP
 
 #include "DZL/types.hpp"
+#define OE_DLL_EXPORT
+#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
 {
     namespace Renderer
     {
-        class VertexBuffer
+        class OE_API VertexBuffer
         {
         public:
             ~VertexBuffer();
@@ -30,4 +32,4 @@ namespace oe
     }
 }
 
-#endif //ENGINE_VERTEXBUFFER_HPP
+#endif //ONEIRO_VERTEXBUFFER_HPP

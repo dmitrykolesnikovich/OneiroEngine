@@ -5,20 +5,22 @@
 
 #pragma once
 
-#ifndef ENGINE_INDEXBUFFER_HPP
-#define ENGINE_INDEXBUFFER_HPP
+#ifndef ONEIRO_VERTEXARRAY_HPP
+#define ONEIRO_VERTEXARRAY_HPP
 
 #include "DZL/types.hpp"
+#define OE_DLL_EXPORT
+#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
 {
     namespace Renderer
     {
-        class IndexBuffer
+        class OE_API VertexArray
         {
         public:
-            ~IndexBuffer();
-            void Init(const dzl::uint32_t* data, dzl::uint32_t count);
+            ~VertexArray();
+            void Init();
             void Bind() const;
             void UnBind() const;
         private:
@@ -27,4 +29,4 @@ namespace oe
     }
 }
 
-#endif //ENGINE_INDEXBUFFER_HPP
+#endif //ONEIRO_VERTEXARRAY_HPP

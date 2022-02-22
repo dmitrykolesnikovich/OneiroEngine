@@ -3,102 +3,26 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include "API/Base.hpp"
-#include "API/Input.hpp"
-#include "Debugger/Debugger.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
+#include "Oneiro/Core/Logger.hpp"
 
-#include "Renderer/OpenGL/Shader.hpp"
-#include "Renderer/OpenGL/VertexArray.hpp"
-#include "Renderer/OpenGL/VertexBuffer.hpp"
-
-class BaseCommand : public oe::Input::Command
-{
-public:
-    void execute() override
-    {
-        if (vec.x != 1.0f)
-            vec += glm::vec3(0.1f);
-    }
-
-    void undo() override
-    {
-        if (vec.x > 0.0f)
-            vec -= glm::vec3(0.1f);
-    }
-
-    const glm::vec3& GetVec() { return vec; }
-private:
-    glm::vec3 vec{0.5f};
-};
-
-class SandBoxApp : public oe::Application
+class SandBoxApp : public oe::SDK::Application
 {
 public:
     bool Init() override
     {
-        constexpr const char* vSrc = R"(
-            #version 330 core
-            layout (location = 0) in vec3 aPos;
-            void main()
-            {
-                gl_Position = vec4(aPos, 1.0);
-            }
-        )";
-
-        constexpr const char* fSrc = R"(
-            #version 330 core
-            out vec4 FragColor;
-            uniform vec3 uColor;
-            void main()
-            {
-                FragColor = vec4(uColor, 1.0);
-            }
-        )";
-
-        mShader.LoadFromSource(vSrc, fSrc);
-
-        constexpr const float vertices[] = {
-               -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.0f,  0.5f, 0.0f
-        };
-
-        mVAO.Init();
-        mVAO.Bind();
-        mVBO.Create(sizeof(vertices), vertices);
-        oe::Renderer::VertexBuffer::PushLayout(0,3,3,0);
-
+        oe::Core::Logger::PrintMessage("Initializing...");
         return true;
     }
-
-    bool Update() override
-    {
-        if (oe::Input::Keyboard::isKeyPressed(oe::Input::Keyboard::Z))
-            command->undo();
-        if (oe::Input::Keyboard::isKeyPressed(oe::Input::Keyboard::A))
-            command->execute();
-
-        mShader.Use();
-        mShader.SetUniform("uColor", command->GetVec());
-        mVAO.Bind();
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
-
-        return true;
-    }
-
+    bool Update() override { return true; }
     void Close() override
     {
+        oe::Core::Logger::PrintMessage("Closing...");
     }
-
-private:
-    BaseCommand* command = new BaseCommand;
-
-    oe::Renderer::Shader mShader{};
-    oe::Renderer::VertexArray mVAO{};
-    oe::Renderer::VertexBuffer mVBO{};
 };
 
-std::shared_ptr<oe::Application> oe::Runtime::CreateApplication()
+int main()
 {
-    return std::make_shared<SandBoxApp>();
+    SandBoxApp app{};
+    oe::Runtime::Engine::Run(app);
 }

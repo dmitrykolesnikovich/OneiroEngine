@@ -5,20 +5,22 @@
 
 #pragma once
 
-#ifndef ENGINE_SHADER_HPP
-#define ENGINE_SHADER_HPP
+#ifndef ONEIRO_SHADER_HPP
+#define ONEIRO_SHADER_HPP
 
 #include <unordered_map>
 #include "OpenGL/gl_core_4_5.hpp"
 #include "DZL/string.hpp"
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
+#define OE_DLL_EXPORT
+#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
 {
     namespace Renderer
     {
-        class Shader
+        class OE_API Shader
         {
         public:
             ~Shader();
@@ -38,4 +40,4 @@ namespace oe
     }
 }
 
-#endif //ENGINE_SHADER_HPP
+#endif //ONEIRO_SHADER_HPP

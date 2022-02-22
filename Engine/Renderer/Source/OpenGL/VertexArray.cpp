@@ -3,7 +3,7 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include "Renderer/OpenGL/VertexArray.hpp"
+#include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
 oe::Renderer::VertexArray::~VertexArray()

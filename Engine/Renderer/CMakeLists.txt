@@ -15,4 +15,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         Include/ ../ThirdParty/stb/include
         ../ThirdParty/DZL/include ../Debugger/Include
         ../ThirdParty/glm ../ThirdParty/OpenGL/include/
+        ../Core/Include/
         )

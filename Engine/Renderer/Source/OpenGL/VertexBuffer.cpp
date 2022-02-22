@@ -3,7 +3,7 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include "Renderer/OpenGL/VertexBuffer.hpp"
+#include "Oneiro/Renderer/OpenGL/VertexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
 oe::Renderer::VertexBuffer::~VertexBuffer()

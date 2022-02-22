@@ -5,7 +5,7 @@
 
 #include <cstring>
 #include <iostream>
-#include "Renderer/OpenGL/Shader.hpp"
+#include "Oneiro/Renderer/OpenGL/Shader.hpp"
 
 dzl::uint32_t CreateVertexShader(const char* src);
 dzl::uint32_t CreateFragmentShader(const char* src);
