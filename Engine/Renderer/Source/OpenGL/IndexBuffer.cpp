@@ -6,24 +6,24 @@
 #include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-oe::Renderer::IndexBuffer::~IndexBuffer()
+oe::IndexBuffer::~IndexBuffer()
 {
     gl::DeleteBuffers(1, &mID);
 }
 
-void oe::Renderer::IndexBuffer::Init(const dzl::uint32_t* data, dzl::uint32_t count)
+void oe::IndexBuffer::Init(const dzl::uint32_t* data, dzl::uint32_t count)
 {
     gl::GenBuffers(1, &mID);
     Bind();
     gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, count, data, gl::STATIC_DRAW);
 }
 
-void oe::Renderer::IndexBuffer::Bind() const
+void oe::IndexBuffer::Bind() const
 {
     gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, mID);
 }
 
-void oe::Renderer::IndexBuffer::UnBind() const
+void oe::IndexBuffer::UnBind() const
 {
     gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
 }

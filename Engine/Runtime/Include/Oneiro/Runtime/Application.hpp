@@ -6,12 +6,12 @@
 
 #pragma once
 
-#ifndef ONEIRO_SDK_APPLICATION_HPP
-#define ONEIRO_SDK_APPLICATION_HPP
+#ifndef ONEIRO_RUNTIME_APPLICATION_HPP
+#define ONEIRO_RUNTIME_APPLICATION_HPP
 
 namespace oe
 {
-    namespace SDK
+    namespace Runtime
     {
         class Application
         {
@@ -23,4 +23,4 @@ namespace oe
     }
 }
 
-#endif //ONEIRO_SDK_APPLICATION_HPP
+#endif //ONEIRO_RUNTIME_APPLICATION_HPP

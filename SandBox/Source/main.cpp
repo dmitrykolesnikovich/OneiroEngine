@@ -6,18 +6,18 @@
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Core/Logger.hpp"
 
-class SandBoxApp : public oe::SDK::Application
+class SandBoxApp : public oe::Runtime::Application
 {
 public:
     bool Init() override
     {
-        oe::Core::Logger::PrintMessage("Initializing...");
+        oe::Logger::PrintMessage("Initializing...");
         return true;
     }
     bool Update() override { return true; }
     void Close() override
     {
-        oe::Core::Logger::PrintMessage("Closing...");
+        oe::Logger::PrintMessage("Closing...");
     }
 };
 

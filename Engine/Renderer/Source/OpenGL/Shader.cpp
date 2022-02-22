@@ -12,17 +12,17 @@ dzl::uint32_t CreateFragmentShader(const char* src);
 dzl::uint32_t CreateProgram(dzl::uint32_t vID, dzl::uint32_t fID);
 void CheckCompileErrors(dzl::uint32_t ID, const char* type);
 
-oe::Renderer::Shader::~Shader()
+oe::Shader::~Shader()
 {
     gl::DeleteShader(mID);
 }
 
-void oe::Renderer::Shader::LoadFromFile(const dzl::string& path)
+void oe::Shader::LoadFromFile(const dzl::string& path)
 {
 
 }
 
-void oe::Renderer::Shader::LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc)
+void oe::Shader::LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc)
 {
     dzl::uint32_t vShader = CreateVertexShader(vSrc);
     dzl::uint32_t fShader = CreateFragmentShader(fSrc);
@@ -31,32 +31,32 @@ void oe::Renderer::Shader::LoadFromSource(const dzl::string& vSrc, const dzl::st
     gl::DeleteShader(fShader);
 }
 
-void oe::Renderer::Shader::Use() const
+void oe::Shader::Use() const
 {
     gl::UseProgram(mID);
 }
 
-void oe::Renderer::Shader::SetUniform(const char* uName, int uVal)
+void oe::Shader::SetUniform(const char* uName, int uVal)
 {
     gl::Uniform1i(GetUniformLocation(uName), uVal);
 }
 
-void oe::Renderer::Shader::SetUniform(const char* uName, float uVal)
+void oe::Shader::SetUniform(const char* uName, float uVal)
 {
     gl::Uniform1f(GetUniformLocation(uName), uVal);
 }
 
-void oe::Renderer::Shader::SetUniform(const char* uName, const glm::vec3& uVal)
+void oe::Shader::SetUniform(const char* uName, const glm::vec3& uVal)
 {
     gl::Uniform3fv(GetUniformLocation(uName), 1, &uVal[0]);
 }
 
-void oe::Renderer::Shader::SetUniform(const char* uName, const glm::mat4& uVal)
+void oe::Shader::SetUniform(const char* uName, const glm::mat4& uVal)
 {
     gl::UniformMatrix4fv(GetUniformLocation(uName), 1, gl::FALSE_, &uVal[0][0]);
 }
 
-GLint oe::Renderer::Shader::GetUniformLocation(const char* name)
+GLint oe::Shader::GetUniformLocation(const char* name)
 {
     if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];

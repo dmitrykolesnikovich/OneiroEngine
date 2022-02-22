@@ -14,22 +14,19 @@
 
 namespace oe
 {
-    namespace Renderer
+    class OE_API VertexBuffer
     {
-        class OE_API VertexBuffer
-        {
-        public:
-            ~VertexBuffer();
-            void Create(dzl::uint32_t size, const float* pVertices);
-            void Bind() const;
-            void UnBind() const;
+    public:
+        ~VertexBuffer();
+        void Create(dzl::uint32_t size, const float* pVertices);
+        void Bind() const;
+        void UnBind() const;
 
-            static void PushLayout(dzl::uint32_t id, dzl::uint32_t size,
-                                   dzl::uint32_t stride, dzl::uint32_t p);
-        private:
-            dzl::uint32_t mID{};
-        };
-    }
+        static void PushLayout(dzl::uint32_t id, dzl::uint32_t size,
+                               dzl::uint32_t stride, dzl::uint32_t p);
+    private:
+        dzl::uint32_t mID{};
+    };
 }
 
 #endif //ONEIRO_VERTEXBUFFER_HPP

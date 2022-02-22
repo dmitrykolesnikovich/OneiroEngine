@@ -14,19 +14,16 @@
 
 namespace oe
 {
-    namespace Renderer
+    class OE_API VertexArray
     {
-        class OE_API VertexArray
-        {
-        public:
-            ~VertexArray();
-            void Init();
-            void Bind() const;
-            void UnBind() const;
-        private:
-            dzl::uint32_t mID{};
-        };
-    }
+    public:
+        ~VertexArray();
+        void Init();
+        void Bind() const;
+        void UnBind() const;
+    private:
+        dzl::uint32_t mID{};
+    };
 }
 
 #endif //ONEIRO_VERTEXARRAY_HPP

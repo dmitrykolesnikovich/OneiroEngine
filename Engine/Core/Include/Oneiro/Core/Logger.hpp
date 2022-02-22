@@ -15,53 +15,50 @@
 
 namespace oe
 {
-    namespace Core
+    class Logger
     {
-        class Logger
+    public:
+        Logger() = default;
+        ~Logger()
         {
-        public:
-            Logger() = default;
-            ~Logger()
-            {
-                mFile->close();
-            }
+            mFile->close();
+        }
 
-            static bool Create(const dzl::string& fileName)
+        static bool Create(const dzl::string& fileName)
+        {
+            delete mFile;
+            mFile = new std::ofstream;
+            mFile->open(fileName);
+            if (!mFile->is_open())
             {
-                delete mFile;
-                mFile = new std::ofstream;
-                mFile->open(fileName);
-                if (!mFile->is_open())
-                {
-                    std::cerr << "Failed to open logger file!\n";
-                    return false;
-                }
-                return true;
+                std::cerr << "Failed to open logger file!\n";
+                return false;
             }
+            return true;
+        }
 
-            static void PrintMessage(const dzl::string& str)
-            {
-                std::cout << "[OE::MESSAGE] " << str << "\n";
-                *mFile << "[OE::MESSAGE] " << str << "\n";
-            }
+        static void PrintMessage(const dzl::string& str)
+        {
+            std::cout << "[OE::MESSAGE] " << str << "\n";
+            *mFile << "[OE::MESSAGE] " << str << "\n";
+        }
 
-            static void PrintWarning(const dzl::string& str)
-            {
-                std::cout << "[OE::WARNING] " << str << "\n";
-                *mFile << "[OE::WARNING] " << str << "\n";
-            }
+        static void PrintWarning(const dzl::string& str)
+        {
+            std::cout << "[OE::WARNING] " << str << "\n";
+            *mFile << "[OE::WARNING] " << str << "\n";
+        }
 
-            static void PrintError(const dzl::string& str)
-            {
-                std::cerr << "[OE::ERROR] " << str << "\n";
-                *mFile << "[OE::ERROR] " << str << "\n";
-            }
+        static void PrintError(const dzl::string& str)
+        {
+            std::cerr << "[OE::ERROR] " << str << "\n";
+            *mFile << "[OE::ERROR] " << str << "\n";
+        }
 
-        private:
-            static std::ofstream* mFile;
-        };
-    }
+    private:
+        static std::ofstream* mFile;
+    };
 }
 
-std::ofstream* oe::Core::Logger::mFile{};
+std::ofstream* oe::Logger::mFile{};
 #endif //ONEIRO_CORE_LOGGER_HPP

@@ -15,35 +15,32 @@
 
 namespace oe
 {
-    namespace Renderer
+    class OE_API Texture
     {
-        class OE_API Texture
+    public:
+        ~Texture();
+        bool PreLoad(const dzl::string& path);
+        bool Load(const dzl::string& path);
+
+        void Load();
+
+        void UnLoad();
+        void Bind() const;
+        void Bind(dzl::uint8_t id);
+
+        void UnBind() const;
+    private:
+        void GenerateTexture();
+        struct TextureData
         {
-        public:
-            ~Texture();
-            bool PreLoad(const dzl::string& path);
-            bool Load(const dzl::string& path);
-
-            void Load();
-
-            void UnLoad();
-            void Bind() const;
-            void Bind(dzl::uint8_t id);
-
-            void UnBind() const;
-        private:
-            void GenerateTexture();
-            struct TextureData
-            {
-                int width{};
-                int height{};
-                int nrChannels{};
-                dzl::uint8_t* data{};
-            };
-            TextureData mData;
-            dzl::uint32_t mID;
+            int width{};
+            int height{};
+            int nrChannels{};
+            dzl::uint8_t* data{};
         };
-    }
+        TextureData mData;
+        dzl::uint32_t mID;
+    };
 }
 
 #endif //ONEIRO_TEXTURE_HPP

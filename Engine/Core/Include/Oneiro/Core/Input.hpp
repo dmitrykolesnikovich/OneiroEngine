@@ -9,6 +9,8 @@
 #ifndef SANDBOX_INPUT_HPP
 #define SANDBOX_INPUT_HPP
 
+#define OE_DLL_EXPORT
+#include "Oneiro.hpp"
 #include "Window.hpp"
 
 namespace oe
@@ -45,7 +47,7 @@ namespace oe
             M = GLFW_KEY_M
         };
 
-        enum Type
+        enum InputType
         {
             PRESS = GLFW_PRESS,
             RELEASE = GLFW_RELEASE
@@ -57,10 +59,10 @@ namespace oe
             RIGHT = GLFW_MOUSE_BUTTON_RIGHT
         };
 
-        bool GetKey(oe::Input::Key key, oe::Input::Type type) { return glfwGetKey(Core::Window::Get()->GetGLFWWindow(), key) == type; }
-        bool GetMouseButton(oe::Input::Button button, oe::Input::Type type) { return glfwGetMouseButton(Core::Window::Get()->GetGLFWWindow(), button) == type; }
+        OE_API bool GetKey(oe::Input::Key key, oe::Input::InputType type) { return glfwGetKey(Window::Get()->GetGLFWWindow(), key) == type; }
+        OE_API bool GetMouseButton(oe::Input::Button button, oe::Input::InputType type) { return glfwGetMouseButton(Window::Get()->GetGLFWWindow(), button) == type; }
 
-        class Command
+        class OE_API Command
         {
         public:
             virtual ~Command() = default;

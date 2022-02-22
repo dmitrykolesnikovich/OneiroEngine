@@ -6,48 +6,52 @@
 
 #pragma once
 
-#ifndef ONEIRO_RUNTIME_APPLICATION_HPP
-#define ONEIRO_RUNTIME_APPLICATION_HPP
+#ifndef ONEIRO_RUNTIME_ENGINE_HPP
+#define ONEIRO_RUNTIME_ENGINE_HPP
 
 #include <iostream>
 #include "Oneiro/Core/Input.hpp"
 #include "Application.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Core.hpp"
 
 namespace oe
 {
     namespace Runtime
     {
-        class OE_API Engine
+        struct OE_API Engine
         {
-        public:
-            static void Run(SDK::Application& app)
+            static void Run(Application& app)
             {
-                Core::Window window;
-                Core::Logger::Create("log.txt");
+                Core::Init();
                 Renderer::Init();
 
-                window.Create();
+                mWindow->Create();
 
                 app.Init();
 
-                while (!window.isClosed())
+                while (!mWindow->isClosed())
                 {
-                    oe::Core::Window::PollEvents();
-                    oe::Core::Window::WaitEvents();
+                    Window::PollEvents();
+                    Window::WaitEvents();
 
                     app.Update();
 
-                    window.SwapBuffers();
+                    mWindow->SwapBuffers();
                 }
 
                 app.Close();
 
                 Renderer::Shutdown();
+                Core::Shutdown();
             }
+        private:
+            static Window* mWindow;
         };
     }
 }
 
-#endif //ONEIRO_RUNTIME_APPLICATION_HPP
+oe::Window* oe::Runtime::Engine::mWindow{new Window};
+
+#endif //ONEIRO_RUNTIME_ENGINE_HPP

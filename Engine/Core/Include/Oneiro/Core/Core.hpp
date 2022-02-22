@@ -9,16 +9,16 @@
 #ifndef ONEIRO_CORE_HPP
 #define ONEIRO_CORE_HPP
 
-#define DLL_EXPORT
-#include "Oneiro.hpp"
 #include "Logger.hpp"
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
 
 namespace oe
 {
     namespace Core
     {
-        void Init() { Logger::Create("log.txt"); }
-        void Shutdown() { }
+        void Init() { glfwInit(); Logger::Create("log.txt"); }
+        void Shutdown() { glfwTerminate(); }
     }
 }
 

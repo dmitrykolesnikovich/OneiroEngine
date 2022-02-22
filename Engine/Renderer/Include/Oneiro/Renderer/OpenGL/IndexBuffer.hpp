@@ -14,19 +14,16 @@
 
 namespace oe
 {
-    namespace Renderer
+    class OE_API IndexBuffer
     {
-        class OE_API IndexBuffer
-        {
-        public:
-            ~IndexBuffer();
-            void Init(const dzl::uint32_t* data, dzl::uint32_t count);
-            void Bind() const;
-            void UnBind() const;
-        private:
-            dzl::uint32_t mID{};
-        };
-    }
+    public:
+        ~IndexBuffer();
+        void Init(const dzl::uint32_t* data, dzl::uint32_t count);
+        void Bind() const;
+        void UnBind() const;
+    private:
+        dzl::uint32_t mID{};
+    };
 }
 
 #endif //ONEIRO_INDEXBUFFER_HPP

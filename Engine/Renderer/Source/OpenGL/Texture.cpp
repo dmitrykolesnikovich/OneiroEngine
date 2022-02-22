@@ -10,7 +10,7 @@
 #define ONEIRO_IMPORT 1
 //#include "Debugger/Debugger.hpp"
 
-bool oe::Renderer::Texture::PreLoad(const dzl::string& path)
+bool oe::Texture::PreLoad(const dzl::string& path)
 {
     mData.data = stbi_load(path, &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
@@ -21,7 +21,7 @@ bool oe::Renderer::Texture::PreLoad(const dzl::string& path)
     }
 }
 
-bool oe::Renderer::Texture::Load(const dzl::string& path)
+bool oe::Texture::Load(const dzl::string& path)
 {
     if (PreLoad(path)) {
         GenerateTexture();
@@ -31,35 +31,35 @@ bool oe::Renderer::Texture::Load(const dzl::string& path)
     }
 }
 
-void oe::Renderer::Texture::Load()
+void oe::Texture::Load()
 {
     GenerateTexture();
 }
 
-void oe::Renderer::Texture::Bind() const
+void oe::Texture::Bind() const
 {
     gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
-void oe::Renderer::Texture::Bind(dzl::uint8_t id)
+void oe::Texture::Bind(dzl::uint8_t id)
 {
     gl::ActiveTexture(gl::TEXTURE0 + id);
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
 
-void oe::Renderer::Texture::UnBind() const
+void oe::Texture::UnBind() const
 {
     gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
 
-void oe::Renderer::Texture::UnLoad()
+void oe::Texture::UnLoad()
 {
     gl::DeleteTextures(1, &mID);
 }
 
-void oe::Renderer::Texture::GenerateTexture()
+void oe::Texture::GenerateTexture()
 {
     gl::GenTextures(1, &mID);
     Bind();
@@ -73,7 +73,7 @@ void oe::Renderer::Texture::GenerateTexture()
     gl::GenerateMipmap(gl::TEXTURE_2D);
 }
 
-oe::Renderer::Texture::~Texture()
+oe::Texture::~Texture()
 {
     stbi_image_free(mData.data);
     UnLoad();

@@ -6,29 +6,29 @@
 #include "Oneiro/Renderer/OpenGL/VertexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-oe::Renderer::VertexBuffer::~VertexBuffer()
+oe::VertexBuffer::~VertexBuffer()
 {
     gl::DeleteBuffers(1, &mID);
 }
 
-void oe::Renderer::VertexBuffer::Create(dzl::uint32_t size, const float* pVertices)
+void oe::VertexBuffer::Create(dzl::uint32_t size, const float* pVertices)
 {
     gl::GenBuffers(1, &mID);
     Bind();
     gl::BufferData(gl::ARRAY_BUFFER, size, pVertices, gl::STATIC_DRAW);
 }
 
-void oe::Renderer::VertexBuffer::Bind() const
+void oe::VertexBuffer::Bind() const
 {
     gl::BindBuffer(gl::ARRAY_BUFFER, mID);
 }
 
-void oe::Renderer::VertexBuffer::UnBind() const
+void oe::VertexBuffer::UnBind() const
 {
     gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 }
 
-void oe::Renderer::VertexBuffer::PushLayout(dzl::uint32_t id, dzl::uint32_t size,
+void oe::VertexBuffer::PushLayout(dzl::uint32_t id, dzl::uint32_t size,
                                             dzl::uint32_t stride, dzl::uint32_t p)
 {
     gl::EnableVertexAttribArray(id);

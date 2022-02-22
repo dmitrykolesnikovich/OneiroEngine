@@ -18,26 +18,23 @@
 
 namespace oe
 {
-    namespace Renderer
+    class OE_API Shader
     {
-        class OE_API Shader
-        {
-        public:
-            ~Shader();
-            void LoadFromFile(const dzl::string& path);
-            void LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc);
-            void Use() const;
+    public:
+        ~Shader();
+        void LoadFromFile(const dzl::string& path);
+        void LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc);
+        void Use() const;
 
-            void SetUniform(const char* uName, int uVal);
-            void SetUniform(const char* uName, float uVal);
-            void SetUniform(const char* uName, const glm::mat4& uVal);
-            void SetUniform(const char* uName, const glm::vec3& uVal);
-        private:
-            GLint GetUniformLocation(const char* name);
-            mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
-            dzl::uint32_t mID{};
-        };
-    }
+        void SetUniform(const char* uName, int uVal);
+        void SetUniform(const char* uName, float uVal);
+        void SetUniform(const char* uName, const glm::mat4& uVal);
+        void SetUniform(const char* uName, const glm::vec3& uVal);
+    private:
+        GLint GetUniformLocation(const char* name);
+        mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
+        dzl::uint32_t mID{};
+    };
 }
 
 #endif //ONEIRO_SHADER_HPP
