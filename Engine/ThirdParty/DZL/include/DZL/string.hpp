@@ -39,7 +39,7 @@ namespace dzl
         }
         string(const string& str) { MoveStr(str); }
     public: // dtrs
-        ~string() { delete mData; }
+        ~string() { delete[] mData; }
     public: // setters
         string& operator=(const char* str) { MoveStr(str); return *this; }
         string& operator+(const char* str)
