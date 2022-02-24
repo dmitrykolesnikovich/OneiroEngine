@@ -20,32 +20,10 @@ namespace oe
 {
     namespace Runtime
     {
-        struct OE_API Engine
+        class OE_API Engine
         {
-            static void Run(Application& app)
-            {
-                Core::Init();
-                Renderer::Init();
-
-                mWindow->Create();
-
-                app.Init();
-
-                while (!mWindow->isClosed())
-                {
-                    Window::PollEvents();
-                    Window::WaitEvents();
-
-                    app.Update();
-
-                    mWindow->SwapBuffers();
-                }
-
-                app.Close();
-
-                Renderer::Shutdown();
-                Core::Shutdown();
-            }
+        public:
+            static void Run(Application& app);
         private:
             static Window* mWindow;
         };
