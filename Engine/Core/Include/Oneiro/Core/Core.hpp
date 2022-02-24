@@ -17,7 +17,10 @@ namespace oe
 {
     namespace Core
     {
-        void Init() { glfwInit(); Logger::Create("log.txt"); }
+        void Init() {
+            glfwInit();
+            Logger::Create("log", "log.txt");
+        }
         void Shutdown() { glfwTerminate(); }
     }
 }

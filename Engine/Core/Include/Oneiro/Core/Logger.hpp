@@ -13,52 +13,67 @@
 #include <fstream>
 #include <iostream>
 
+#include <unordered_map>
+
+#define OE_DLL_EXPORT
+#include "Oneiro.hpp"
+
+namespace oe { class Logger; }
+static std::unordered_map<const char*, oe::Logger*> loggers;
+
 namespace oe
 {
     class Logger
     {
     public:
         Logger() = default;
+        Logger(const char* file) { mFile.open(file, std::ios::out | std::ios::trunc); }
         ~Logger()
         {
-            mFile->close();
+            for (const auto& log : loggers)
+            {
+                log.second->mFile.close();
+            }
         }
 
-        static bool Create(const dzl::string& fileName)
+        static bool Create(const char* loggerName, const dzl::string& fileName)
         {
-            delete mFile;
-            mFile = new std::ofstream;
-            mFile->open(fileName);
-            if (!mFile->is_open())
+            static Logger log(fileName);
+            loggers[loggerName] = &log;
+            if (!log.mFile.is_open())
             {
-                std::cerr << "Failed to open logger file!\n";
+                std::cerr << "Failed to open log file!\n";
                 return false;
             }
             return true;
         }
 
-        static void PrintMessage(const dzl::string& str)
+        void PrintMessage(const dzl::string& msg) const
         {
-            std::cout << "[OE::MESSAGE] " << str << "\n";
-            *mFile << "[OE::MESSAGE] " << str << "\n";
+            Print("[OE::MESSAGE]", msg);
         }
 
-        static void PrintWarning(const dzl::string& str)
+        void PrintWarning(const dzl::string& msg) const
         {
-            std::cout << "[OE::WARNING] " << str << "\n";
-            *mFile << "[OE::WARNING] " << str << "\n";
+            Print("[OE::WARNING]", msg);
         }
 
-        static void PrintError(const dzl::string& str)
+        void PrintError(const dzl::string& msg) const
         {
-            std::cerr << "[OE::ERROR] " << str << "\n";
-            *mFile << "[OE::ERROR] " << str << "\n";
+            Print("[OE::ERROR]", msg);
         }
 
+        static const Logger* Get(const char* name) { return loggers[name]; }
     private:
-        static std::ofstream* mFile;
+        void Print(const char* type, const char* msg) const
+        {
+            mFile << type << " " << msg << "\n";
+            std::cerr << type << " " << msg << "\n";
+        }
+        mutable std::fstream mFile;
     };
 }
 
-std::ofstream* oe::Logger::mFile{};
+
+
 #endif //ONEIRO_CORE_LOGGER_HPP
