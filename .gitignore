@@ -1,5 +1,9 @@
 .git
 .idea
+.vs
+.github
 bin/
 SandBox/cmake-build-debug/
 SandBox/cmake-build-release/
+
+SandBox/out/
