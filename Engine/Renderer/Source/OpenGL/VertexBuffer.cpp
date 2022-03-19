@@ -11,7 +11,7 @@ oe::VertexBuffer::~VertexBuffer()
     gl::DeleteBuffers(1, &mID);
 }
 
-void oe::VertexBuffer::Create(dzl::uint32_t size, const float* pVertices)
+void oe::VertexBuffer::Create(uint32_t size, const float* pVertices)
 {
     gl::GenBuffers(1, &mID);
     Bind();
@@ -28,8 +28,8 @@ void oe::VertexBuffer::UnBind() const
     gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 }
 
-void oe::VertexBuffer::PushLayout(dzl::uint32_t id, dzl::uint32_t size,
-                                            dzl::uint32_t stride, dzl::uint32_t p)
+void oe::VertexBuffer::PushLayout(uint32_t id, uint32_t size,
+                                            uint32_t stride, uint32_t p)
 {
     gl::EnableVertexAttribArray(id);
     gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*)(p == 0 ? 0 : (p * sizeof(float))));

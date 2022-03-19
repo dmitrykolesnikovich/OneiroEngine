@@ -11,13 +11,13 @@ class SandBoxApp : public oe::Runtime::Application
 public:
     bool Init() override
     {
-        oe::Logger::PrintMessage("Initializing...");
+        oe::Logger::Get("log")->PrintMessage("Initializing...");
         return true;
     }
     bool Update() override { return true; }
     void Close() override
     {
-        oe::Logger::PrintMessage("Closing...");
+        oe::Logger::Get("log")->PrintMessage("Closing...");
     }
 };
 

@@ -8,8 +8,9 @@
 #ifndef ONEIRO_VERTEXARRAY_HPP
 #define ONEIRO_VERTEXARRAY_HPP
 
-#include "DZL/types.hpp"
 #define OE_DLL_EXPORT
+#include <cstdint>
+
 #include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
@@ -22,7 +23,7 @@ namespace oe
         void Bind() const;
         void UnBind() const;
     private:
-        dzl::uint32_t mID{};
+        uint32_t mID{};
     };
 }
 

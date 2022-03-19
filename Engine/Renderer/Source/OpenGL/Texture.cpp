@@ -10,9 +10,9 @@
 #define ONEIRO_IMPORT 1
 //#include "Debugger/Debugger.hpp"
 
-bool oe::Texture::PreLoad(const dzl::string& path)
+bool oe::Texture::PreLoad(const std::string& path)
 {
-    mData.data = stbi_load(path, &mData.width, &mData.height, &mData.nrChannels, 0);
+    mData.data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
         return true;
     } else {
@@ -21,7 +21,7 @@ bool oe::Texture::PreLoad(const dzl::string& path)
     }
 }
 
-bool oe::Texture::Load(const dzl::string& path)
+bool oe::Texture::Load(const std::string& path)
 {
     if (PreLoad(path)) {
         GenerateTexture();
@@ -42,7 +42,7 @@ void oe::Texture::Bind() const
     gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
-void oe::Texture::Bind(dzl::uint8_t id)
+void oe::Texture::Bind(uint8_t id)
 {
     gl::ActiveTexture(gl::TEXTURE0 + id);
     gl::BindTexture(gl::TEXTURE_2D, 0);

@@ -23,7 +23,31 @@ namespace oe
         class OE_API Engine
         {
         public:
-            static void Run(Application& app);
+            static void Run(Application& app)
+            {
+                Core::Init();
+                Renderer::Init();
+
+                mWindow->Create();
+
+                app.Init();
+
+                while (!mWindow->isClosed())
+                {
+                    Window::PollEvents();
+                    Window::WaitEvents();
+
+                    app.Update();
+
+                    mWindow->SwapBuffers();
+                }
+
+                app.Close();
+
+                Renderer::Shutdown();
+                Core::Shutdown();
+            }
+
         private:
             static Window* mWindow;
         };
