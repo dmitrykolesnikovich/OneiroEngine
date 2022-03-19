@@ -11,7 +11,7 @@ oe::IndexBuffer::~IndexBuffer()
     gl::DeleteBuffers(1, &mID);
 }
 
-void oe::IndexBuffer::Init(const dzl::uint32_t* data, dzl::uint32_t count)
+void oe::IndexBuffer::Init(const uint32_t* data, uint32_t count)
 {
     gl::GenBuffers(1, &mID);
     Bind();

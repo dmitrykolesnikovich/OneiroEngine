@@ -10,7 +10,6 @@
 
 #include <unordered_map>
 #include "OpenGL/gl_core_4_5.hpp"
-#include "DZL/string.hpp"
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 #define OE_DLL_EXPORT
@@ -22,8 +21,8 @@ namespace oe
     {
     public:
         ~Shader();
-        void LoadFromFile(const dzl::string& path);
-        void LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc);
+        void LoadFromFile(const std::string& path);
+        void LoadFromSource(const std::string& vSrc, const std::string& fSrc);
         void Use() const;
 
         void SetUniform(const char* uName, int uVal);
@@ -33,7 +32,7 @@ namespace oe
     private:
         GLint GetUniformLocation(const char* name);
         mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
-        dzl::uint32_t mID{};
+        uint32_t mID{};
     };
 }
 

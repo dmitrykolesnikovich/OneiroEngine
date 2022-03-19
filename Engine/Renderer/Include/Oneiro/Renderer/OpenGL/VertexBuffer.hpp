@@ -8,8 +8,9 @@
 #ifndef ONEIRO_VERTEXBUFFER_HPP
 #define ONEIRO_VERTEXBUFFER_HPP
 
-#include "DZL/types.hpp"
 #define OE_DLL_EXPORT
+#include <cstdint>
+
 #include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe
@@ -18,14 +19,14 @@ namespace oe
     {
     public:
         ~VertexBuffer();
-        void Create(dzl::uint32_t size, const float* pVertices);
+        void Create(uint32_t size, const float* pVertices);
         void Bind() const;
         void UnBind() const;
 
-        static void PushLayout(dzl::uint32_t id, dzl::uint32_t size,
-                               dzl::uint32_t stride, dzl::uint32_t p);
+        static void PushLayout(uint32_t id, uint32_t size,
+                               uint32_t stride, uint32_t p);
     private:
-        dzl::uint32_t mID{};
+        uint32_t mID{};
     };
 }
 

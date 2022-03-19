@@ -9,7 +9,6 @@
 #ifndef ONEIRO_CORE_LOGGER_HPP
 #define ONEIRO_CORE_LOGGER_HPP
 
-#include "DZL/string.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -19,7 +18,7 @@
 #include "Oneiro.hpp"
 
 namespace oe { class Logger; }
-static std::unordered_map<const char*, oe::Logger*> loggers;
+static std::unordered_map<std::string, oe::Logger*> loggers;
 
 namespace oe
 {
@@ -27,7 +26,7 @@ namespace oe
     {
     public:
         Logger() = default;
-        Logger(const char* file) { mFile.open(file, std::ios::out | std::ios::trunc); }
+        Logger(const std::string& file) { mFile.open(file, std::ios::out | std::ios::trunc); }
         ~Logger()
         {
             for (const auto& log : loggers)
@@ -36,7 +35,7 @@ namespace oe
             }
         }
 
-        static bool Create(const char* loggerName, const dzl::string& fileName)
+        static bool Create(const std::string& loggerName, const std::string& fileName)
         {
             static Logger log(fileName);
             loggers[loggerName] = &log;
@@ -48,19 +47,19 @@ namespace oe
             return true;
         }
 
-        void PrintMessage(const dzl::string& msg) const
+        void PrintMessage(const std::string& msg) const
         {
-            Print("[OE::MESSAGE]", msg);
+            Print("[OE::MESSAGE]", msg.c_str());
         }
 
-        void PrintWarning(const dzl::string& msg) const
+        void PrintWarning(const std::string& msg) const
         {
-            Print("[OE::WARNING]", msg);
+            Print("[OE::WARNING]", msg.c_str());
         }
 
-        void PrintError(const dzl::string& msg) const
+        void PrintError(const std::string& msg) const
         {
-            Print("[OE::ERROR]", msg);
+            Print("[OE::ERROR]", msg.c_str());
         }
 
         static const Logger* Get(const char* name) { return loggers[name]; }

@@ -7,25 +7,25 @@
 #include <iostream>
 #include "Oneiro/Renderer/OpenGL/Shader.hpp"
 
-dzl::uint32_t CreateVertexShader(const char* src);
-dzl::uint32_t CreateFragmentShader(const char* src);
-dzl::uint32_t CreateProgram(dzl::uint32_t vID, dzl::uint32_t fID);
-void CheckCompileErrors(dzl::uint32_t ID, const char* type);
+uint32_t CreateVertexShader(const char* src);
+uint32_t CreateFragmentShader(const char* src);
+uint32_t CreateProgram(uint32_t vID, uint32_t fID);
+void CheckCompileErrors(uint32_t ID, const char* type);
 
 oe::Shader::~Shader()
 {
     gl::DeleteShader(mID);
 }
 
-void oe::Shader::LoadFromFile(const dzl::string& path)
+void oe::Shader::LoadFromFile(const std::string& path)
 {
 
 }
 
-void oe::Shader::LoadFromSource(const dzl::string& vSrc, const dzl::string& fSrc)
+void oe::Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc)
 {
-    dzl::uint32_t vShader = CreateVertexShader(vSrc);
-    dzl::uint32_t fShader = CreateFragmentShader(fSrc);
+    uint32_t vShader = CreateVertexShader(vSrc.c_str());
+    uint32_t fShader = CreateFragmentShader(fSrc.c_str());
     mID = CreateProgram(vShader, fShader);
     gl::DeleteShader(vShader);
     gl::DeleteShader(fShader);
@@ -65,27 +65,27 @@ GLint oe::Shader::GetUniformLocation(const char* name)
     return location;
 }
 
-dzl::uint32_t CreateVertexShader(const char* src)
+uint32_t CreateVertexShader(const char* src)
 {
-    dzl::uint32_t ID = gl::CreateShader(gl::VERTEX_SHADER);
+    uint32_t ID = gl::CreateShader(gl::VERTEX_SHADER);
     gl::ShaderSource(ID, 1, &src, nullptr);
     gl::CompileShader(ID);
     CheckCompileErrors(ID, "VERTEX");
     return ID;
 }
 
-dzl::uint32_t CreateFragmentShader(const char* src)
+uint32_t CreateFragmentShader(const char* src)
 {
-    dzl::uint32_t ID = gl::CreateShader(gl::FRAGMENT_SHADER);
+    uint32_t ID = gl::CreateShader(gl::FRAGMENT_SHADER);
     gl::ShaderSource(ID, 1, &src, nullptr);
     gl::CompileShader(ID);
     CheckCompileErrors(ID, "FRAGMENT");
     return ID;
 }
 
-dzl::uint32_t CreateProgram(dzl::uint32_t vID, dzl::uint32_t fID)
+uint32_t CreateProgram(uint32_t vID, uint32_t fID)
 {
-    dzl::uint32_t ID = gl::CreateProgram();
+    uint32_t ID = gl::CreateProgram();
     gl::AttachShader(ID, vID);
     gl::AttachShader(ID, fID);
     gl::LinkProgram(ID);
@@ -93,7 +93,7 @@ dzl::uint32_t CreateProgram(dzl::uint32_t vID, dzl::uint32_t fID)
     return ID;
 }
 
-void CheckCompileErrors(dzl::uint32_t ID, const char* type)
+void CheckCompileErrors(uint32_t ID, const char* type)
 {
     int success{};
     char infoLog[512];

@@ -4,28 +4,3 @@
 //
 
 #include "Oneiro/Runtime/Engine.hpp"
-
-void oe::Runtime::Engine::Run(oe::Runtime::Application& app)
-{
-    Core::Init();
-    Renderer::Init();
-
-    mWindow->Create();
-
-    app.Init();
-
-    while (!mWindow->isClosed())
-    {
-        Window::PollEvents();
-        Window::WaitEvents();
-
-        app.Update();
-
-        mWindow->SwapBuffers();
-    }
-
-    app.Close();
-
-    Renderer::Shutdown();
-    Core::Shutdown();
-}

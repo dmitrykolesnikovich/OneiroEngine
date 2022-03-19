@@ -10,9 +10,6 @@ set(ONEIRO_IMPORT ON)
 file(GLOB TEXTUREFILES "Textures/*.jpg" "Textures/*.png")
 file(COPY ${TEXTUREFILES} DESTINATION ${CMAKE_BINARY_DIR}/Textures/)
 
-# if u dont have a mold, then remove next line
-add_compile_options(-B/usr/libexec/mold)
-
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
