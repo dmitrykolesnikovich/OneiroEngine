@@ -1,13 +1,9 @@
 //
-// Created by Dezlow on 22.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
-
 #pragma once
-
-#ifndef ONEIRO_HPP
-#define ONEIRO_HPP
 
 #ifdef _WIN32
     #ifndef OE_DLL_IMPORT
@@ -24,5 +20,3 @@
 #else
     #define OE_API
 #endif
-
-#endif //ONEIRO_HPP

@@ -1,13 +1,9 @@
 //
-// Created by Dezlow on 22.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
-
 #pragma once
-
-#ifndef ONEIRO_CORE_LOGGER_HPP
-#define ONEIRO_CORE_LOGGER_HPP
 
 #include <fstream>
 #include <iostream>
@@ -72,7 +68,3 @@ namespace oe
         mutable std::fstream mFile;
     };
 }
-
-
-
-#endif //ONEIRO_CORE_LOGGER_HPP

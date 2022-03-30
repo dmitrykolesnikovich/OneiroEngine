@@ -1,59 +1,84 @@
 //
-// Created by Dezlow on 20.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 
 #pragma once
 
-#ifndef ONEIRO_RUNTIME_ENGINE_HPP
-#define ONEIRO_RUNTIME_ENGINE_HPP
-
 #include <iostream>
-#include "Oneiro/Core/Input.hpp"
-#include "Application.hpp"
+#include <Oneiro/Core/Window.hpp>
+#include "Oneiro/Runtime/Application.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Core.hpp"
 
-namespace oe
+namespace oe::Runtime
 {
-    namespace Runtime
+    class OE_API Engine
     {
-        class OE_API Engine
+    public:
+        static void Init()
         {
-        public:
-            static void Run(Application& app)
+            Core::Init();
+            Renderer::Init();
+        }
+
+        static void Shutdown()
+        {
+            Renderer::Shutdown();
+            Core::Shutdown();
+        }
+
+        static void Run(const std::shared_ptr<Application>& app)
+        {
+            mApplication = app.get();
+
+            mWindow->Create();
+
+            glfwSetKeyCallback(Core::Window::GetGLFWWindow(), Engine::KeyCallback);
+            glfwSetMouseButtonCallback(Core::Window::GetGLFWWindow(), Engine::MouseButtonCallback);
+
+            glfwSetFramebufferSizeCallback(Core::Window::GetGLFWWindow(), [](GLFWwindow* window, int width, int height){
+                gl::Viewport(0,0, width, height);
+                Core::Window::UpdateSize(width, height);
+            });
+
+            app->Init();
+
+            while (!mWindow->IsClosed())
             {
-                Core::Init();
-                Renderer::Init();
+                if (app->IsStopped())
+                    break;
 
-                mWindow->Create();
+                Core::Window::PollEvents();
 
-                app.Init();
+                if (!app->Update())
+                    break;
 
-                while (!mWindow->isClosed())
-                {
-                    Window::PollEvents();
-                    Window::WaitEvents();
-
-                    app.Update();
-
-                    mWindow->SwapBuffers();
-                }
-
-                app.Close();
-
-                Renderer::Shutdown();
-                Core::Shutdown();
+                mWindow->SwapBuffers();
             }
 
-        private:
-            static Window* mWindow;
-        };
-    }
+            app->Close();
+        }
+
+        static Application* GetApplication() { return mApplication; }
+
+    private:
+        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            mApplication->HandleKey(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
+        }
+
+        static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+        {
+            mApplication->HandleButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
+        }
+
+        static Application* mApplication;
+        static Core::Window* mWindow;
+    };
 }
 
-oe::Window* oe::Runtime::Engine::mWindow{new Window};
-
-#endif //ONEIRO_RUNTIME_ENGINE_HPP
+oe::Core::Window* oe::Runtime::Engine::mWindow{new oe::Core::Window};
+oe::Runtime::Application* oe::Runtime::Engine::mApplication{nullptr};

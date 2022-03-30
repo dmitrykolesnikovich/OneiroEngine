@@ -1,75 +1,66 @@
 //
-// Created by Dezlow on 21.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
-
 
 #pragma once
 
-#ifndef SANDBOX_INPUT_HPP
-#define SANDBOX_INPUT_HPP
-
 #define OE_DLL_EXPORT
 #include "Oneiro.hpp"
-#include "Window.hpp"
 
-namespace oe
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
+
+namespace oe::Input
 {
-    namespace Input
+    enum Key
     {
-        enum Key
-        {
-            Q = GLFW_KEY_Q,
-            W = GLFW_KEY_W,
-            E = GLFW_KEY_E,
-            R = GLFW_KEY_R,
-            T = GLFW_KEY_T,
-            Y = GLFW_KEY_Y,
-            U = GLFW_KEY_U,
-            I = GLFW_KEY_I,
-            O = GLFW_KEY_O,
-            P = GLFW_KEY_P,
-            A = GLFW_KEY_A,
-            S = GLFW_KEY_S,
-            D = GLFW_KEY_D,
-            F = GLFW_KEY_F,
-            G = GLFW_KEY_G,
-            H = GLFW_KEY_H,
-            J = GLFW_KEY_J,
-            K = GLFW_KEY_K,
-            L = GLFW_KEY_L,
-            Z = GLFW_KEY_Z,
-            X = GLFW_KEY_X,
-            C = GLFW_KEY_C,
-            V = GLFW_KEY_V,
-            B = GLFW_KEY_B,
-            N = GLFW_KEY_N,
-            M = GLFW_KEY_M
-        };
+        Q = GLFW_KEY_Q,
+        W = GLFW_KEY_W,
+        E = GLFW_KEY_E,
+        R = GLFW_KEY_R,
+        T = GLFW_KEY_T,
+        Y = GLFW_KEY_Y,
+        U = GLFW_KEY_U,
+        I = GLFW_KEY_I,
+        O = GLFW_KEY_O,
+        P = GLFW_KEY_P,
+        A = GLFW_KEY_A,
+        S = GLFW_KEY_S,
+        D = GLFW_KEY_D,
+        F = GLFW_KEY_F,
+        G = GLFW_KEY_G,
+        H = GLFW_KEY_H,
+        J = GLFW_KEY_J,
+        K = GLFW_KEY_K,
+        L = GLFW_KEY_L,
+        Z = GLFW_KEY_Z,
+        X = GLFW_KEY_X,
+        C = GLFW_KEY_C,
+        V = GLFW_KEY_V,
+        B = GLFW_KEY_B,
+        N = GLFW_KEY_N,
+        M = GLFW_KEY_M,
+        ESC = GLFW_KEY_ESCAPE
+    };
 
-        enum InputType
-        {
-            PRESS = GLFW_PRESS,
-            RELEASE = GLFW_RELEASE
-        };
+    enum Action
+    {
+        PRESS = GLFW_PRESS,
+        RELEASE = GLFW_RELEASE
+    };
 
-        enum Button
-        {
-            LEFT = GLFW_MOUSE_BUTTON_LEFT,
-            RIGHT = GLFW_MOUSE_BUTTON_RIGHT
-        };
+    enum Button
+    {
+        LEFT = GLFW_MOUSE_BUTTON_LEFT,
+        RIGHT = GLFW_MOUSE_BUTTON_RIGHT
+    };
 
-        OE_API bool GetKey(oe::Input::Key key, oe::Input::InputType type) { return glfwGetKey(Window::Get()->GetGLFWWindow(), key) == type; }
-        OE_API bool GetMouseButton(oe::Input::Button button, oe::Input::InputType type) { return glfwGetMouseButton(Window::Get()->GetGLFWWindow(), button) == type; }
-
-        class OE_API Command
-        {
-        public:
-            virtual ~Command() = default;
-            virtual void execute() = 0;
-            virtual void undo() = 0;
-        };
-    }
+    class OE_API Command
+    {
+    public:
+        virtual ~Command() = default;
+        virtual void Execute() = 0;
+        virtual void Undo() = 0;
+    };
 }
-
-#endif //SANDBOX_INPUT_HPP

@@ -1,26 +1,33 @@
 //
-// Created by Dezlow on 22.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
-
 
 #pragma once
 
-#ifndef ONEIRO_RUNTIME_APPLICATION_HPP
-#define ONEIRO_RUNTIME_APPLICATION_HPP
+#define OE_DLL_EXPORT
+#include "Oneiro/Core/Oneiro.hpp"
+#include "Oneiro/Core/Input.hpp"
 
-namespace oe
+#include <memory>
+
+namespace oe::Runtime
 {
-    namespace Runtime
+    class Application
     {
-        class Application
-        {
-        public:
-            virtual bool Init() = 0;
-            virtual bool Update() = 0;
-            virtual void Close() = 0;
-        };
-    }
-}
+    public:
+        virtual ~Application() = default;
+        virtual bool Init() = 0;
+        virtual bool Update() = 0;
+        virtual void Close() = 0;
+        virtual void HandleKey(Input::Key key, Input::Action action) = 0;
+        virtual void HandleButton(Input::Button button, Input::Action action) = 0;
+        [[nodiscard]] bool IsStopped() const { return mIsStopped; }
+    protected:
+        void Stop() { mIsStopped = true; }
+    private:
+        bool mIsStopped{};
+    };
 
-#endif //ONEIRO_RUNTIME_APPLICATION_HPP
+    OE_API std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
+}

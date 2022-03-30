@@ -1,28 +1,19 @@
 //
-// Created by Dezlow on 20.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
-
 #pragma once
-
-#ifndef ONEIRO_CORE_HPP
-#define ONEIRO_CORE_HPP
 
 #include "Logger.hpp"
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
-namespace oe
+namespace oe::Core
 {
-    namespace Core
-    {
-        void Init() {
-            glfwInit();
-            Logger::Create("log", "log.txt");
-        }
-        void Shutdown() { glfwTerminate(); }
+    void Init() {
+        glfwInit();
+        Logger::Create("log", "log.txt");
     }
+    void Shutdown() { glfwTerminate(); }
 }
-
-#endif //ONEIRO_CORE_HPP

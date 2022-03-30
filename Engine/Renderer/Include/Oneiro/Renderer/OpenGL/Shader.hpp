@@ -1,13 +1,11 @@
 //
-// Created by Dezlow on 11.02.2022.
-// Copyright (c) 2022 Oneiro Games. All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 #pragma once
 
-#ifndef ONEIRO_SHADER_HPP
-#define ONEIRO_SHADER_HPP
-
+#include <string>
 #include <unordered_map>
 #include "OpenGL/gl_core_4_5.hpp"
 #include "glm/vec3.hpp"
@@ -15,7 +13,7 @@
 #define OE_DLL_EXPORT
 #include "Oneiro/Core/Oneiro.hpp"
 
-namespace oe
+namespace oe::Renderer
 {
     class OE_API Shader
     {
@@ -23,17 +21,17 @@ namespace oe
         ~Shader();
         void LoadFromFile(const std::string& path);
         void LoadFromSource(const std::string& vSrc, const std::string& fSrc);
+
         void Use() const;
 
-        void SetUniform(const char* uName, int uVal);
-        void SetUniform(const char* uName, float uVal);
-        void SetUniform(const char* uName, const glm::mat4& uVal);
-        void SetUniform(const char* uName, const glm::vec3& uVal);
+        void SetUniform(const char* uName, int uVal) const;
+        void SetUniform(const char* uName, float uVal) const;
+        void SetUniform(const char* uName, const glm::mat4& uVal) const;
+        void SetUniform(const char* uName, const glm::vec2& uVal) const;
+        void SetUniform(const char* uName, const glm::vec3& uVal) const;
     private:
-        GLint GetUniformLocation(const char* name);
+        GLint GetUniformLocation(const char* name) const;
         mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
         uint32_t mID{};
     };
 }
-
-#endif //ONEIRO_SHADER_HPP

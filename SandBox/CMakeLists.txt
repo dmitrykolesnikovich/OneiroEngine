@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(SandBox)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/../bin/${CMAKE_SYSTEM_NAME}/${CMAKE_PROJECT_NAME}/${CMAKE_BUILD_TYPE}-${CMAKE_SYSTEM_PROCESSOR}")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/)
@@ -17,5 +17,5 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
 endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
-add_executable(${CMAKE_PROJECT_NAME} Source/main.cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Engine/ Engine/)
+add_executable(${CMAKE_PROJECT_NAME} Source/main.cpp "../Engine/ThirdParty/OpenGL/src/gl_core_4_5.cpp")
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Engine/ Oneiro)

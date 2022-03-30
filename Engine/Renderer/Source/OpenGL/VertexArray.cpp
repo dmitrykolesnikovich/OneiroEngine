@@ -1,27 +1,27 @@
 //
-// Created by Dezlow on 11.02.2022.
-// Copyright (c) 2022 Oneiro Games. All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 #include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-oe::VertexArray::~VertexArray()
+oe::Renderer::VertexArray::~VertexArray()
 {
     gl::DeleteVertexArrays(1, &mID);
 }
 
-void oe::VertexArray::Init()
+void oe::Renderer::VertexArray::Init()
 {
     gl::GenVertexArrays(1, &mID);
 }
 
-void oe::VertexArray::Bind() const
+void oe::Renderer::VertexArray::Bind() const
 {
     gl::BindVertexArray(mID);
 }
 
-void oe::VertexArray::UnBind() const
+void oe::Renderer::VertexArray::UnBind() const
 {
     gl::BindVertexArray(0);
 }

@@ -1,12 +1,9 @@
 //
-// Created by Dezlow on 20.02.2022.
-// Copyright (c) 2022 Oneiro Games All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 #pragma once
-
-#ifndef ONEIRO_CORE_WINDOW_HPP
-#define ONEIRO_CORE_WINDOW_HPP
 
 #define OE_DLL_EXPORT
 #include "Oneiro.hpp"
@@ -14,15 +11,15 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
-namespace oe
+namespace oe::Core
 {
     class OE_API Window
     {
         struct WindowData
         {
-            uint16_t width{1280};
-            uint16_t height{720};
-            const char* title{"Oneiro Engine"};
+            uint16_t width{ 1280 };
+            uint16_t height{ 720 };
+            const char* title{ "Oneiro Engine" };
         };
 
         static Window* mInstance;
@@ -33,15 +30,16 @@ namespace oe
         {
             mInstance = this;
 
-            glfwInit();
-
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
             mWindow = glfwCreateWindow(mData.width, mData.height, mData.title, nullptr, nullptr);
 
             glfwMakeContextCurrent(mWindow);
+            glfwSwapInterval(1);
+            UpdateAR(mData.width, mData.height);
 
             if (mWindow == nullptr)
                 return false;
@@ -49,21 +47,46 @@ namespace oe
             return true;
         }
 
-        bool isClosed() const { return glfwWindowShouldClose(mWindow); }
+        [[nodiscard]] bool IsClosed() const { return glfwWindowShouldClose(mWindow); }
         void SwapBuffers() { glfwSwapBuffers(mWindow); }
+        const WindowData& GetData() { return mData; }
 
-        GLFWwindow* GetGLFWWindow() { return mWindow; }
-        const WindowData* GetWindowData() const { return &mData; }
+        static GLFWwindow* GetGLFWWindow() { return Get()->mWindow; }
+        [[nodiscard]] const WindowData* GetWindowData() const { return &mData; }
 
         static Window* Get() { return mInstance; }
         static void PollEvents() { glfwPollEvents(); }
         static void WaitEvents() { glfwWaitEvents(); }
+
+        int GetWidth()
+        {
+            int w{};
+            glfwGetWindowSize(mWindow, &w, nullptr);
+            return w;
+        }
+
+        int GetHeight()
+        {
+            int h{};
+            glfwGetWindowSize(mWindow, nullptr, &h);
+            return h;
+        }
+
+        static void UpdateSize(int w, int h)
+        {
+            UpdateAR(w, h);
+            Get()->mData.width = w;
+            Get()->mData.height = h;
+        }
+
+        [[nodiscard]] float GetAR() const { return mAR; }
     private:
-        WindowData mData;
-        GLFWwindow* mWindow;
+        static void UpdateAR(int w, int h)
+        {
+            Get()->mAR = (float)w / (float)h;
+        }
+        WindowData mData{};
+        GLFWwindow* mWindow{};
+        float mAR{};
     };
-};
-
-OE_API oe::Window* oe::Window::mInstance{};
-
-#endif //ONEIRO_CORE_WINDOW_HPP
+}

@@ -1,27 +1,27 @@
 //
-// Created by Dezlow on 11.02.2022.
-// Copyright (c) 2022 Oneiro Games. All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 #include "Oneiro/Renderer/OpenGL/Texture.hpp"
 
 #include "OpenGL/gl_core_4_5.hpp"
 #include "stb/stb_image.h"
-#define ONEIRO_IMPORT 1
-//#include "Debugger/Debugger.hpp"
+#include "Oneiro/Core/Logger.hpp"
 
-bool oe::Texture::PreLoad(const std::string& path)
+bool oe::Renderer::Texture::PreLoad(const std::string& path)
 {
     mData.data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
+        mData.ar = (float)mData.width / (float)mData.height;
         return true;
     } else {
-//        Debugger::GetLogger()->PrintWarning(dzl::string("Failed to load texture from ") + path + " path!");
+        Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + path + " path!");
         return false;
     }
 }
 
-bool oe::Texture::Load(const std::string& path)
+bool oe::Renderer::Texture::Load(const std::string& path)
 {
     if (PreLoad(path)) {
         GenerateTexture();
@@ -31,35 +31,35 @@ bool oe::Texture::Load(const std::string& path)
     }
 }
 
-void oe::Texture::Load()
+void oe::Renderer::Texture::Load()
 {
     GenerateTexture();
 }
 
-void oe::Texture::Bind() const
+void oe::Renderer::Texture::Bind() const
 {
     gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
-void oe::Texture::Bind(uint8_t id)
+void oe::Renderer::Texture::Bind(uint8_t id)
 {
     gl::ActiveTexture(gl::TEXTURE0 + id);
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
 
-void oe::Texture::UnBind() const
+void oe::Renderer::Texture::UnBind() const
 {
     gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
 
-void oe::Texture::UnLoad()
+void oe::Renderer::Texture::UnLoad()
 {
     gl::DeleteTextures(1, &mID);
 }
 
-void oe::Texture::GenerateTexture()
+void oe::Renderer::Texture::GenerateTexture()
 {
     gl::GenTextures(1, &mID);
     Bind();
@@ -73,7 +73,7 @@ void oe::Texture::GenerateTexture()
     gl::GenerateMipmap(gl::TEXTURE_2D);
 }
 
-oe::Texture::~Texture()
+oe::Renderer::Texture::~Texture()
 {
     stbi_image_free(mData.data);
     UnLoad();

@@ -1,6 +1,6 @@
 //
-// Created by Dezlow on 11.02.2022.
-// Copyright (c) 2022 Oneiro Games. All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
 #include <cstring>
@@ -12,17 +12,17 @@ uint32_t CreateFragmentShader(const char* src);
 uint32_t CreateProgram(uint32_t vID, uint32_t fID);
 void CheckCompileErrors(uint32_t ID, const char* type);
 
-oe::Shader::~Shader()
+oe::Renderer::Shader::~Shader()
 {
     gl::DeleteShader(mID);
 }
 
-void oe::Shader::LoadFromFile(const std::string& path)
+void oe::Renderer::Shader::LoadFromFile(const std::string& path)
 {
 
 }
 
-void oe::Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc)
+void oe::Renderer::Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc)
 {
     uint32_t vShader = CreateVertexShader(vSrc.c_str());
     uint32_t fShader = CreateFragmentShader(fSrc.c_str());
@@ -31,32 +31,37 @@ void oe::Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc
     gl::DeleteShader(fShader);
 }
 
-void oe::Shader::Use() const
+void oe::Renderer::Shader::Use() const
 {
     gl::UseProgram(mID);
 }
 
-void oe::Shader::SetUniform(const char* uName, int uVal)
+void oe::Renderer::Shader::SetUniform(const char* uName, int uVal) const
 {
     gl::Uniform1i(GetUniformLocation(uName), uVal);
 }
 
-void oe::Shader::SetUniform(const char* uName, float uVal)
+void oe::Renderer::Shader::SetUniform(const char* uName, float uVal) const
 {
     gl::Uniform1f(GetUniformLocation(uName), uVal);
 }
 
-void oe::Shader::SetUniform(const char* uName, const glm::vec3& uVal)
+void oe::Renderer::Shader::SetUniform(const char* uName, const glm::vec2& uVal) const
+{
+    gl::Uniform2fv(GetUniformLocation(uName), 1, &uVal[0]);
+}
+
+void oe::Renderer::Shader::SetUniform(const char* uName, const glm::vec3& uVal) const
 {
     gl::Uniform3fv(GetUniformLocation(uName), 1, &uVal[0]);
 }
 
-void oe::Shader::SetUniform(const char* uName, const glm::mat4& uVal)
+void oe::Renderer::Shader::SetUniform(const char* uName, const glm::mat4& uVal) const
 {
     gl::UniformMatrix4fv(GetUniformLocation(uName), 1, gl::FALSE_, &uVal[0][0]);
 }
 
-GLint oe::Shader::GetUniformLocation(const char* name)
+GLint oe::Renderer::Shader::GetUniformLocation(const char* name) const
 {
     if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];
