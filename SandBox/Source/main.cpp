@@ -5,7 +5,6 @@
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
 #include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Core/Input.hpp"
 
 #include "Oneiro/VisualNovel/Sprite.hpp"
 #include "Oneiro/VisualNovel/Background.hpp"
@@ -74,4 +73,3 @@ namespace oe::Runtime
         return std::make_shared<SandBoxApp>();
     }
 }
-

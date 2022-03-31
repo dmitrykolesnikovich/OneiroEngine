@@ -34,14 +34,13 @@ namespace oe::Runtime
         {
             mApplication = app.get();
 
-            mWindow->Create();
+            if (!mWindow->Create())
+                throw std::runtime_error("Failed to create window!");
 
-            glfwSetKeyCallback(Core::Window::GetGLFWWindow(), Engine::KeyCallback);
-            glfwSetMouseButtonCallback(Core::Window::GetGLFWWindow(), Engine::MouseButtonCallback);
-
-            glfwSetFramebufferSizeCallback(Core::Window::GetGLFWWindow(), [](GLFWwindow* window, int width, int height){
-                gl::Viewport(0,0, width, height);
-                Core::Window::UpdateSize(width, height);
+            mWindow->SetKeyCallback(Engine::KeyCallback);
+            mWindow->SetMouseButtonCallback(Engine::MouseButtonCallback);
+            mWindow->SetFrameBufferSizeCallback([](int w, int h){
+                gl::Viewport(0, 0, w, h);
             });
 
             app->Init();
@@ -65,14 +64,14 @@ namespace oe::Runtime
         static Application* GetApplication() { return mApplication; }
 
     private:
-        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+        static void KeyCallback(Input::Key key, Input::Action action)
         {
-            mApplication->HandleKey(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
+            mApplication->HandleKey(key, action);
         }
 
-        static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+        static void MouseButtonCallback(Input::Button button, Input::Action action)
         {
-            mApplication->HandleButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
+            mApplication->HandleButton(button, action);
         }
 
         static Application* mApplication;

@@ -5,4 +5,8 @@
 
 #include "Oneiro/Core/Window.hpp"
 
-OE_API oe::Core::Window* oe::Core::Window::mInstance{};
+namespace oe::Core
+{
+    Window* Window::mInstance{};
+    Window::WindowCallbacks Window::mCallbacks{};
+}
