@@ -69,7 +69,7 @@ namespace oe::Core
         static void SetKeyCallback(keyCallback kCallback)
         {
             mCallbacks.key = kCallback;
-            glfwSetKeyCallback(GetGLFW(), [](GLFWwindow*, int key, int action, int, int)
+            glfwSetKeyCallback(GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
             {
                 Window::mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
             });
@@ -115,7 +115,6 @@ namespace oe::Core
         };
 
         static void UpdateAR(int w, int h) { Get()->SetAR((float)w / (float)h); }
-
     private:
         static Window* mInstance;
         static WindowCallbacks mCallbacks;

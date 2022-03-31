@@ -37,9 +37,13 @@ namespace oe::Runtime
             if (!mWindow->Create())
                 throw std::runtime_error("Failed to create window!");
 
-            mWindow->SetKeyCallback(Engine::KeyCallback);
-            mWindow->SetMouseButtonCallback(Engine::MouseButtonCallback);
-            mWindow->SetFrameBufferSizeCallback([](int w, int h){
+            Core::Window::SetKeyCallback([](Input::Key key, Input::Action action){
+                mApplication->HandleKey(key, action);
+            });
+            Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action){
+                mApplication->HandleButton(button, action);
+            });
+            Core::Window::SetFrameBufferSizeCallback([](int w, int h){
                 gl::Viewport(0, 0, w, h);
             });
 
@@ -64,16 +68,6 @@ namespace oe::Runtime
         static Application* GetApplication() { return mApplication; }
 
     private:
-        static void KeyCallback(Input::Key key, Input::Action action)
-        {
-            mApplication->HandleKey(key, action);
-        }
-
-        static void MouseButtonCallback(Input::Button button, Input::Action action)
-        {
-            mApplication->HandleButton(button, action);
-        }
-
         static Application* mApplication;
         static Core::Window* mWindow;
     };
