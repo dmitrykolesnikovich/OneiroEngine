@@ -12,7 +12,7 @@
 
 namespace oe::VisualNovel
 {
-    class Background : public ImageBase
+    class OE_API Background : public ImageBase
     {
     public:
         void Init() override;

@@ -12,7 +12,7 @@
 
 namespace oe::VisualNovel
 {
-    class Sprite : public ImageBase
+    class OE_API Sprite : public ImageBase
     {
     public:
         void Init() override;

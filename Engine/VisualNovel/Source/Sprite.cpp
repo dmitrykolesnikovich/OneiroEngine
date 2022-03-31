@@ -61,6 +61,6 @@ void oe::VisualNovel::Sprite::Load(const std::string& path)
 void oe::VisualNovel::Sprite::Draw()
 {
     GetShader()->Use();
-    GetShader()->SetUniform("uAR", Core::Window::Get()->GetAR() / GetTexture()->GetData().ar);
+    GetShader()->SetUniform("uAR", Core::Window::Get()->GetData().ar / GetTexture()->GetData().ar);
     DrawTexture();
 }
