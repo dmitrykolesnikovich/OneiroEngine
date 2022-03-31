@@ -12,7 +12,8 @@
 namespace oe::Core
 {
     void Init() {
-        glfwInit();
+        if (!glfwInit())
+            throw std::runtime_error("Failed to init glfw!");
         Logger::Create("log", "log.txt");
     }
     void Shutdown() { glfwTerminate(); }
