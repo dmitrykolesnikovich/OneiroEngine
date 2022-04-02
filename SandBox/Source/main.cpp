@@ -29,7 +29,7 @@ public:
         return true;
     }
 
-    void Close() override
+    void Shutdown() override
     {
         oe::Logger::Get("log")->PrintMessage("Closing...");
     }

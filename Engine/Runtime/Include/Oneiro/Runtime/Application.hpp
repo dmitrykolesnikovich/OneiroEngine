@@ -19,7 +19,7 @@ namespace oe::Runtime
         virtual ~Application() = default;
         virtual bool Init() = 0;
         virtual bool Update() = 0;
-        virtual void Close() = 0;
+        virtual void Shutdown() = 0;
         virtual void HandleKey(Input::Key key, Input::Action action) = 0;
         virtual void HandleButton(Input::Button button, Input::Action action) = 0;
         [[nodiscard]] bool IsStopped() const { return mIsStopped; }
