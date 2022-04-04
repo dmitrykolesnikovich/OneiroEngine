@@ -7,6 +7,5 @@
 
 namespace oe::Core
 {
-    Window* Window::mInstance{};
     Window::WindowCallbacks Window::mCallbacks{};
 }

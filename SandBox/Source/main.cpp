@@ -5,9 +5,7 @@
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
 #include "Oneiro/Core/Logger.hpp"
-
-#include "Oneiro/VisualNovel/Sprite.hpp"
-#include "Oneiro/VisualNovel/Background.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 class SandBoxApp : public oe::Runtime::Application
 {
@@ -15,17 +13,14 @@ public:
     bool Init() override
     {
         oe::Logger::Get("log")->PrintMessage("Initializing...");
-        bg.Init();
-        sprite.Init();
-        bg.Load("texture.jpg");
-        sprite.Load("sprite.png");
+        mSprite.Init(true);
+        mSprite.Load("sprite.png");
         return true;
     }
 
     bool Update() override
     {
-        bg.Draw();
-        sprite.Draw();
+        mSprite.Draw();
         return true;
     }
 
@@ -36,15 +31,16 @@ public:
 
     void HandleKey(oe::Input::Key key, oe::Input::Action action) override
     {
-        if (action == oe::Input::PRESS)
+        using namespace oe;
+        if (action == Input::Action::PRESS)
         {
             switch (key)
             {
-            case oe::Input::ESC:
+            case Input::Key::ESC:
                 Stop();
                 break;
-            case oe::Input::F:
-                oe::Logger::Get("log")->PrintMessage("Press F!");
+            case Input::Key::F:
+                Logger::Get("log")->PrintMessage("Press F!");
                 break;
             }
         }
@@ -52,18 +48,18 @@ public:
 
     void HandleButton(oe::Input::Button button, oe::Input::Action action) override
     {
-        if (action == oe::Input::PRESS)
+        using namespace oe;
+        if (action == Input::Action::PRESS)
         {
             switch (button)
             {
-            case oe::Input::LEFT:
-                oe::Logger::Get("log")->PrintMessage("Press left button!");
+            case Input::Button::LEFT:
+                Logger::Get("log")->PrintMessage("Press left button!");
             }
         }
     }
 private:
-    oe::VisualNovel::Background bg;
-    oe::VisualNovel::Sprite sprite;
+    oe::Renderer::Sprite2D mSprite;
 };
 
 namespace oe::Runtime

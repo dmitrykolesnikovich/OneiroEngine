@@ -12,6 +12,7 @@
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Core.hpp"
+#include "Oneiro/Core/Root.hpp"
 
 namespace oe::Runtime
 {
@@ -32,24 +33,27 @@ namespace oe::Runtime
 
         static void Run(const std::shared_ptr<Application>& app)
         {
-            mApplication = app.get();
+            root = new Core::Root;
+            window = new Core::Window;
 
-            if (!mWindow->Create())
+            root->SetApplication(app.get());
+
+            root->SetWindow(window);
+
+            Core::Window::SetErrorCallback([](int error, const char* description){
+                Logger::Get("log")->PrintError("GLFW ERROR[" + std::to_string(error) + "]: " + description);
+            });
+
+            if (!window->Create())
                 throw std::runtime_error("Failed to create window!");
 
-            Core::Window::SetKeyCallback([](Input::Key key, Input::Action action){
-                mApplication->HandleKey(key, action);
-            });
-            Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action){
-                mApplication->HandleButton(button, action);
-            });
-            Core::Window::SetFrameBufferSizeCallback([](int w, int h){
-                gl::Viewport(0, 0, w, h);
-            });
+            Core::Window::SetFramerate(1);
+            SetupCallbacks();
 
-            app->Init();
+            if (!app->Init())
+                throw std::runtime_error("Failed to initialize application!");
 
-            while (!mWindow->IsClosed())
+            while (!window->IsClosed())
             {
                 if (app->IsStopped())
                     break;
@@ -59,19 +63,35 @@ namespace oe::Runtime
                 if (!app->Update())
                     break;
 
-                mWindow->SwapBuffers();
+                window->SwapBuffers();
             }
 
-            app->Close();
+            app->Shutdown();
         }
 
-        static Application* GetApplication() { return mApplication; }
-
     private:
-        static Application* mApplication;
-        static Core::Window* mWindow;
-    };
-}
+        static void SetupCallbacks()
+        {
+            Core::Window::SetKeyCallback([](Input::Key key, Input::Action action){
+                Core::Root::GetApplication()->HandleKey(key, action);
+            });
+            Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action){
+                Core::Root::GetApplication()->HandleButton(button, action);
+            });
+            Core::Window::SetFrameBufferSizeCallback([](int w, int h){
+                gl::Viewport(0, 0, w, h);
+            });
 
-oe::Core::Window* oe::Runtime::Engine::mWindow{new oe::Core::Window};
-oe::Runtime::Application* oe::Runtime::Engine::mApplication{nullptr};
+            Core::Window::SetFocusCallback([](bool isFocused){
+                if (isFocused)
+                    Core::Window::SetFramerate(1); // 60 fps
+                else
+                    Core::Window::SetFramerate(-3); // 15 fps
+            });
+        }
+        static Core::Root* root;
+        static Core::Window* window;
+    };
+    Core::Root* Engine::root{};
+    Core::Window* Engine::window{};
+}

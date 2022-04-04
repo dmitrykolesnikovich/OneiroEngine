@@ -13,7 +13,7 @@
 
 namespace oe::Input
 {
-    enum Key
+    enum class Key
     {
         Q = GLFW_KEY_Q,
         W = GLFW_KEY_W,
@@ -44,13 +44,13 @@ namespace oe::Input
         ESC = GLFW_KEY_ESCAPE
     };
 
-    enum Action
+    enum class Action : uint8_t
     {
         PRESS = GLFW_PRESS,
         RELEASE = GLFW_RELEASE
     };
 
-    enum Button
+    enum class Button : uint8_t
     {
         LEFT = GLFW_MOUSE_BUTTON_LEFT,
         RIGHT = GLFW_MOUSE_BUTTON_RIGHT

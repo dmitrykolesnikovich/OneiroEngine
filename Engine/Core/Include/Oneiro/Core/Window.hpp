@@ -11,15 +11,23 @@
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
+#include "Root.hpp"
+
+#include <iostream>
 
 namespace oe::Core
 {
     class OE_API Window
     {
     public:
-        typedef void (*frameBufferSizeCallback)(int w, int h);
-        typedef void (*mouseButtonCallback)(Input::Button button, Input::Action action);
-        typedef void (*keyCallback)(Input::Key key, Input::Action action);
+        struct Callbacks
+        {
+            typedef void (*frameBufferSizeCallback)(int w, int h);
+            typedef void (*mouseButtonCallback)(Input::Button button, Input::Action action);
+            typedef void (*keyCallback)(Input::Key key, Input::Action action);
+            typedef void (*errorCallback)(int code, const char* description);
+            typedef void (*focusCallback)(bool isFocused);
+        };
     private:
         class WindowData;
         class WindowCallbacks;
@@ -28,8 +36,6 @@ namespace oe::Core
 
         bool Create()
         {
-            mInstance = this;
-
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
             glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -41,11 +47,6 @@ namespace oe::Core
                 return false;
 
             glfwMakeContextCurrent(mWindow);
-            glfwSwapInterval(1);
-
-//            glfwSetFramebufferSizeCallback(mWindow, Window::FrameBufferSizeCallback);
-//            glfwSetKeyCallback(mWindow, Window::KeyCallback);
-//            glfwSetMouseButtonCallback(mWindow, Window::MouseButtonCallback);
 
             UpdateAR(mData.width, mData.height);
 
@@ -58,46 +59,66 @@ namespace oe::Core
 
         [[nodiscard]] bool IsClosed() const { return glfwWindowShouldClose(mWindow); }
         const WindowData& GetData() { return mData; }
-        static inline GLFWwindow* GetGLFW() { return Get()->mWindow; }
-        static inline Window* Get() { return mInstance; }
+        inline GLFWwindow* GetGLFW() { return mWindow; }
 
         void SetAR(float ar) { mData.ar = ar; }
         void SetWidth(int w) { mData.width = w; }
         void SetHeight(int h) { mData.height = h; }
         void SetSize(int w, int h) { mData.width = w; mData.height = h; }
 
-        static void SetKeyCallback(keyCallback kCallback)
+        static void SetFramerate(int fps)
+        {
+            glfwSwapInterval(fps);
+        }
+
+        static void SetKeyCallback(Callbacks::keyCallback kCallback)
         {
             mCallbacks.key = kCallback;
-            glfwSetKeyCallback(GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
+            glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
             {
                 Window::mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
             });
         }
 
-        static void SetMouseButtonCallback(mouseButtonCallback mbCallback)
+        static void SetMouseButtonCallback(Callbacks::mouseButtonCallback mbCallback)
         {
             mCallbacks.mouseButton = mbCallback;
-            glfwSetMouseButtonCallback(GetGLFW(), [](GLFWwindow*, int button, int action, int)
+            glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int button, int action, int)
             {
                 Window::mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
             });
         }
 
-        static void SetFrameBufferSizeCallback(frameBufferSizeCallback fbsCallback)
+        static void SetFrameBufferSizeCallback(Callbacks::frameBufferSizeCallback fbsCallback)
         {
             mCallbacks.frameBufferSize = fbsCallback;
-            glfwSetFramebufferSizeCallback(GetGLFW(),[](GLFWwindow*, int w, int h)
+            glfwSetFramebufferSizeCallback(Root::GetWindow()->GetGLFW(),[](GLFWwindow*, int w, int h)
             {
                 Window::mCallbacks.frameBufferSize(w, h);
                 Window::UpdateSize(w, h);
             });
         }
 
+        static void SetFocusCallback(Callbacks::focusCallback focusCallback)
+        {
+            mCallbacks.focus = focusCallback;
+            glfwSetWindowFocusCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int isFocused){
+                mCallbacks.focus(isFocused);
+            });
+        }
+
+        static void SetErrorCallback(Callbacks::errorCallback errorCallback)
+        {
+            mCallbacks.error = errorCallback;
+            glfwSetErrorCallback([](int code, const char* description){
+                mCallbacks.error(code, description);
+            });
+        }
+
         static void UpdateSize(int w, int h)
         {
             UpdateAR(w, h);
-            Get()->SetSize(w, h);
+            Root::GetWindow()->SetSize(w, h);
         }
     private:
         struct WindowData
@@ -107,16 +128,18 @@ namespace oe::Core
             uint16_t width{ 1280 };
             uint16_t height{ 720 };
         };
+
         struct WindowCallbacks
         {
-            frameBufferSizeCallback frameBufferSize{};
-            mouseButtonCallback mouseButton{};
-            keyCallback key{};
+            Callbacks::frameBufferSizeCallback frameBufferSize{};
+            Callbacks::mouseButtonCallback mouseButton{};
+            Callbacks::keyCallback key{};
+            Callbacks::errorCallback error{};
+            Callbacks::focusCallback focus{};
         };
 
-        static void UpdateAR(int w, int h) { Get()->SetAR((float)w / (float)h); }
+        static void UpdateAR(int w, int h) { Root::GetWindow()->SetAR((float)w / (float)h); }
     private:
-        static Window* mInstance;
         static WindowCallbacks mCallbacks;
         WindowData mData{};
         GLFWwindow* mWindow{};
