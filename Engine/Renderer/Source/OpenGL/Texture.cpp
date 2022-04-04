@@ -14,9 +14,11 @@ bool oe::Renderer::Texture::PreLoad(const std::string& path)
     mData.data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
         mData.ar = (float)mData.width / (float)mData.height;
+        mIsLoaded = true;
         return true;
     } else {
         Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + path + " path!");
+        stbi_image_free(mData.data);
         return false;
     }
 }
@@ -34,6 +36,7 @@ bool oe::Renderer::Texture::Load(const std::string& path)
 void oe::Renderer::Texture::Load()
 {
     GenerateTexture();
+    mIsLoaded = true;
 }
 
 void oe::Renderer::Texture::Bind() const
@@ -56,6 +59,7 @@ void oe::Renderer::Texture::UnBind() const
 
 void oe::Renderer::Texture::UnLoad()
 {
+    mIsLoaded = false;
     gl::DeleteTextures(1, &mID);
 }
 

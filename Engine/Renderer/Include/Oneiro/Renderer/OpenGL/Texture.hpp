@@ -33,9 +33,11 @@ namespace oe::Renderer
         void Bind(uint8_t id);
         void UnBind() const;
         [[nodiscard]] const Data& GetData() const { return mData; }
+        bool IsLoaded() { return mIsLoaded; }
     private:
         void GenerateTexture();
         Data mData;
         uint32_t mID;
+        bool mIsLoaded{};
     };
 }
