@@ -4,6 +4,7 @@
 //
 
 #include "Oneiro/Runtime/Engine.hpp"
+#include <string>
 
 namespace oe::Runtime
 {
@@ -13,7 +14,7 @@ namespace oe::Runtime
         window = new Core::Window;
 
         root->SetApplication(app.get());
-
+        
         root->SetWindow(window);
 
         Core::Window::SetErrorCallback([](int error, const char* description){
