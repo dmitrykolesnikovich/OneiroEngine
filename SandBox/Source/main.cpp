@@ -6,7 +6,7 @@
 #include "Oneiro/Runtime/EntryPoint.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
-class SandBoxApp : public oe::Runtime::Application
+class SandBoxApp final : public oe::Runtime::Application
 {
 public:
     bool Init() override
@@ -44,6 +44,7 @@ public:
             case Input::Key::F:
                 Logger::Get("log")->PrintMessage("Press F!");
                 break;
+            default: break;
             }
         }
     }
@@ -57,12 +58,15 @@ public:
             {
             case Input::Button::LEFT:
                 Logger::Get("log")->PrintMessage("Press left button!");
+                break;
+            default:
+                break;
             }
         }
     }
 private:
-    oe::Renderer::Sprite2D mSprite;
-    oe::Renderer::Sprite2D mBG;
+    oe::Renderer::Sprite2D mSprite{};
+    oe::Renderer::Sprite2D mBG{};
 };
 
 namespace oe::Runtime
