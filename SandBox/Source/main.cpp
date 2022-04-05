@@ -1,10 +1,10 @@
 //
-// Created by Dezlow on 09.02.2022.
-// Copyright (c) 2022 Oneiro Games. All rights reserved.
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Runtime/Engine.hpp"
-#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Runtime/EntryPoint.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 class SandBoxApp : public oe::Runtime::Application
 {
@@ -12,17 +12,63 @@ public:
     bool Init() override
     {
         oe::Logger::Get("log")->PrintMessage("Initializing...");
+        mBG.Init(false);
+        mSprite.Init();
+        mSprite.Load("sprite.png");
+        mBG.Load("texture.jpg");
         return true;
     }
-    bool Update() override { return true; }
-    void Close() override
+
+    bool Update() override
+    {
+        mBG.Draw();
+        mSprite.Draw();
+        return true;
+    }
+
+    void Shutdown() override
     {
         oe::Logger::Get("log")->PrintMessage("Closing...");
     }
+
+    void HandleKey(oe::Input::Key key, oe::Input::Action action) override
+    {
+        using namespace oe;
+        if (action == Input::Action::PRESS)
+        {
+            switch (key)
+            {
+            case Input::Key::ESC:
+                Stop();
+                break;
+            case Input::Key::F:
+                Logger::Get("log")->PrintMessage("Press F!");
+                break;
+            }
+        }
+    }
+
+    void HandleButton(oe::Input::Button button, oe::Input::Action action) override
+    {
+        using namespace oe;
+        if (action == Input::Action::PRESS)
+        {
+            switch (button)
+            {
+            case Input::Button::LEFT:
+                Logger::Get("log")->PrintMessage("Press left button!");
+            }
+        }
+    }
+private:
+    oe::Renderer::Sprite2D mSprite;
+    oe::Renderer::Sprite2D mBG;
 };
 
-int main()
+namespace oe::Runtime
 {
-    SandBoxApp app{};
-    oe::Runtime::Engine::Run(app);
+    std::shared_ptr<Application> CreateApplication(int argc, char* argv[])
+    {
+        return std::make_shared<SandBoxApp>();
+    }
 }
