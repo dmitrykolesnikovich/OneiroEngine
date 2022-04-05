@@ -3,11 +3,7 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#pragma once
-
-#include "Engine.hpp"
-#include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Runtime/EntryPoint.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -20,6 +16,8 @@ int main(int argc, char* argv[])
     catch (const std::exception& ex)
     {
         oe::Logger::Get("log")->PrintError(std::string("Exception: ") + ex.what());
+        return 1;
     }
     oe::Runtime::Engine::Shutdown();
+    return 0;
 }

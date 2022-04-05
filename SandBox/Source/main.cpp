@@ -4,7 +4,6 @@
 //
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
-#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 class SandBoxApp : public oe::Runtime::Application
@@ -13,13 +12,16 @@ public:
     bool Init() override
     {
         oe::Logger::Get("log")->PrintMessage("Initializing...");
-        mSprite.Init(true);
+        mBG.Init(false);
+        mSprite.Init();
         mSprite.Load("sprite.png");
+        mBG.Load("texture.jpg");
         return true;
     }
 
     bool Update() override
     {
+        mBG.Draw();
         mSprite.Draw();
         return true;
     }
@@ -60,6 +62,7 @@ public:
     }
 private:
     oe::Renderer::Sprite2D mSprite;
+    oe::Renderer::Sprite2D mBG;
 };
 
 namespace oe::Runtime

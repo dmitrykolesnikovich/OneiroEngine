@@ -22,6 +22,4 @@ namespace oe::Core
         static Window* mWindowInstance;
         static Runtime::Application* mApplicationInstance;
     };
-    Window* Root::mWindowInstance{};
-    Runtime::Application* Root::mApplicationInstance;
 }
