@@ -6,12 +6,8 @@
 
 #pragma once
 
-#include <iostream>
-#include <Oneiro/Core/Window.hpp>
+#include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Core/Root.hpp"
 
 namespace oe::Runtime
@@ -19,22 +15,12 @@ namespace oe::Runtime
     class OE_API Engine
     {
     public:
-        static void Init()
-        {
-            Core::Init();
-            Renderer::Init();
-        }
-
-        static void Shutdown()
-        {
-            Renderer::Shutdown();
-            Core::Shutdown();
-        }
-
+        static void Init();
         static void Run(const std::shared_ptr<Application>& app);
+        static void Shutdown();
     private:
         static void SetupCallbacks();
-        static Core::Root* root;
-        static Core::Window* window;
+        static Core::Window* mWindow;
+        static Core::Root* mRoot;
     };
 }

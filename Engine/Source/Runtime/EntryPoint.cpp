@@ -5,19 +5,21 @@
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
-    oe::Runtime::Engine::Init();
+    using namespace oe::Runtime;
+    using namespace oe;
+    Engine::Init();
     try
     {
-        auto app = oe::Runtime::CreateApplication(argc, argv);
-        oe::Runtime::Engine::Run(app);
+	    const auto app = CreateApplication(argc, argv);
+        Engine::Run(app);
     }
     catch (const std::exception& ex)
     {
-        oe::Logger::Get("log")->PrintError(std::string("Exception: ") + ex.what());
+        Logger::Get("log")->PrintError(std::string("Exception: ") + ex.what());
         return 1;
     }
-    oe::Runtime::Engine::Shutdown();
+    Engine::Shutdown();
     return 0;
 }

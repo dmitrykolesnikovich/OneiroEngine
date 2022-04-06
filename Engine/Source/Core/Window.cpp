@@ -7,6 +7,39 @@
 
 namespace oe::Core
 {
+	Window::~Window() { glfwDestroyWindow(mWindow); }
+
+	void Window::SwapBuffers() const { glfwSwapBuffers(mWindow); }
+
+	void Window::PollEvents() { glfwPollEvents(); }
+
+	void Window::WaitEvents() { glfwWaitEvents(); }
+
+	bool Window::IsClosed() const { return glfwWindowShouldClose(mWindow) != 0; }
+
+	const Window::WindowData& Window::GetData() const { return mData; }
+
+	GLFWwindow* Window::GetGLFW() const { return mWindow; }
+
+	void Window::SetWidth(int width) const { UpdateSize(width, mData.height); }
+
+	void Window::SetHeight(int height) const { UpdateSize(mData.width, height); }
+
+	void Window::SetSize(int width, int height) { mData.width = width; mData.height = height; }
+
+	void Window::SetFramerate(int fps) { glfwSwapInterval(fps); }
+
+	void Window::UpdateSize(int width, int height)
+	{
+		UpdateAR(width, height);
+		Root::GetWindow()->SetSize(width, height);
+		glfwSetWindowSize(Root::GetWindow()->GetGLFW(), width, height);
+	}
+
+	void Window::SetAR(float aspectRatio) { mData.ar = aspectRatio; }
+
+	void Window::UpdateAR(int width, int height) { Root::GetWindow()->SetAR(static_cast<float>(width) / static_cast<float>(height)); }
+
     bool Window::Create()
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -31,7 +64,7 @@ namespace oe::Core
         mCallbacks.key = kCallback;
         glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
-            Window::mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
+	        mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
         });
     }
 
@@ -40,7 +73,7 @@ namespace oe::Core
         mCallbacks.mouseButton = mbCallback;
         glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int button, int action, int)
         {
-            Window::mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
+	        mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
         });
     }
 
@@ -49,8 +82,8 @@ namespace oe::Core
         mCallbacks.frameBufferSize = fbsCallback;
         glfwSetFramebufferSizeCallback(Root::GetWindow()->GetGLFW(),[](GLFWwindow*, int w, int h)
         {
-            Window::mCallbacks.frameBufferSize(w, h);
-            Window::UpdateSize(w, h);
+	        mCallbacks.frameBufferSize(w, h);
+	        UpdateSize(w, h);
         });
     }
 

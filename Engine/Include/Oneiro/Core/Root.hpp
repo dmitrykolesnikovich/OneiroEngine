@@ -12,12 +12,14 @@ namespace oe::Core
 {
     class Root
     {
+    public:
+        ~Root();
     public: // Getters
-        static Window* GetWindow() { return mWindowInstance; }
-        static Runtime::Application* GetApplication() { return mApplicationInstance; }
+        static Window* GetWindow();
+        static Runtime::Application* GetApplication();
     public: // Setters (NOT STATIC!)
-        void SetApplication(Runtime::Application* app) { if (!mApplicationInstance) mApplicationInstance = app; }
-        void SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
+        void SetApplication(Runtime::Application* app);
+        void SetWindow(Window* window);
     private:
         static Window* mWindowInstance;
         static Runtime::Application* mApplicationInstance;

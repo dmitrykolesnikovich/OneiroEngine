@@ -18,14 +18,14 @@ namespace oe
     class Logger
     {
     public:
-        Logger() = default;
-        Logger(const std::string& file) { mFile.open(file, std::ios::out | std::ios::trunc); }
+        Logger();
+        Logger(const std::string& file);
         ~Logger();
 
         static bool Create(const std::string& loggerName, const std::string& fileName);
-        void PrintMessage(const std::string& msg) const { Print("[OE::MESSAGE]", msg.c_str()); }
-        void PrintWarning(const std::string& msg) const { Print("[OE::WARNING]", msg.c_str()); }
-        void PrintError(const std::string& msg) const { Print("[OE::ERROR]", msg.c_str()); }
+        void PrintMessage(const std::string& msg) const;
+        void PrintWarning(const std::string& msg) const;
+        void PrintError(const std::string& msg) const;
         static const Logger* Get(const char* name);
     private:
         void Print(const char* type, const char* msg) const;

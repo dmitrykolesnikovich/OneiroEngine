@@ -13,24 +13,21 @@ bool oe::Renderer::Texture::PreLoad(const std::string& path)
 {
     mData.data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
-        mData.ar = (float)mData.width / (float)mData.height;
+        mData.ar = static_cast<float>(mData.width) / static_cast<float>(mData.height);
         mIsLoaded = true;
         return true;
-    } else {
-        Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + path + " path!");
-        stbi_image_free(mData.data);
-        return false;
     }
+    Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + path + " path!");
+    stbi_image_free(mData.data);
+    return false;
 }
 
 bool oe::Renderer::Texture::Load(const std::string& path)
 {
     if (PreLoad(path)) {
-        GenerateTexture();
-        return true;
-    } else {
-        return false;
+        GenerateTexture(); return true;
     }
+    return false;
 }
 
 void oe::Renderer::Texture::Load()
@@ -48,7 +45,7 @@ void oe::Renderer::Texture::Bind() const
 void oe::Renderer::Texture::Bind(uint8_t id)
 {
     gl::ActiveTexture(gl::TEXTURE0 + id);
-    gl::BindTexture(gl::TEXTURE_2D, 0);
+    gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
 void oe::Renderer::Texture::UnBind() const
@@ -56,6 +53,10 @@ void oe::Renderer::Texture::UnBind() const
     gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
+
+const oe::Renderer::Texture::Data& oe::Renderer::Texture::GetData() const { return mData; }
+
+bool oe::Renderer::Texture::IsLoaded() const { return mIsLoaded; }
 
 void oe::Renderer::Texture::UnLoad()
 {

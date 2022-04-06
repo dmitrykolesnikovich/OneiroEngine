@@ -32,12 +32,12 @@ namespace oe::Renderer
         void Bind() const;
         void Bind(uint8_t id);
         void UnBind() const;
-        [[nodiscard]] const Data& GetData() const { return mData; }
-        bool IsLoaded() { return mIsLoaded; }
+        [[nodiscard]] const Data& GetData() const;
+        bool IsLoaded() const;
     private:
         void GenerateTexture();
         Data mData;
-        uint32_t mID;
+        uint32_t mID{};
         bool mIsLoaded{};
     };
 }

@@ -11,12 +11,20 @@ namespace
 
 namespace oe
 {
+	Logger::Logger() = default;
+
+	Logger::Logger(const std::string& file) { mFile.open(file, std::ios::out | std::ios::trunc); }
+
+	void Logger::PrintMessage(const std::string& msg) const { Print("[OE::MESSAGE]", msg.c_str()); }
+
+	void Logger::PrintWarning(const std::string& msg) const { Print("[OE::WARNING]", msg.c_str()); }
+
+	void Logger::PrintError(const std::string& msg) const { Print("[OE::ERROR]", msg.c_str()); }
+
     Logger::~Logger()
     {
-        for (const auto& log : loggers)
-        {
-            log.second->mFile.close();
-        }
+        for (const auto& [fst, snd] : loggers)
+            if (snd == this) snd->mFile.close();
     }
 
     bool Logger::Create(const std::string& loggerName, const std::string& fileName)
@@ -30,6 +38,7 @@ namespace oe
         }
         return true;
     }
+
     const Logger* Logger::Get(const char* name) { return loggers[name]; }
 
     void Logger::Print(const char* type, const char* msg) const

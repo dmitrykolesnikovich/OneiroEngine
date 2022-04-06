@@ -3,25 +3,31 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Runtime/Engine.hpp"
 #include <string>
+#include "Oneiro/Runtime/Engine.hpp"
+#include "Oneiro/Core/Core.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Runtime
 {
+    void Engine::Init()
+    {
+        Core::Init();
+        Renderer::Init();
+        mRoot = new Core::Root;
+        mWindow = new Core::Window;
+    }
+
     void Engine::Run(const std::shared_ptr<Application>& app)
     {
-        root = new Core::Root;
-        window = new Core::Window;
-
-        root->SetApplication(app.get());
-        
-        root->SetWindow(window);
+        mRoot->SetApplication(app.get());
+        mRoot->SetWindow(mWindow);
 
         Core::Window::SetErrorCallback([](int error, const char* description){
             Logger::Get("log")->PrintError("GLFW ERROR[" + std::to_string(error) + "]: " + description);
         });
 
-        if (!window->Create())
+        if (!mWindow->Create())
             throw std::runtime_error("Failed to create window!");
 
         Core::Window::SetFramerate(1);
@@ -30,7 +36,7 @@ namespace oe::Runtime
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
 
-        while (!window->IsClosed())
+        while (!mWindow->IsClosed())
         {
             if (app->IsStopped())
                 break;
@@ -40,7 +46,7 @@ namespace oe::Runtime
             if (!app->Update())
                 break;
 
-            window->SwapBuffers();
+            mWindow->SwapBuffers();
         }
 
         app->Shutdown();
@@ -54,8 +60,8 @@ namespace oe::Runtime
         Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action){
             Core::Root::GetApplication()->HandleButton(button, action);
         });
-        Core::Window::SetFrameBufferSizeCallback([](int w, int h){
-            gl::Viewport(0, 0, w, h);
+        Core::Window::SetFrameBufferSizeCallback([](int width, int height){
+            Renderer::Viewport(width, height);
         });
 
         Core::Window::SetFocusCallback([](bool isFocused){
@@ -66,6 +72,15 @@ namespace oe::Runtime
         });
     }
 
-    Core::Root* Engine::root{};
-    Core::Window* Engine::window{};
+    void Engine::Shutdown()
+    {
+        delete mWindow;
+        delete mRoot;
+
+        Renderer::Shutdown();
+        Core::Shutdown();
+    }
+
+    Core::Root* Engine::mRoot{};
+    Core::Window* Engine::mWindow{};
 }

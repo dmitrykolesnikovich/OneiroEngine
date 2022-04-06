@@ -12,9 +12,6 @@
 
 namespace oe::Renderer
 {
-    /**
-     * Index buffer implementation for opengl rendering
-     */
     class OE_API IndexBuffer
     {
     public:

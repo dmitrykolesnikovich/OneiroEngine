@@ -16,3 +16,23 @@ void oe::Renderer::Shutdown()
 {
 
 }
+
+void oe::Renderer::Viewport(GLsizei width, GLsizei height)
+{
+    gl::Viewport(0, 0, width, height);
+}
+
+void oe::Renderer::Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+    gl::Viewport(x, y, width, height);
+}
+
+void oe::Renderer::DrawArrays(DrawMode mode, GLint count)
+{
+    gl::DrawArrays(mode, 0, count);
+}
+
+void oe::Renderer::DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount)
+{
+    gl::DrawArraysInstanced(mode, 0, arraysCount, instanceCount);
+}

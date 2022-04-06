@@ -30,23 +30,23 @@ namespace oe::Core
         class WindowData;
         class WindowCallbacks;
     public:
-        ~Window() { glfwDestroyWindow(mWindow); }
+        ~Window();
 
         bool Create();
 
-        void SwapBuffers() { glfwSwapBuffers(mWindow); }
-        static void PollEvents() { glfwPollEvents(); }
-        static void WaitEvents() { glfwWaitEvents(); }
+        void SwapBuffers() const;
+        static void PollEvents();
+        static void WaitEvents();
 
-        [[nodiscard]] bool IsClosed() const { return glfwWindowShouldClose(mWindow) != 0; }
-        const WindowData& GetData() { return mData; }
-        inline GLFWwindow* GetGLFW() { return mWindow; }
+        [[nodiscard]] bool IsClosed() const;
+        [[nodiscard]] const WindowData& GetData() const;
+        [[nodiscard]] GLFWwindow* GetGLFW() const;
 
-        void SetWidth(int width) const { UpdateSize(width, mData.height); }
-        void SetHeight(int height) const { UpdateSize(mData.width, height); }
-        void SetSize(int width, int height) { mData.width = width; mData.height = height; }
+        void SetWidth(int width) const;
+        void SetHeight(int height) const;
+        void SetSize(int width, int height);
 
-        static void SetFramerate(int fps) { glfwSwapInterval(fps); }
+        static void SetFramerate(int fps);
         static void SetKeyCallback(Callbacks::keyCallback kCallback);
         static void SetMouseButtonCallback(Callbacks::mouseButtonCallback mbCallback);
         static void SetFrameBufferSizeCallback(Callbacks::frameBufferSizeCallback fbsCallback);
@@ -54,15 +54,10 @@ namespace oe::Core
 
         static void SetErrorCallback(Callbacks::errorCallback errorCallback);
 
-        static void UpdateSize(int width, int height)
-        {
-            UpdateAR(width, height);
-            Root::GetWindow()->SetSize(width, height);
-            glfwSetWindowSize(Root::GetWindow()->GetGLFW(), width, height);
-        }
+        static void UpdateSize(int width, int height);
     private:
-        void SetAR(float aspectRatio) { mData.ar = aspectRatio; }
-        static void UpdateAR(int width, int height) { Root::GetWindow()->SetAR((float)width / (float)height); }
+        void SetAR(float aspectRatio);
+        static void UpdateAR(int width, int height);
 
         struct WindowData
         {

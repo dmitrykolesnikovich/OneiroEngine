@@ -4,8 +4,31 @@
 //
 
 #include "Oneiro/Core/Root.hpp"
+
 namespace oe::Core
 {
     Window* Root::mWindowInstance{};
     Runtime::Application* Root::mApplicationInstance;
+
+    Root::~Root()
+    {
+	    mWindowInstance = nullptr;
+	    mApplicationInstance = nullptr;
+    }
+
+    Window* Root::GetWindow()
+    { return mWindowInstance; }
+
+    Runtime::Application* Root::GetApplication()
+    { return mApplicationInstance; }
+
+    void Root::SetApplication(Runtime::Application* app)
+    {
+	    if (!mApplicationInstance) mApplicationInstance = app;
+    }
+
+    void Root::SetWindow(Window* window)
+    {
+	    if (!mWindowInstance) mWindowInstance = window;
+    }
 }
