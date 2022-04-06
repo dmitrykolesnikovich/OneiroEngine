@@ -13,8 +13,6 @@
 #include "GLFW/glfw3.h"
 #include "Root.hpp"
 
-#include <iostream>
-
 namespace oe::Core
 {
     class OE_API Window
@@ -22,7 +20,7 @@ namespace oe::Core
     public:
         struct Callbacks
         {
-            typedef void (*frameBufferSizeCallback)(int w, int h);
+            typedef void (*frameBufferSizeCallback)(int width, int height);
             typedef void (*mouseButtonCallback)(Input::Button button, Input::Action action);
             typedef void (*keyCallback)(Input::Key key, Input::Action action);
             typedef void (*errorCallback)(int code, const char* description);
@@ -40,14 +38,13 @@ namespace oe::Core
         static void PollEvents() { glfwPollEvents(); }
         static void WaitEvents() { glfwWaitEvents(); }
 
-        [[nodiscard]] bool IsClosed() const { return glfwWindowShouldClose(mWindow); }
+        [[nodiscard]] bool IsClosed() const { return glfwWindowShouldClose(mWindow) != 0; }
         const WindowData& GetData() { return mData; }
         inline GLFWwindow* GetGLFW() { return mWindow; }
 
-        void SetAR(float ar) { mData.ar = ar; }
-        void SetWidth(int w) { mData.width = w; }
-        void SetHeight(int h) { mData.height = h; }
-        void SetSize(int w, int h) { mData.width = w; mData.height = h; }
+        void SetWidth(int width) const { UpdateSize(width, mData.height); }
+        void SetHeight(int height) const { UpdateSize(mData.width, height); }
+        void SetSize(int width, int height) { mData.width = width; mData.height = height; }
 
         static void SetFramerate(int fps) { glfwSwapInterval(fps); }
         static void SetKeyCallback(Callbacks::keyCallback kCallback);
@@ -57,18 +54,22 @@ namespace oe::Core
 
         static void SetErrorCallback(Callbacks::errorCallback errorCallback);
 
-        static void UpdateSize(int w, int h)
+        static void UpdateSize(int width, int height)
         {
-            UpdateAR(w, h);
-            Root::GetWindow()->SetSize(w, h);
+            UpdateAR(width, height);
+            Root::GetWindow()->SetSize(width, height);
+            glfwSetWindowSize(Root::GetWindow()->GetGLFW(), width, height);
         }
     private:
+        void SetAR(float aspectRatio) { mData.ar = aspectRatio; }
+        static void UpdateAR(int width, int height) { Root::GetWindow()->SetAR((float)width / (float)height); }
+
         struct WindowData
         {
-            const char* title{ "OpenGL Window" };
+            const char* title{"Oneiro Engine"};
             float ar{};
-            uint16_t width{ 1280 };
-            uint16_t height{ 720 };
+            int width{1280};
+            int height{720};
         };
 
         struct WindowCallbacks
@@ -80,8 +81,6 @@ namespace oe::Core
             Callbacks::focusCallback focus{};
         };
 
-        static void UpdateAR(int w, int h) { Root::GetWindow()->SetAR((float)w / (float)h); }
-    private:
         static WindowCallbacks mCallbacks;
         WindowData mData{};
         GLFWwindow* mWindow{};
