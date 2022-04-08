@@ -6,13 +6,12 @@
 
 #pragma once
 
-#include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Runtime/Application.hpp"
 #include "Oneiro/Core/Root.hpp"
 
 namespace oe::Runtime
 {
-    class OE_API Engine
+    class Engine
     {
     public:
         static void Init();

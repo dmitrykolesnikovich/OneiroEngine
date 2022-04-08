@@ -6,8 +6,12 @@
 #include <string>
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Core/Core.hpp"
+#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include <stdexcept>
+
+#include "Oneiro/Core/Event.hpp"
 
 namespace oe::Runtime
 {

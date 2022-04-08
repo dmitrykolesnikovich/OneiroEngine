@@ -5,9 +5,6 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-#include "Oneiro.hpp"
-
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
@@ -56,7 +53,7 @@ namespace oe::Input
         RIGHT = GLFW_MOUSE_BUTTON_RIGHT
     };
 
-    class OE_API Command
+    class Command
     {
     public:
         virtual ~Command() = default;

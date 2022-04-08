@@ -5,14 +5,11 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
 #include <cstdint>
-
-#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe::Renderer
 {
-    class OE_API VertexBuffer
+    class VertexBuffer
     {
     public:
         ~VertexBuffer();

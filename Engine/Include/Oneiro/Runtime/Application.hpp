@@ -5,14 +5,12 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-#include "Oneiro/Core/Oneiro.hpp"
 #include "Oneiro/Core/Input.hpp"
 #include <memory>
 
 namespace oe::Runtime
 {
-    class OE_API Application
+    class Application
     {
     public:
         virtual ~Application();
@@ -30,5 +28,5 @@ namespace oe::Runtime
         bool mIsStopped{};        
     };
 
-    OE_API std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
+    std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
 }

@@ -8,11 +8,9 @@
 #define OE_DLL_EXPORT
 #include <cstdint>
 
-#include "Oneiro/Core/Oneiro.hpp"
-
 namespace oe::Renderer
 {
-    class OE_API IndexBuffer
+    class IndexBuffer
     {
     public:
         ~IndexBuffer();

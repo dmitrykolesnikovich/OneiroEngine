@@ -5,9 +5,6 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-#include "Oneiro/Core/Oneiro.hpp"
-
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
@@ -18,33 +15,33 @@
 namespace oe::Renderer::GuiLayer
 {
 	using namespace ImGui;
-	OE_API inline void PreInit()
+	inline void PreInit()
 	{
 		IMGUI_CHECKVERSION();
 		CreateContext();
 		StyleColorsDark();
 	}
 
-	OE_API inline void Init()
+	inline void Init()
 	{
 		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
 		ImGui_ImplOpenGL3_Init("#version 330");
 	}
 
-	OE_API inline void NewFrame()
+	inline void NewFrame()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	OE_API inline void Draw()
+	inline void Draw()
 	{
 		Render();
 		ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
 	}
 
-	OE_API inline void Shutdown()
+	inline void Shutdown()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

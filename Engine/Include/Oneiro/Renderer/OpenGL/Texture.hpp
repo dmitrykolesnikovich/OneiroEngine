@@ -5,15 +5,11 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-
 #include <string>
-
-#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe::Renderer
 {
-    class OE_API Texture
+    class Texture
     {
         struct Data
         {

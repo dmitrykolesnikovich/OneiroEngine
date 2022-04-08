@@ -10,12 +10,10 @@
 #include "OpenGL/gl_core_4_5.hpp"
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
-#define OE_DLL_EXPORT
-#include "Oneiro/Core/Oneiro.hpp"
 
 namespace oe::Renderer
 {
-    class OE_API Shader
+    class Shader
     {
     public:
         ~Shader();

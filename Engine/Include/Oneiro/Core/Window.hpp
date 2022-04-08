@@ -5,18 +5,13 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-#include "Oneiro.hpp"
-#include "Input.hpp"
-
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "Root.hpp"
-#include "Event.hpp"
 
 namespace oe::Core
 {
-    class OE_API Window
+    class Window
     {
         class WindowData;
     public:

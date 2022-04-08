@@ -4,6 +4,8 @@
 //
 
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer
 {
@@ -53,7 +55,7 @@ namespace oe::Renderer
 		constexpr float vertices[] = {
 			1.0f,  1.0f, 0.0f,
 			1.0f, -1.0f, 0.0f,
-			-1.0f,  1.0f, 0.0f
+		   -1.0f,  1.0f, 0.0f
 		};
 
 		mVAO.Init();

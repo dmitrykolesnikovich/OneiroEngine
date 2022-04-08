@@ -6,7 +6,7 @@
 #include "Oneiro/Core/Logger.hpp"
 namespace
 {
-    static std::unordered_map<std::string, oe::Logger*> loggers;
+    std::unordered_map<std::string, oe::Logger*> loggers;
 }
 
 namespace oe

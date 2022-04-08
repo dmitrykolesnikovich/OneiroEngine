@@ -4,6 +4,8 @@
 //
 
 #include "Oneiro/Core/Window.hpp"
+
+#include "Oneiro/Core/Event.hpp"
 #include "Oneiro/Runtime/Application.hpp"
 
 namespace oe::Core

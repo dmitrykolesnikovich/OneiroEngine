@@ -10,9 +10,6 @@
 
 #include <unordered_map>
 
-#define OE_DLL_EXPORT
-#include "Oneiro.hpp"
-
 namespace oe
 {
     class Logger

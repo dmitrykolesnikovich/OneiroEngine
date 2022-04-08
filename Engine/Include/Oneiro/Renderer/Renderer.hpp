@@ -5,8 +5,6 @@
 
 #pragma once
 
-#define OE_DLL_EXPORT
-#include "Oneiro/Core/Oneiro.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
 namespace oe::Renderer
@@ -16,11 +14,11 @@ namespace oe::Renderer
         TRIANGLES = gl::TRIANGLES
     };
 
-    OE_API void PreInit();
-    OE_API void Init();
-    OE_API void Shutdown();
-    OE_API void Viewport(GLsizei width, GLsizei height);
-    OE_API void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
-    OE_API void DrawArrays(DrawMode mode, GLint count);
-    OE_API void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
+    void PreInit();
+    void Init();
+    void Shutdown();
+    void Viewport(GLsizei width, GLsizei height);
+    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+    void DrawArrays(DrawMode mode, GLint count);
+    void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
 }

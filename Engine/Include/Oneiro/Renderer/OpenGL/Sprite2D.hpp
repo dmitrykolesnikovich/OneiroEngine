@@ -6,13 +6,11 @@
 #pragma once
 
 #include "Oneiro/Renderer/OpenGL/Base.hpp"
-#include "Oneiro/Renderer/Renderer.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Oneiro/Core/Window.hpp"
 
 namespace oe::Renderer
 {
-    class OE_API Sprite2D
+    class Sprite2D
     {
     public:
         void Init(bool keepAspectRatio = true);
