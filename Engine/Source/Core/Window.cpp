@@ -55,71 +55,26 @@ namespace oe::Core
             return false;
 
         glfwMakeContextCurrent(mWindow);
+        glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
+	        {
+		        Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
+	        });
+        glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int)
+	        {
+				Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
+	        });
+		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int)
+			{
+				Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
+			});
+
+		glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused)
+			{
+				Event::Dispatcher::Post(Event::FocusEvent(isFocused));
+			});
 
         UpdateAR(mData.width, mData.height);
 
         return true;
     }
-
-    void Window::SetKeyCallback(Callbacks::keyCallback kCallback)
-    {
-        if (kCallback)
-        {
-            mCallbacks.key = kCallback;
-            glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
-                {
-                    if (Root::GetWindow()->IsKeyInput) 
-                        mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
-                });
-        }
-        else
-        {
-            glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), nullptr);
-        }
-    }
-
-    void Window::SetMouseButtonCallback(Callbacks::mouseButtonCallback mbCallback)
-    {
-        if (mbCallback)
-        {
-            mCallbacks.mouseButton = mbCallback;
-            glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int button, int action, int)
-                {
-                    if (Root::GetWindow()->IsMouseButtonInput) 
-                        mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
-                });
-        }
-        else
-        {
-            glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), nullptr);
-        }
-    }
-
-    void Window::SetFrameBufferSizeCallback(Callbacks::frameBufferSizeCallback fbsCallback)
-    {
-        mCallbacks.frameBufferSize = fbsCallback;
-        glfwSetFramebufferSizeCallback(Root::GetWindow()->GetGLFW(),[](GLFWwindow*, int w, int h)
-        {
-	        mCallbacks.frameBufferSize(w, h);
-	        UpdateSize(w, h);
-        });
-    }
-
-    void Window::SetFocusCallback(Callbacks::focusCallback focusCallback)
-    {
-        mCallbacks.focus = focusCallback;
-        glfwSetWindowFocusCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int isFocused){
-            mCallbacks.focus(isFocused);
-        });
-    }
-
-    void Window::SetErrorCallback(Callbacks::errorCallback errorCallback)
-    {
-        mCallbacks.error = errorCallback;
-        glfwSetErrorCallback([](int code, const char* description){
-            mCallbacks.error(code, description);
-        });
-    }
-
-    Window::WindowCallbacks Window::mCallbacks{};
 }

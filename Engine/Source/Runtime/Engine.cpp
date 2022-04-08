@@ -21,19 +21,21 @@ namespace oe::Runtime
 
     void Engine::Run(const std::shared_ptr<Application>& app)
     {
+        using namespace Core;
         mRoot->SetApplication(app.get());
         mRoot->SetWindow(mWindow);
 
-        Core::Window::SetErrorCallback([](int error, const char* description){
-            Logger::Get("log")->PrintError("GLFW ERROR[" + std::to_string(error) + "]: " + description);
-        });
-
+        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
+			{
+                const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
+                Logger::Get("log")->PrintError("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
+												   errorEvent.Description);
+            });
         if (!mWindow->Create())
             throw std::runtime_error("Failed to create window!");
 
-        Core::Window::SetFramerate(1);
-
-    	SetupCallbacks();
+        Window::SetFramerate(1);
+        SetupEvents();
 
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
@@ -60,28 +62,6 @@ namespace oe::Runtime
         app->Shutdown();
     }
 
-    void Engine::SetupCallbacks()
-    {
-        Core::Window::SetKeyCallback([](Input::Key key, Input::Action action) {
-            Core::Root::GetApplication()->HandleKey(key, action);
-            });
-
-        Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action) {
-            Core::Root::GetApplication()->HandleButton(button, action);
-            });
-
-        Core::Window::SetFrameBufferSizeCallback([](int width, int height){
-            Renderer::Viewport(width, height);
-			});
-
-        Core::Window::SetFocusCallback([](bool isFocused){
-            if (isFocused)
-                Core::Window::SetFramerate(1); // 60 fps
-            else
-                Core::Window::SetFramerate(-3); // 15 fps
-			});
-    }
-
     void Engine::Shutdown()
     {
         delete mWindow;
@@ -89,6 +69,39 @@ namespace oe::Runtime
 
         Renderer::Shutdown();
         Core::Shutdown();
+    }
+
+    void Engine::SetupEvents()
+    {
+        using namespace oe::Core;
+        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
+            {
+                const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+                Renderer::Viewport(resizeEvent.Width, resizeEvent.Height);
+            });
+
+        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
+            {
+                const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
+                Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
+                    static_cast<Input::Action>(keyInputEvent.Action));
+            });
+
+        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
+            {
+                const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
+                Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
+                    static_cast<Input::Action>(mouseButtonEvent.Action));
+            });
+
+        Event::Dispatcher::Subscribe<Event::FocusEvent>([](const Event::Base& e)
+            {
+                const auto& focusEvent = dynamic_cast<const Event::FocusEvent&>(e);
+                if (focusEvent.IsFocused)
+                    Window::SetFramerate(1); // 60 fps
+                else
+                    Window::SetFramerate(-3); // 15 fps
+            });
     }
 
     Core::Root* Engine::mRoot{};

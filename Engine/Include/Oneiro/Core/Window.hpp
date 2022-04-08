@@ -12,23 +12,13 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "Root.hpp"
+#include "Event.hpp"
 
 namespace oe::Core
 {
     class OE_API Window
     {
-    public:
-        struct Callbacks
-        {
-            typedef void (*frameBufferSizeCallback)(int width, int height);
-            typedef void (*mouseButtonCallback)(Input::Button button, Input::Action action);
-            typedef void (*keyCallback)(Input::Key key, Input::Action action);
-            typedef void (*errorCallback)(int code, const char* description);
-            typedef void (*focusCallback)(bool isFocused);
-        };
-    private:
         class WindowData;
-        class WindowCallbacks;
     public:
         ~Window();
 
@@ -47,12 +37,6 @@ namespace oe::Core
         void SetSize(int width, int height);
 
         static void SetFramerate(int fps);
-        static void SetKeyCallback(Callbacks::keyCallback kCallback);
-        static void SetMouseButtonCallback(Callbacks::mouseButtonCallback mbCallback);
-        static void SetFrameBufferSizeCallback(Callbacks::frameBufferSizeCallback fbsCallback);
-        static void SetFocusCallback(Callbacks::focusCallback focusCallback);
-
-        static void SetErrorCallback(Callbacks::errorCallback errorCallback);
 
         static void UpdateSize(int width, int height);
 
@@ -70,16 +54,6 @@ namespace oe::Core
             int height{720};
         };
 
-        struct WindowCallbacks
-        {
-            Callbacks::frameBufferSizeCallback frameBufferSize{};
-            Callbacks::mouseButtonCallback mouseButton{};
-            Callbacks::keyCallback key{};
-            Callbacks::errorCallback error{};
-            Callbacks::focusCallback focus{};
-        };
-
-        static WindowCallbacks mCallbacks;
         WindowData mData{};
         GLFWwindow* mWindow{};
     };

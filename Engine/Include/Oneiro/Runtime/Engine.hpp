@@ -20,7 +20,7 @@ namespace oe::Runtime
         static void Run(const std::shared_ptr<Application>& app);
         static void Shutdown();
     private:
-        static void SetupCallbacks();
+        static void SetupEvents();
         static Core::Window* mWindow;
         static Core::Root* mRoot;
     };
