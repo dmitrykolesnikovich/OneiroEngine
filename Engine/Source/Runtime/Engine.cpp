@@ -47,12 +47,9 @@ namespace oe::Runtime
 
             Core::Window::PollEvents();
 
-            if (!app->Update())
-                break;
-
             Renderer::GuiLayer::NewFrame();
 
-            if (!app->UpdateGui())
+            if (!app->Update())
                 break;
 
             Renderer::GuiLayer::Draw();

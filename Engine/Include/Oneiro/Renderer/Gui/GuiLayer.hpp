@@ -15,43 +15,39 @@
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GuiLayer
 {
-	class OE_API GuiLayer
+	using namespace ImGui;
+	OE_API inline void PreInit()
 	{
-	public:
-		static void PreInit()
-		{
-			IMGUI_CHECKVERSION();
-			ImGui::CreateContext();
-			const ImGuiIO& io = ImGui::GetIO(); (void)io;
-			ImGui::StyleColorsDark();
-		}
+		IMGUI_CHECKVERSION();
+		CreateContext();
+		StyleColorsDark();
+	}
 
-		static void Init()
-		{
-			ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
-			ImGui_ImplOpenGL3_Init("#version 330");
-		}
+	OE_API inline void Init()
+	{
+		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
+		ImGui_ImplOpenGL3_Init("#version 330");
+	}
 
-		static void NewFrame()
-		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-		}
+	OE_API inline void NewFrame()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
 
-		static void Draw()
-		{
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
+	OE_API inline void Draw()
+	{
+		Render();
+		ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+	}
 
-		static void Shutdown()
-		{
-			ImGui_ImplOpenGL3_Shutdown();
-			ImGui_ImplGlfw_Shutdown();
-			ImGui::DestroyContext();
-		}
-	};
+	OE_API inline void Shutdown()
+	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		DestroyContext();
+	}
 }

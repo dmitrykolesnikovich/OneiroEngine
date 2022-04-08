@@ -3,11 +3,10 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Runtime/EntryPoint.hpp"
-#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
-#include "imgui.h"
-#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Runtime/Application.hpp"
+#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -24,15 +23,17 @@ public:
 
     bool Update() override
     {
+        using namespace oe;
+        using namespace Renderer;
+        if (mShowGui)
+        {
+            auto& io = GuiLayer::GetIO();
+            GuiLayer::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+            GuiLayer::Begin("Hello!");
+            GuiLayer::End();
+        }
         mBG.Draw();
         mSprite.Draw();
-        return true;
-    }
-
-    bool UpdateGui() override
-    {
-        ImGui::Begin("Test");
-        ImGui::End();
         return true;
     }
 
@@ -52,10 +53,9 @@ public:
                 Stop();
                 break;
             case Input::Key::F:
-                SetButtonInput(false);
-                break;
-            case Input::Key::G:
-                SetButtonInput(true);
+                if (mShowGui) SetButtonInput(true);
+                else SetButtonInput(false);
+                mShowGui = !mShowGui;
                 break;
             default: break;
             }
@@ -80,6 +80,7 @@ public:
 private:
     oe::Renderer::Sprite2D mSprite{};
     oe::Renderer::Sprite2D mBG{};
+    bool mShowGui{false};
 };
 
 namespace oe::Runtime

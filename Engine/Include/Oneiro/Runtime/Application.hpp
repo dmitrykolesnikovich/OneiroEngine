@@ -15,18 +15,17 @@ namespace oe::Runtime
     class OE_API Application
     {
     public:
-        virtual ~Application() = default;
+        virtual ~Application();
         virtual bool Init();
         virtual bool Update();
-        virtual bool UpdateGui();
         virtual void Shutdown();
         virtual void HandleKey(Input::Key key, Input::Action action);
         virtual void HandleButton(Input::Button button, Input::Action action);
         bool IsStopped() const { return mIsStopped; }
     protected:
         void Stop() { mIsStopped = true; }
-        void SetKeyInput(bool isEnabled = true);
-        void SetButtonInput(bool isEnabled = true);
+        static void SetKeyInput(bool isEnabled = true);
+        static void SetButtonInput(bool isEnabled = true);
     private:
         bool mIsStopped{};        
     };

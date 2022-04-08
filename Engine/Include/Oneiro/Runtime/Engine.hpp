@@ -16,6 +16,7 @@ namespace oe::Runtime
     {
     public:
         static void Init();
+        static void Setup(const std::shared_ptr<Application>& app);
         static void Run(const std::shared_ptr<Application>& app);
         static void Shutdown();
     private:
