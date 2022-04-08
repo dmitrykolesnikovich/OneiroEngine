@@ -7,13 +7,14 @@
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 
 namespace oe::Runtime
 {
     void Engine::Init()
     {
         Core::Init();
-        Renderer::Init();
+        Renderer::PreInit();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
     }
@@ -31,11 +32,14 @@ namespace oe::Runtime
             throw std::runtime_error("Failed to create window!");
 
         Core::Window::SetFramerate(1);
-        SetupCallbacks();
+
+    	SetupCallbacks();
 
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
 
+        Renderer::Init();
+        
         while (!mWindow->IsClosed())
         {
             if (app->IsStopped())
@@ -46,6 +50,13 @@ namespace oe::Runtime
             if (!app->Update())
                 break;
 
+            Renderer::GuiLayer::NewFrame();
+
+            if (!app->UpdateGui())
+                break;
+
+            Renderer::GuiLayer::Draw();
+
             mWindow->SwapBuffers();
         }
 
@@ -54,22 +65,24 @@ namespace oe::Runtime
 
     void Engine::SetupCallbacks()
     {
-        Core::Window::SetKeyCallback([](Input::Key key, Input::Action action){
+        Core::Window::SetKeyCallback([](Input::Key key, Input::Action action) {
             Core::Root::GetApplication()->HandleKey(key, action);
-        });
-        Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action){
+            });
+
+        Core::Window::SetMouseButtonCallback([](Input::Button button, Input::Action action) {
             Core::Root::GetApplication()->HandleButton(button, action);
-        });
+            });
+
         Core::Window::SetFrameBufferSizeCallback([](int width, int height){
             Renderer::Viewport(width, height);
-        });
+			});
 
         Core::Window::SetFocusCallback([](bool isFocused){
             if (isFocused)
                 Core::Window::SetFramerate(1); // 60 fps
             else
                 Core::Window::SetFramerate(-3); // 15 fps
-        });
+			});
     }
 
     void Engine::Shutdown()

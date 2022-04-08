@@ -5,6 +5,9 @@
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "imgui.h"
+#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Runtime/Application.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -26,6 +29,13 @@ public:
         return true;
     }
 
+    bool UpdateGui() override
+    {
+        ImGui::Begin("Test");
+        ImGui::End();
+        return true;
+    }
+
     void Shutdown() override
     {
         oe::Logger::Get("log")->PrintMessage("Closing...");
@@ -42,7 +52,10 @@ public:
                 Stop();
                 break;
             case Input::Key::F:
-                Logger::Get("log")->PrintMessage("Press F!");
+                SetButtonInput(false);
+                break;
+            case Input::Key::G:
+                SetButtonInput(true);
                 break;
             default: break;
             }

@@ -7,14 +7,22 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-void oe::Renderer::Init()
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+
+void oe::Renderer::PreInit()
 {
     stbi_set_flip_vertically_on_load(1);
+    GuiLayer::PreInit();
+}
+
+void oe::Renderer::Init()
+{
+    GuiLayer::Init();
 }
 
 void oe::Renderer::Shutdown()
 {
-
+    GuiLayer::Shutdown();
 }
 
 void oe::Renderer::Viewport(GLsizei width, GLsizei height)

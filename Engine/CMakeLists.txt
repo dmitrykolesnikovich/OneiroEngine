@@ -14,11 +14,20 @@ file(GLOB ONEIRO_SOURCE
         "Source/Runtime/*.cpp"
         "ThirdParty/OpenGL/src/*.cpp"
         )
+file(GLOB IMGUI_SOURCE
+        "ThirdParty/imgui/*.cpp"
+        "ThirdParty/imgui/backends/imgui_impl_opengl3.cpp"
+        "ThirdParty/imgui/backends/imgui_impl_glfw.cpp"
+        )
 
-add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE})
+add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE} ${IMGUI_SOURCE})
 add_subdirectory(ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(ThirdParty/glm ThirdParty/glm)
-target_include_directories(${PROJECT_NAME} PUBLIC ThirdParty/OpenGL/include ThirdParty/stb/include)
-target_include_directories(${PROJECT_NAME} PUBLIC Include/)
+target_include_directories(${PROJECT_NAME} PUBLIC ThirdParty/OpenGL/include
+                                                  ThirdParty/stb/include
+                                                  Include/
+                                                  ThirdParty/imgui
+                                                  )
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ThirdParty/imgui)
 target_link_libraries(${PROJECT_NAME} glfw glm OpenGL::GL)
 target_link_libraries(${CMAKE_PROJECT_NAME} Oneiro)

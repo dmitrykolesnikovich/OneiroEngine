@@ -16,6 +16,7 @@ namespace oe::Renderer
         TRIANGLES = gl::TRIANGLES
     };
 
+    OE_API void PreInit();
     OE_API void Init();
     OE_API void Shutdown();
     OE_API void Viewport(GLsizei width, GLsizei height);

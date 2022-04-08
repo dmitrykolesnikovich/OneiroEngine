@@ -4,6 +4,7 @@
 //
 
 #include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Runtime/Application.hpp"
 
 namespace oe::Core
 {
@@ -45,6 +46,7 @@ namespace oe::Core
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         mWindow = glfwCreateWindow(mData.width, mData.height, mData.title, nullptr, nullptr);
@@ -61,20 +63,36 @@ namespace oe::Core
 
     void Window::SetKeyCallback(Callbacks::keyCallback kCallback)
     {
-        mCallbacks.key = kCallback;
-        glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        if (kCallback)
         {
-	        mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
-        });
+            mCallbacks.key = kCallback;
+            glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
+                {
+                    if (Root::GetWindow()->IsKeyInput) 
+                        mCallbacks.key(static_cast<Input::Key>(key), static_cast<Input::Action>(action));
+                });
+        }
+        else
+        {
+            glfwSetKeyCallback(Root::GetWindow()->GetGLFW(), nullptr);
+        }
     }
 
     void Window::SetMouseButtonCallback(Callbacks::mouseButtonCallback mbCallback)
     {
-        mCallbacks.mouseButton = mbCallback;
-        glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int button, int action, int)
+        if (mbCallback)
         {
-	        mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
-        });
+            mCallbacks.mouseButton = mbCallback;
+            glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), [](GLFWwindow*, int button, int action, int)
+                {
+                    if (Root::GetWindow()->IsMouseButtonInput) 
+                        mCallbacks.mouseButton(static_cast<Input::Button>(button), static_cast<Input::Action>(action));
+                });
+        }
+        else
+        {
+            glfwSetMouseButtonCallback(Root::GetWindow()->GetGLFW(), nullptr);
+        }
     }
 
     void Window::SetFrameBufferSizeCallback(Callbacks::frameBufferSizeCallback fbsCallback)

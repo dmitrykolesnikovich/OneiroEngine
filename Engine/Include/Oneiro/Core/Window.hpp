@@ -55,6 +55,9 @@ namespace oe::Core
         static void SetErrorCallback(Callbacks::errorCallback errorCallback);
 
         static void UpdateSize(int width, int height);
+
+        bool IsMouseButtonInput{true};
+        bool IsKeyInput{true};
     private:
         void SetAR(float aspectRatio);
         static void UpdateAR(int width, int height);

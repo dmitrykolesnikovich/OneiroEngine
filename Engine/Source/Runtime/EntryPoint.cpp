@@ -4,6 +4,8 @@
 //
 
 #include "Oneiro/Runtime/EntryPoint.hpp"
+#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 
 int main(const int argc, char* argv[])
 {

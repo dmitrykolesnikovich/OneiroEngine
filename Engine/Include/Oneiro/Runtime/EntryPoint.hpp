@@ -5,8 +5,4 @@
 
 #pragma once
 
-#include "Engine.hpp"
-#include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/Core/Logger.hpp"
-
 int main(int argc, char* argv[]);
