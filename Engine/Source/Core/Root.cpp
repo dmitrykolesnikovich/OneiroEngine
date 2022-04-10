@@ -5,10 +5,19 @@
 
 #include "Oneiro/Core/Root.hpp"
 
+#include <chrono>
+#include <future>
+
+#include "Oneiro/Renderer/OpenGL/Texture.hpp"
+
 namespace oe::Core
 {
     Window* Root::mWindowInstance{};
     Runtime::Application* Root::mApplicationInstance;
+    ResourceManager<Renderer::Texture>* Root::mTextureManager;
+    std::vector<std::future<void>> Root::mFutures;
+
+	Root::Root() { mTextureManager = new ResourceManager<Renderer::Texture>; }
 
     Root::~Root()
     {
@@ -16,11 +25,34 @@ namespace oe::Core
 	    mApplicationInstance = nullptr;
     }
 
-    Window* Root::GetWindow()
-    { return mWindowInstance; }
+    Window* Root::GetWindow() { return mWindowInstance; }
 
-    Runtime::Application* Root::GetApplication()
-    { return mApplicationInstance; }
+    Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
+
+    ResourceManager<Renderer::Texture>* Root::GetTextureManager() { return mTextureManager; }
+
+    void Root::LoadTexturesAsync()
+    {
+        using namespace std::chrono_literals;
+        const auto& resources = mTextureManager->GetResources();
+        for (const auto& resource : resources)
+        {
+            mFutures.emplace_back(std::async(std::launch::async, 
+                [](Renderer::Texture* texture) { texture->PreLoad(); }, resource.get()));
+        }
+
+        // TODO: optimize while loop
+        const size_t futuresSize = mFutures.size();
+        uint64_t i{};
+        while (true)
+        {
+            if (i == futuresSize) break;
+            if (mFutures[i].wait_for(0ms) == std::future_status::ready)
+            {
+                mTextureManager->GetItem(i)->Load(); i++;
+            }
+        }
+    }
 
     void Root::SetApplication(Runtime::Application* app)
     {

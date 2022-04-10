@@ -6,10 +6,11 @@
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Core/Root.hpp"
 
 namespace oe::Renderer
 {
-	void Sprite2D::Init(bool keepAspectRatio)
+	void Sprite2D::Init(const std::string& path, bool keepAspectRatio)
 	{
 		mKeepAR = keepAspectRatio;
 		constexpr auto vertexShaderSrc = R"(
@@ -64,23 +65,15 @@ namespace oe::Renderer
 		VertexBuffer::PushLayout(0,3,3,0);
 		mVAO.UnBind();
 		mVBO.UnBind();
-	}
-
-	bool Sprite2D::Load(const std::string& path)
-	{
-		if (!mTexture.IsLoaded())
-		{
-			mTexture.Load(path);
-			return true;
-		}
-		return false;
+		mTexture = Core::Root::GetTextureManager()->AddItem(std::make_shared<Texture>());
+		mTexture->Init(path);
 	}
 
 	bool Sprite2D::Load()
 	{
-		if (!mTexture.IsLoaded())
+		if (!mTexture->IsLoaded())
 		{
-			mTexture.Load();
+			mTexture->Load();
 			return true;
 		}
 		return false;
@@ -88,9 +81,9 @@ namespace oe::Renderer
 
 	bool Sprite2D::UnLoad()
 	{
-		if (mTexture.IsLoaded())
+		if (mTexture->IsLoaded())
 		{
-			mTexture.UnLoad();
+			mTexture->UnLoad();
 			return true;
 		}
 		return false;
@@ -100,11 +93,11 @@ namespace oe::Renderer
 	{
 		mShader.Use();
 		if (mKeepAR)
-			mShader.SetUniform("uAR", Core::Root::GetWindow()->GetData().ar / mTexture.GetData().ar);
+			mShader.SetUniform("uAR", Core::Root::GetWindow()->GetData().ar / mTexture->GetData().ar);
 		mVAO.Bind();
-		mTexture.Bind();
+		mTexture->Bind();
 		DrawArrays(TRIANGLES, 6);
-		mTexture.UnBind();
+		mTexture->UnBind();
 		mVAO.UnBind();
 	}
 

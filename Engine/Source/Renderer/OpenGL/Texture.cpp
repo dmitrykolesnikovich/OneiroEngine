@@ -9,24 +9,16 @@
 #include "stb/stb_image.h"
 #include "Oneiro/Core/Logger.hpp"
 
-bool oe::Renderer::Texture::PreLoad(const std::string& path)
+bool oe::Renderer::Texture::PreLoad()
 {
-    mData.data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
+    mData.data = stbi_load(mPath.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (mData.data) {
         mData.ar = static_cast<float>(mData.width) / static_cast<float>(mData.height);
         mIsLoaded = true;
         return true;
     }
-    Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + path + " path!");
+    Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + mPath + " path!");
     stbi_image_free(mData.data);
-    return false;
-}
-
-bool oe::Renderer::Texture::Load(const std::string& path)
-{
-    if (PreLoad(path)) {
-        GenerateTexture(); return true;
-    }
     return false;
 }
 

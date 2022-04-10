@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "Oneiro/Renderer/OpenGL/Base.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -13,11 +15,9 @@ namespace oe::Renderer
     class Sprite2D
     {
     public:
-        void Init(bool keepAspectRatio = true);
-
-        bool Load(const std::string& path);
-
-        bool Load();;
+        void Init(const std::string& path, bool keepAspectRatio = true);
+        
+        bool Load();
 
         bool UnLoad();
 
@@ -28,10 +28,10 @@ namespace oe::Renderer
         void Scale(glm::vec2 scale);
     private:
         glm::mat4 mModel{1.0f};
-        Renderer::Texture mTexture{};
-        Renderer::Shader mShader{};
-        Renderer::VertexBuffer mVBO;
-        Renderer::VertexArray mVAO;
+        Texture* mTexture{};
+        Shader mShader{};
+        VertexBuffer mVBO;
+        VertexArray mVAO;
         float mAlpha{1.0f};
         bool mKeepAR{};
     };

@@ -7,6 +7,9 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include "GLFW/glfw3.h"
+#include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
+#include "OpenGL/gl_core_4_5.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -14,10 +17,53 @@ public:
     bool Init() override
     {
         oe::Logger::Get("log")->PrintMessage("Initializing...");
-        mBG.Init(false);
-        mSprite.Init();
-        mSprite.Load("sprite.png");
-        mBG.Load("texture.jpg");
+        constexpr auto vertexShaderSrc = R"(
+                #version 330 core
+                layout (location = 0) in vec3 aPos;
+                void main()
+                {
+                    gl_Position = vec4(aPos, 1.0);
+                }
+            )";
+
+        constexpr auto fragmentShaderSrc = R"(
+                #version 330 core
+                out vec4 FragColor;
+				uniform float uTime;
+				uniform vec2 uSize;
+                void main()
+                {
+					vec2 uv = gl_FragCoord.xy / uSize;
+					vec4 color = vec4(0);
+					color.rg += cos(uv + uTime) * cos(uTime);
+					color.gb += sin(uv + uTime) * sin(uTime);
+                    FragColor = color;
+					FragColor.a = 1.0;
+                }
+            )";
+
+        mShader.LoadFromSource(vertexShaderSrc, fragmentShaderSrc);
+
+        constexpr float vertices[] = {
+		    1.0f,  1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f,
+		   -1.0f, -1.0f, 0.0f,
+		   -1.0f,  1.0f, 0.0f
+        };
+
+        constexpr uint32_t indices[] = {
+            0,1,3,
+            1,2,3
+        };
+
+        mVAO.Init();
+        mVAO.Bind();
+        mEBO.Init(indices, sizeof(indices));
+        mVBO.Create(sizeof(vertices), vertices);
+        oe::Renderer::VertexBuffer::PushLayout(0, 3, 3, 0);
+        mVAO.UnBind();
+        mVBO.UnBind();
+        mBG.Init("bg/bg (1).jpg");
         return true;
     }
 
@@ -27,13 +73,16 @@ public:
         using namespace Renderer;
         if (mShowGui)
         {
-            auto& io = GuiLayer::GetIO();
-            GuiLayer::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
             GuiLayer::Begin("Hello!");
             GuiLayer::End();
         }
+        mShader.Use();
+        mShader.SetUniform("uTime", static_cast<float>(glfwGetTime()));
+        mShader.SetUniform("uSize", glm::vec2(Core::Root::GetWindow()->GetData().width,
+            Core::Root::GetWindow()->GetData().height));
+        mVAO.Bind();
+        gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, nullptr);
         mBG.Draw();
-        mSprite.Draw();
         return true;
     }
 
@@ -70,6 +119,7 @@ public:
             switch (button)
             {
             case Input::Button::LEFT:
+                mSpriteID++;
                 Logger::Get("log")->PrintMessage("Press left button!");
                 break;
             default:
@@ -78,8 +128,12 @@ public:
         }
     }
 private:
-    oe::Renderer::Sprite2D mSprite{};
     oe::Renderer::Sprite2D mBG{};
+    oe::Renderer::Shader mShader{};
+    oe::Renderer::VertexBuffer mVBO;
+    oe::Renderer::VertexArray mVAO;
+    oe::Renderer::IndexBuffer mEBO;
+    int mSpriteID{1};
     bool mShowGui{false};
 };
 

@@ -3,15 +3,14 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include <string>
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Event.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include <stdexcept>
-
-#include "Oneiro/Core/Event.hpp"
+#include <string>
 
 namespace oe::Runtime
 {
@@ -45,13 +44,15 @@ namespace oe::Runtime
             throw std::runtime_error("Failed to initialize application!");
 
         Renderer::Init();
-        
-        while (!mWindow->IsClosed())
+
+        mRoot->LoadTexturesAsync();
+
+    	while (!mWindow->IsClosed())
         {
             if (app->IsStopped())
                 break;
 
-            Core::Window::PollEvents();
+            Window::PollEvents();
 
             Renderer::GuiLayer::NewFrame();
 

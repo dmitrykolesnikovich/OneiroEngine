@@ -21,8 +21,8 @@ namespace oe::Renderer
         };
     public:
         ~Texture();
-        bool PreLoad(const std::string& path);
-        bool Load(const std::string& path);
+        void Init(const std::string& path) { mPath = path; }
+        bool PreLoad();
         void Load();
         void UnLoad();
         void Bind() const;
@@ -33,6 +33,7 @@ namespace oe::Renderer
     private:
         void GenerateTexture();
         Data mData;
+        std::string mPath{};
         uint32_t mID{};
         bool mIsLoaded{};
     };
