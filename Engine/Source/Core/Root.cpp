@@ -44,9 +44,8 @@ namespace oe::Core
         // TODO: optimize while loop
         const size_t futuresSize = mFutures.size();
         uint64_t i{};
-        while (true)
+        while (i != futuresSize)
         {
-            if (i == futuresSize) break;
             if (mFutures[i].wait_for(0ms) == std::future_status::ready)
             {
                 mTextureManager->GetItem(i)->Load(); i++;
