@@ -7,5 +7,6 @@ SandBox/cmake-build-debug/
 SandBox/cmake-build-release/
 
 SandBox/out/
+SandBox/CMakeSettings.json
 
 Folder.DotSettings.user
