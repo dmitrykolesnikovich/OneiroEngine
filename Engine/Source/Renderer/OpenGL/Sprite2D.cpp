@@ -65,7 +65,7 @@ namespace oe::Renderer
 		VertexBuffer::PushLayout(0,3,3,0);
 		mVAO.UnBind();
 		mVBO.UnBind();
-		mTexture = Core::Root::GetTextureManager()->AddItem(std::make_shared<Texture>());
+		mTexture = Core::Root::GetTextureManager()->Add(std::make_shared<Texture>());
 		mTexture->Init(path);
 	}
 

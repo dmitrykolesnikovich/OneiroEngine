@@ -43,12 +43,12 @@ namespace oe::Core
 
         // TODO: optimize while loop
         const size_t futuresSize = mFutures.size();
-        uint64_t i{};
+        uint64_t i{0};
         while (i != futuresSize)
         {
             if (mFutures[i]._Is_ready())
             {
-                mTextureManager->GetItem(i)->Load(); i++;
+                mTextureManager->Get(i)->Load(); i++;
             }
         }
     }
