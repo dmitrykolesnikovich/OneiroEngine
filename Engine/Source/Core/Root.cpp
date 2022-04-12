@@ -37,7 +37,7 @@ namespace oe::Core
         const auto& resources = mTextureManager->GetResources();
         for (const auto& resource : resources)
         {
-            mFutures.emplace_back(std::async(std::launch::async, 
+            mFutures.emplace_back(std::async(std::launch::async,
                 [](Renderer::Texture* texture) { texture->PreLoad(); }, resource.get()));
         }
 
@@ -46,7 +46,7 @@ namespace oe::Core
         uint64_t i{};
         while (i != futuresSize)
         {
-            if (mFutures[i].wait_for(0ms) == std::future_status::ready)
+            if (mFutures[i]._Is_ready())
             {
                 mTextureManager->GetItem(i)->Load(); i++;
             }

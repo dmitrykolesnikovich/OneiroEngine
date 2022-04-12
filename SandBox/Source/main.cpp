@@ -7,7 +7,6 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
-#include "GLFW/glfw3.h"
 #include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
@@ -63,7 +62,6 @@ public:
         oe::Renderer::VertexBuffer::PushLayout(0, 3, 3, 0);
         mVAO.UnBind();
         mVBO.UnBind();
-        mBG.Init("bg/bg (1).jpg");
         return true;
     }
 
@@ -82,7 +80,6 @@ public:
             Core::Root::GetWindow()->GetData().height));
         mVAO.Bind();
         gl::DrawElements(gl::TRIANGLES, 6, gl::UNSIGNED_INT, nullptr);
-        mBG.Draw();
         return true;
     }
 
@@ -119,7 +116,6 @@ public:
             switch (button)
             {
             case Input::Button::LEFT:
-                mSpriteID++;
                 Logger::Get("log")->PrintMessage("Press left button!");
                 break;
             default:
@@ -128,12 +124,10 @@ public:
         }
     }
 private:
-    oe::Renderer::Sprite2D mBG{};
     oe::Renderer::Shader mShader{};
     oe::Renderer::VertexBuffer mVBO;
     oe::Renderer::VertexArray mVAO;
     oe::Renderer::IndexBuffer mEBO;
-    int mSpriteID{1};
     bool mShowGui{false};
 };
 
