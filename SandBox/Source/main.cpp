@@ -16,32 +16,7 @@ public:
     bool Init() override
     {
         oe::Logger::Get("log")->PrintMessage("Initializing...");
-        constexpr auto vertexShaderSrc = R"(
-                #version 330 core
-                layout (location = 0) in vec3 aPos;
-                void main()
-                {
-                    gl_Position = vec4(aPos, 1.0);
-                }
-            )";
-
-        constexpr auto fragmentShaderSrc = R"(
-                #version 330 core
-                out vec4 FragColor;
-				uniform float uTime;
-				uniform vec2 uSize;
-                void main()
-                {
-					vec2 uv = gl_FragCoord.xy / uSize;
-					vec4 color = vec4(0);
-					color.rg += cos(uv + uTime) * cos(uTime);
-					color.gb += sin(uv + uTime) * sin(uTime);
-                    FragColor = color;
-					FragColor.a = 1.0;
-                }
-            )";
-
-        mShader.LoadFromSource(vertexShaderSrc, fragmentShaderSrc);
+        mShader.LoadFromFile("Shaders/shader.glsl");
 
         constexpr float vertices[] = {
 		    1.0f,  1.0f, 0.0f,
