@@ -9,13 +9,15 @@
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
+#include "spdlog/logger.h"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
 public:
     bool Init() override
     {
-        oe::Logger::Get("log")->PrintMessage("Initializing...");
+        OE_LOG_INFO("test");
+	    oe::log::get("log")->info("Initializing...");
         mShader.LoadFromFile("Shaders/shader.glsl");
 
         constexpr float vertices[] = {
@@ -60,7 +62,7 @@ public:
 
     void Shutdown() override
     {
-        oe::Logger::Get("log")->PrintMessage("Closing...");
+        oe::log::get("log")->info("Closing...");
     }
 
     void HandleKey(oe::Input::Key key, oe::Input::Action action) override
@@ -91,7 +93,6 @@ public:
             switch (button)
             {
             case Input::Button::LEFT:
-                Logger::Get("log")->PrintMessage("Press left button!");
                 break;
             default:
                 break;

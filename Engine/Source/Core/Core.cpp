@@ -6,10 +6,16 @@
 #include <stdexcept>
 #include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Core/Event.hpp"
-#include "Oneiro/Core/Logger.hpp"
 
 #define GLFW_INCLUDE_NONE
+
 #include "GLFW/glfw3.h"
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
+#include "Oneiro/Core/Logger.hpp"
 
 namespace oe::Core
 {
@@ -19,8 +25,20 @@ namespace oe::Core
             {
                 Event::Dispatcher::Post(Event::ErrorEvent(error, description));
             });
-        Logger::Create("log", "log.txt");
-        if (!glfwInit())
+
+    	std::vector<log::sink_ptr> sinks;
+        sinks.push_back(std::make_shared<log::sinks::basic_file_sink_mt>("logs/log.txt", true));
+        sinks.push_back(std::make_shared<log::sinks::stdout_color_sink_mt>());
+
+        const auto firstLogger = std::make_shared<log::logger>("log", begin(sinks), end(sinks));
+        const auto secondLogger = std::make_shared<log::logger>("dbg",
+            std::make_shared<log::sinks::stdout_color_sink_mt>());
+        firstLogger->set_pattern("[%H:%M:%S] [%t] [%^%l%$] %v");
+        secondLogger->set_pattern("[%H:%M:%S] [%t] [%^%l in %s:%#%$] %v");
+        set_default_logger(secondLogger);
+        register_logger(firstLogger);
+
+    	if (!glfwInit())
             throw std::runtime_error("Failed to init glfw!");
     }
 

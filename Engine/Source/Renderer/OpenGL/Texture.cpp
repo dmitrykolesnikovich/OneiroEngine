@@ -17,7 +17,7 @@ bool oe::Renderer::Texture::PreLoad()
         mIsLoaded = true;
         return true;
     }
-    Logger::Get("log")->PrintWarning(std::string("Failed to load texture from ") + mPath + " path!");
+    log::get("log")->warn(std::string("Failed to load texture from ") + mPath + " path!");
     stbi_image_free(mData.data);
     return false;
 }

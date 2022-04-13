@@ -31,7 +31,7 @@ namespace oe::Runtime
         Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
 			{
                 const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
-                Logger::Get("log")->PrintError("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
+                log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
 												   errorEvent.Description);
             });
         if (!mWindow->Create())
@@ -98,7 +98,7 @@ namespace oe::Runtime
                 Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
                     static_cast<Input::Action>(mouseButtonEvent.Action));
             });
-
+        
         Event::Dispatcher::Subscribe<Event::FocusEvent>([](const Event::Base& e)
             {
                 const auto& focusEvent = dynamic_cast<const Event::FocusEvent&>(e);

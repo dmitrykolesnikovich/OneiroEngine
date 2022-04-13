@@ -63,7 +63,7 @@ void oe::Renderer::Shader::LoadFromFile(const std::string& path)
     }
     catch (const std::exception& ex)
     {
-        Logger::Get("log")->PrintWarning(
+        log::get("log")->warn(
             "Failed to load shader at" + path + " path! Exception: " + ex.what());
     }
 

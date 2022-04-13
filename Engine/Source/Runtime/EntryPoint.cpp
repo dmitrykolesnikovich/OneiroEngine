@@ -19,7 +19,7 @@ int main(const int argc, char* argv[])
     }
     catch (const std::exception& ex)
     {
-        Logger::Get("log")->PrintError(std::string("Exception: ") + ex.what());
+        log::get("log")->error(std::string("Exception: ") + ex.what());
         return 1;
     }
     Engine::Shutdown();

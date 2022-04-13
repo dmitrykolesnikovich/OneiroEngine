@@ -5,27 +5,16 @@
 
 #pragma once
 
-#include <fstream>
-#include <iostream>
+#include "spdlog/spdlog.h"
 
-#include <unordered_map>
+#define OE_LOG_INFO(...) SPDLOG_INFO(__VA_ARGS__)
+#define OE_LOG_WARNING(...) SPDLOG_WARNING(__VA_ARGS__)
+#define OE_LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 
 namespace oe
 {
-    class Logger
+    namespace log
     {
-    public:
-        Logger();
-        Logger(const std::string& file);
-        ~Logger();
-
-        static bool Create(const std::string& loggerName, const std::string& fileName);
-        void PrintMessage(const std::string& msg) const;
-        void PrintWarning(const std::string& msg) const;
-        void PrintError(const std::string& msg) const;
-        static const Logger* Get(const char* name);
-    private:
-        void Print(const char* type, const char* msg) const;
-        mutable std::fstream mFile;
-    };
+        using namespace spdlog;
+    }
 }
