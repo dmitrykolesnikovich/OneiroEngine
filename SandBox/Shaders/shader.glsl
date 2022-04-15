@@ -5,8 +5,7 @@ void main()
     gl_Position = vec4(aPos, 1.0);
 }
 
-// TFRAGMENT SHADER
-out vec4 FragColor;
+// FRAGMENT SHADER
 uniform float uTime;
 uniform vec2 uSize;
 void main()
