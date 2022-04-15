@@ -3,10 +3,11 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Event.hpp"
+#include "Oneiro/Core/Config.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include <stdexcept>
@@ -20,6 +21,15 @@ namespace oe::Runtime
         Renderer::PreInit();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
+        std::string glVersion = Core::Root::GetConfig("renderer")->GetValue("GL_VERSION");
+        if (glVersion == "None")
+        {
+            glVersion = "3.3";
+            Core::Root::GetConfig("renderer")->WriteData("GL_VERSION", glVersion);
+        }
+        mRoot->SetGLVersion(glVersion);
+        mRoot->SetGLSLVersion(std::to_string(std::atoi(&glVersion[0])) +
+							  std::to_string(std::atoi(&glVersion[2])) + "0");
     }
 
     void Engine::Run(const std::shared_ptr<Application>& app)
@@ -46,7 +56,7 @@ namespace oe::Runtime
         Renderer::Init();
 
         mRoot->LoadTexturesAsync();
-
+        
     	while (!mWindow->IsClosed())
         {
             if (app->IsStopped())

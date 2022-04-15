@@ -11,6 +11,9 @@
 
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Core/Logger.hpp"
+
+#include <string>
 
 namespace oe::Renderer::GuiLayer
 {
@@ -25,7 +28,8 @@ namespace oe::Renderer::GuiLayer
 	inline void Init()
 	{
 		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
-		ImGui_ImplOpenGL3_Init("#version 330");
+		std::string glVersion = Core::Root::GetGLVersion();
+		ImGui_ImplOpenGL3_Init(("#version " + Core::Root::GetGLSLVersion()).c_str());
 	}
 
 	inline void NewFrame()

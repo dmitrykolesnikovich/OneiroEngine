@@ -1,13 +1,11 @@
-// TYPE=VERTEX
-#version 330 core
+// VERTEX SHADER
 layout (location = 0) in vec3 aPos;
 void main()
 {
     gl_Position = vec4(aPos, 1.0);
 }
 
-// TYPE=FRAGMENT
-#version 330 core
+// TFRAGMENT SHADER
 out vec4 FragColor;
 uniform float uTime;
 uniform vec2 uSize;

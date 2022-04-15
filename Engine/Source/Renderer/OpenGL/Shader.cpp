@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Oneiro/Renderer/OpenGL/Shader.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Root.hpp"
 
 uint32_t CreateVertexShader(const char* src);
 uint32_t CreateFragmentShader(const char* src);
@@ -40,15 +41,18 @@ void oe::Renderer::Shader::LoadFromFile(const std::string& path)
         std::stringstream ss[2];
         std::string line{};
         ShaderType type{};
-
         while (std::getline(shaderFile, line))
         {
-            if (line.find("// TYPE=") != std::string::npos)
+            if (line.find("// VERTEX SHADER") != std::string::npos)
             {
-                if (line.find("VERTEX") != std::string::npos)
-                    type = VERTEX;
-                else if (line.find("FRAGMENT") != std::string::npos)
-                    type = FRAGMENT;
+            	type = VERTEX;
+                ss[static_cast<int>(type)] << "#version " + Core::Root::GetGLSLVersion() + " core" << '\n';
+            }
+            else if (line.find("// FRAGMENT SHADER") != std::string::npos)
+            {
+                type = FRAGMENT;
+                ss[static_cast<int>(type)] << "#version " + Core::Root::GetGLSLVersion() + " core" << '\n';
+                ss[static_cast<int>(type)] << "out vec4 FragColor;" << '\n';
             }
             else
             {

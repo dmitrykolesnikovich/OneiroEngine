@@ -9,14 +9,12 @@
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
-#include "spdlog/logger.h"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
 public:
     bool Init() override
     {
-        OE_LOG_INFO("test");
 	    oe::log::get("log")->info("Initializing...");
         mShader.LoadFromFile("Shaders/shader.glsl");
 

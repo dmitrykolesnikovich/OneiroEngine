@@ -4,11 +4,11 @@
 //
 
 #include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Core/Config.hpp"
+#include "Oneiro/Renderer/OpenGL/Texture.hpp"
 
 #include <chrono>
 #include <future>
-
-#include "Oneiro/Renderer/OpenGL/Texture.hpp"
 
 namespace oe::Core
 {
@@ -16,8 +16,16 @@ namespace oe::Core
     Runtime::Application* Root::mApplicationInstance;
     ResourceManager<Renderer::Texture>* Root::mTextureManager;
     std::vector<std::future<void>> Root::mFutures;
+    std::unordered_map<std::string, Config*> Root::mConfigsMap;
+    std::string Root::mGLVersion;
+    std::string Root::mGLSLVersion;
 
-	Root::Root() { mTextureManager = new ResourceManager<Renderer::Texture>; }
+	Root::Root()
+	{
+		mTextureManager = new ResourceManager<Renderer::Texture>;
+        mConfigsMap["user"] = new Config("user.cfg");
+        mConfigsMap["renderer"] = new Config("renderer.cfg");
+	}
 
     Root::~Root()
     {
@@ -30,6 +38,14 @@ namespace oe::Core
     Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
 
     ResourceManager<Renderer::Texture>* Root::GetTextureManager() { return mTextureManager; }
+
+    std::vector<std::future<void>>& Root::GetFutures() { return mFutures; }
+
+    Config* Root::GetConfig(const std::string& name) { return mConfigsMap[name]; }
+
+    const std::string& Root::GetGLVersion() { return mGLVersion; }
+
+    const std::string& Root::GetGLSLVersion() { return mGLSLVersion; }
 
     void Root::LoadTexturesAsync()
     {
@@ -53,13 +69,11 @@ namespace oe::Core
         }
     }
 
-    void Root::SetApplication(Runtime::Application* app)
-    {
-	    if (!mApplicationInstance) mApplicationInstance = app;
-    }
+    void Root::SetApplication(Runtime::Application* app) { if (!mApplicationInstance) mApplicationInstance = app; }
 
-    void Root::SetWindow(Window* window)
-    {
-	    if (!mWindowInstance) mWindowInstance = window;
-    }
+    void Root::SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
+
+    void Root::SetGLVersion(const std::string& version) { mGLVersion = version; }
+
+    void Root::SetGLSLVersion(const std::string& version) { mGLSLVersion = version; }
 }
