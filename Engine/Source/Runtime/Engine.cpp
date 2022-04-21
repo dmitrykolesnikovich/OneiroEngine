@@ -9,7 +9,9 @@
 #include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include "Oneiro/Core/Window.hpp"
+//#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -21,7 +23,7 @@ namespace oe::Runtime
         Renderer::PreInit();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
-        std::string glVersion = Core::Root::GetConfig("renderer")->GetValue("GL_VERSION");
+        /*std::string glVersion = Core::Root::GetConfig("renderer")->GetValue("GL_VERSION");
         if (glVersion == "None")
         {
             glVersion = "3.3";
@@ -29,7 +31,7 @@ namespace oe::Runtime
         }
         mRoot->SetGLVersion(glVersion);
         mRoot->SetGLSLVersion(std::to_string(std::atoi(&glVersion[0])) +
-							  std::to_string(std::atoi(&glVersion[2])) + "0");
+							  std::to_string(std::atoi(&glVersion[2])) + "0");*/
     }
 
     void Engine::Run(const std::shared_ptr<Application>& app)
@@ -50,13 +52,13 @@ namespace oe::Runtime
         Window::SetFramerate(1);
         SetupEvents();
 
+        Renderer::Init();
+
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
 
-        Renderer::Init();
+        //mRoot->LoadTexturesAsync();
 
-        mRoot->LoadTexturesAsync();
-        
     	while (!mWindow->IsClosed())
         {
             if (app->IsStopped())
@@ -64,12 +66,12 @@ namespace oe::Runtime
 
             Window::PollEvents();
 
-            Renderer::GuiLayer::NewFrame();
+            //Renderer::GuiLayer::NewFrame();
 
             if (!app->Update())
                 break;
 
-            Renderer::GuiLayer::Draw();
+            //Renderer::GuiLayer::Draw();
 
             mWindow->SwapBuffers();
         }
@@ -92,7 +94,7 @@ namespace oe::Runtime
         Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
             {
                 const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-                Renderer::Viewport(resizeEvent.Width, resizeEvent.Height);
+                //Renderer::Viewport(resizeEvent.Width, resizeEvent.Height);
             });
 
         Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)

@@ -4,21 +4,33 @@
 //
 
 #pragma once
+#include <vulkan/vulkan_core.h>
 
-#include "OpenGL/gl_core_4_5.hpp"
+#include "Oneiro/Core/Root.hpp"
+#include "Vulkan/CommandBuffer.hpp"
+#include "Vulkan/LogicalDevice.hpp"
+#include "Vulkan/SwapChain.hpp"
+
+//#include "OpenGL/gl_core_4_5.hpp"
 
 namespace oe::Renderer
 {
-    enum DrawMode
+    /*enum DrawMode
     {
         TRIANGLES = gl::TRIANGLES
-    };
+    };*/
 
     void PreInit();
     void Init();
     void Shutdown();
-    void Viewport(GLsizei width, GLsizei height);
+    /*void Viewport(GLsizei width, GLsizei height);
     void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
     void DrawArrays(DrawMode mode, GLint count);
-    void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
+    void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);*/
+    namespace Vulkan
+    {
+        void BeginScene();
+
+        void EndScene();
+    }
 }

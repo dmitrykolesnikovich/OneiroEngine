@@ -17,7 +17,7 @@ bool oe::Renderer::Texture::PreLoad()
         mIsLoaded = true;
         return true;
     }
-    log::get("log")->warn(std::string("Failed to load texture from ") + mPath + " path!");
+    //log::get("log")->warn(std::string("Failed to load texture from ") + mPath + " path!");
     stbi_image_free(mData.data);
     return false;
 }
@@ -62,8 +62,8 @@ void oe::Renderer::Texture::GenerateTexture()
     Bind();
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_BORDER);
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_BORDER);
-    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
-    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_NEAREST);
     gl::TexImage2D(gl::TEXTURE_2D, 0, mData.nrChannels == 4 ? gl::RGBA : gl::RGB,
                    mData.width, mData.height, 0, mData.nrChannels == 4 ? gl::RGBA : gl::RGB,
                    gl::UNSIGNED_BYTE, mData.data);

@@ -6,13 +6,14 @@
 #include "Oneiro/Core/Window.hpp"
 
 #include "Oneiro/Core/Event.hpp"
+#include "Oneiro/Renderer/Vulkan/WindowSurface.hpp"
 #include "Oneiro/Runtime/Application.hpp"
 
 namespace oe::Core
 {
 	Window::~Window() { glfwDestroyWindow(mWindow); }
 
-	void Window::SwapBuffers() const { glfwSwapBuffers(mWindow); }
+	void Window::SwapBuffers() const { /*glfwSwapBuffers(mWindow);*/ }
 
 	void Window::PollEvents() { glfwPollEvents(); }
 
@@ -30,7 +31,7 @@ namespace oe::Core
 
 	void Window::SetSize(int width, int height) { mData.width = width; mData.height = height; }
 
-	void Window::SetFramerate(int fps) { glfwSwapInterval(fps); }
+	void Window::SetFramerate(int fps) { /*glfwSwapInterval(fps);*/ }
 
 	void Window::UpdateSize(int width, int height)
 	{
@@ -45,19 +46,20 @@ namespace oe::Core
 
     bool Window::Create()
     {
-		std::string glVersion = Root::GetGLVersion();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, std::atoi(&glVersion[0]));
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, std::atoi(&glVersion[2]));
+		//std::string glVersion = Root::GetGLVersion();
+        /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, std::atoi(&glVersion[0]));
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, std::atoi(&glVersion[2]));*/
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        /*glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
         mWindow = glfwCreateWindow(mData.width, mData.height, mData.title, nullptr, nullptr);
 
         if (mWindow == nullptr)
             return false;
 
-        glfwMakeContextCurrent(mWindow);
+        //glfwMakeContextCurrent(mWindow);
         glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
 	        {
 		        Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));

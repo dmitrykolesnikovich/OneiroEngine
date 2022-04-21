@@ -9,7 +9,7 @@
 
 namespace oe::Core
 {
-	Config::Config(const std::string& file)
+	/*Config::Config(const std::string& file)
 	{
 		try
 		{
@@ -41,5 +41,5 @@ namespace oe::Core
 		return "None";
 	}
 
-	void Config::WriteData(const std::string& cfg, const std::string& value) { mOFile.seekp(0); mOFile << cfg << "=" << value << '\n'; }
+	void Config::WriteData(const std::string& cfg, const std::string& value) { mOFile.seekp(0); mOFile << cfg << "=" << value << '\n'; }*/
 }

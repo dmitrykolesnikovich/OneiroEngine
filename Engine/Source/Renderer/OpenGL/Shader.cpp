@@ -67,8 +67,8 @@ void oe::Renderer::Shader::LoadFromFile(const std::string& path)
     }
     catch (const std::exception& ex)
     {
-        log::get("log")->warn(
-            "Failed to load shader at" + path + " path! Exception: " + ex.what());
+        /*log::get("log")->warn(
+            "Failed to load shader at" + path + " path! Exception: " + ex.what());*/
     }
 
     const uint32_t vertexShader = CreateVertexShader(vertexShaderSrc.c_str());

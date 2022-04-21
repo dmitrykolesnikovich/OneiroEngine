@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
 #include "Root.hpp"
 
@@ -48,7 +48,6 @@ namespace oe::Core
             int width{1280};
             int height{720};
         };
-
         WindowData mData{};
         GLFWwindow* mWindow{};
     };
