@@ -107,10 +107,11 @@ namespace oe::Core
         mSwapChain.Create();
         mRenderPass.Create();
         mImageViews.Create();
-        const auto vert = Renderer::Vulkan::Shader::CreateShaderModule(
+        static const auto vert = Renderer::Vulkan::Shader::CreateShaderModule(
             Renderer::Vulkan::Shader::LoadFromFile("Shaders/vert.spv"));
-        const auto frag = Renderer::Vulkan::Shader::CreateShaderModule(
+        static const auto frag = Renderer::Vulkan::Shader::CreateShaderModule(
             Renderer::Vulkan::Shader::LoadFromFile("Shaders/frag.spv"));
+        AddShaders({ vert }, { frag });
         mPipeline.Create({ vert }, { frag });
         CreateFramebuffers();
         mCommandPool.Create();
@@ -118,9 +119,36 @@ namespace oe::Core
         CreateAsyncObjects();
     }
 
+    void Root::Vulkan::ReInit()
+    {
+        int width{}, height{};
+        glfwGetFramebufferSize(GetWindow()->GetGLFW(), &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(GetWindow()->GetGLFW(), &width, &height);
+            glfwWaitEvents();
+        }
+        vkDeviceWaitIdle(mLogicalDevice.Get());
+        DestroyFramebuffers();
+        mPipeline.Destroy();
+        mRenderPass.Destroy();
+        mImageViews.Destroy();
+        mSwapChain.Destroy();
+
+        mSwapChain.Create();
+        mImageViews.Create();
+        mRenderPass.Create();
+        mPipeline.Create(mVertShaders, mFragShaders);
+        CreateFramebuffers();
+    }
+
     void Root::Vulkan::Destroy()
     {
         vkDeviceWaitIdle(mLogicalDevice.Get());
+        const auto& device = mLogicalDevice.Get();
+        for (const auto& fragShaderModule : mVertShaders)
+            vkDestroyShaderModule(device, fragShaderModule, nullptr);
+        for (const auto& vertShaderModule : mFragShaders)
+            vkDestroyShaderModule(device, vertShaderModule, nullptr);
         DesrtoyAsyncObjects();
         mCommandPool.Destroy();
         DestroyFramebuffers();
@@ -133,9 +161,26 @@ namespace oe::Core
         mInstance.Destroy();
     }
 
+    void Root::Vulkan::AddShaders(const std::vector<VkShaderModule>& vertShaders,
+        const std::vector<VkShaderModule>& fragShaders)
+    {
+        for (const auto& vertShader : vertShaders)
+            mVertShaders.push_back(vertShader);
+        
+        for (const auto& fragShader : fragShaders)
+            mFragShaders.push_back(fragShader);
+    }
+
     void Root::Vulkan::UpdateCurrentImageIndex()
     {
-        vkAcquireNextImageKHR(mLogicalDevice.Get(), mSwapChain.Get(), UINT64_MAX, mImageAvailableSemaphores, VK_NULL_HANDLE, &mCurrentImageIndex);
+        VkResult result = vkAcquireNextImageKHR(mLogicalDevice.Get(), mSwapChain.Get(),
+            UINT64_MAX, mImageAvailableSemaphores, VK_NULL_HANDLE, &mCurrentImageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            ReInit();
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            throw std::runtime_error("Failed to acquire swap chain image!");
+        }
     }
 
     uint32_t Root::Vulkan::GetCurrentImageIndex()

@@ -147,11 +147,6 @@ namespace oe::Renderer::Vulkan
             nullptr, &mGraphicsPipeline) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create graphics pipeline!");
         }
-
-        for (const auto& fragShaderModule : fragShaderModules)
-            vkDestroyShaderModule(device, fragShaderModule, nullptr);
-        for (const auto& vertShaderModule : vertShaderModules)
-            vkDestroyShaderModule(device, vertShaderModule, nullptr);
     }
 
     void Pipeline::Bind() const

@@ -84,7 +84,14 @@ void oe::Renderer::Vulkan::EndScene()
     uint32_t imageIndex = Core::Root::Vulkan::GetCurrentImageIndex();
     presentInfo.pImageIndices = &imageIndex;
 
-    vkQueuePresentKHR(Core::Root::Vulkan::GetPresentQueue(), &presentInfo);
+    VkResult result = vkQueuePresentKHR(Core::Root::Vulkan::GetPresentQueue(), &presentInfo);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+        Core::Root::Vulkan::ReInit();
+    }
+    else if (result != VK_SUCCESS) {
+        throw std::runtime_error("failed to present swap chain image!");
+    }
+
 }
 
 //void oe::Renderer::Viewport(GLsizei width, GLsizei height)

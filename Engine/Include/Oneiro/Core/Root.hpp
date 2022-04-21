@@ -59,7 +59,11 @@ namespace oe::Core
     {
     public:
         static void Init();
+        static void ReInit();
         static void Destroy();
+
+        static void AddShaders(const std::vector<VkShaderModule>& vertShaders,
+            const std::vector<VkShaderModule>& fragShaders);
 
         static const Renderer::Vulkan::Instance* GetInstance() { return &mInstance; }
         static const Renderer::Vulkan::PhysicalDevice* GetPhysDevice() { return &mPhysicalDevice; }
@@ -74,12 +78,12 @@ namespace oe::Core
         static const Renderer::Vulkan::CommandPool* GetCommandPool() { return &mCommandPool; }
         static const Renderer::Vulkan::CommandBuffer* GetCommandBuffer() { return &mCommandBuffer; }
         static VkQueue* GetQueuePtr() { return &mGraphicsQueue; }
-        static const VkQueue GetQueue() { return mGraphicsQueue; }
-        static const VkQueue GetPresentQueue() { return mPresentQueue; }
+        static VkQueue GetQueue() { return mGraphicsQueue; }
+        static VkQueue GetPresentQueue() { return mPresentQueue; }
         static VkQueue* GetPresentQueuePtr() { return &mPresentQueue; }
-        static const VkSemaphore GetImageAvaibleSemaphores() { return mImageAvailableSemaphores; }
-        static const VkSemaphore GetRenderFinishedSemaphores() { return mRenderFinishedSemaphores; }
-        static const VkFence GetInFlightFence() { return mInFlightFence; }
+        static VkSemaphore GetImageAvaibleSemaphores() { return mImageAvailableSemaphores; }
+        static VkSemaphore GetRenderFinishedSemaphores() { return mRenderFinishedSemaphores; }
+        static VkFence GetInFlightFence() { return mInFlightFence; }
         static void UpdateCurrentImageIndex();
         static uint32_t GetCurrentImageIndex();
     private:
@@ -88,6 +92,9 @@ namespace oe::Core
 
         static void CreateAsyncObjects();
         static void DesrtoyAsyncObjects();
+
+        inline static std::vector<VkShaderModule> mVertShaders;
+        inline static std::vector<VkShaderModule> mFragShaders;
 
         inline static VkQueue mGraphicsQueue{};
         inline static VkQueue mPresentQueue{};
