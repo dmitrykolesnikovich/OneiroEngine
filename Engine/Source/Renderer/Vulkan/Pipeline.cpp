@@ -37,6 +37,8 @@ namespace oe::Renderer::Vulkan
             shaderStages.push_back(fragShaderStageInfo);
         }
 
+        if (shaderStages.empty()) return;
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         const auto& vertexBindingDescriptions = Core::Root::Vulkan::GetVertexInputBindingDescriptions();
