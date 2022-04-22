@@ -1,6 +1,6 @@
 # Oneiro Engine — это мощный, быстрый и главное бесплатный движок для визуальных новелл, созданный разработчиками для разработчиков.
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/74720936/164480358-22f89315-fe38-46ba-a808-ddbcd1f8565c.png"></a>
+  <img src="https://user-images.githubusercontent.com/74720936/164480358-22f89315-fe38-46ba-a808-ddbcd1f8565c.png" width="350" height="400">
 </p>
 
 [Main github repository](https://github.com/OneiroGames/Oneiro)
