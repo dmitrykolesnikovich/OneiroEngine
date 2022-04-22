@@ -57,7 +57,7 @@ public:
             switch (button)
             {
             case Input::Button::LEFT:
-                Logger::get("log")->info("Press left button!");
+                log::get("log")->info("Press left button!");
                 break;
             default:
                 break;
