@@ -20,7 +20,6 @@ namespace oe::Runtime
     void Engine::Init()
     {
         Core::Init();
-        Renderer::PreInit();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
         /*std::string glVersion = Core::Root::GetConfig("renderer")->GetValue("GL_VERSION");
@@ -52,10 +51,12 @@ namespace oe::Runtime
         Window::SetFramerate(1);
         SetupEvents();
 
-        Renderer::Init();
+        Renderer::PreInit();
 
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
+
+        Renderer::Init();
 
         //mRoot->LoadTexturesAsync();
 

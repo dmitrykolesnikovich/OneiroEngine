@@ -44,8 +44,8 @@ namespace oe::Renderer::Vulkan
         }
         else {
             createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            createInfo.queueFamilyIndexCount = 0; // Optional
-            createInfo.pQueueFamilyIndices = nullptr; // Optional
+            createInfo.queueFamilyIndexCount = 0; 
+            createInfo.pQueueFamilyIndices = nullptr; 
         }
 
         createInfo.preTransform = capabilities.currentTransform;

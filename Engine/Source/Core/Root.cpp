@@ -4,7 +4,9 @@
 //
 
 #include "Oneiro/Core/Root.hpp"
-//#include "Oneiro/Core/Config.hpp"
+#include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Core/Config.hpp"
+#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
@@ -15,41 +17,24 @@
 #include "Oneiro/Renderer/Vulkan/Framebuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-
 #include "Oneiro/Renderer/Vulkan/Shader.hpp"
-#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/IndexBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
+#include "Oneiro/Renderer/Vulkan/UniformBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/DescriptorPool.hpp"
+#include "Oneiro/Renderer/Vulkan/DescriptorSet.hpp"
 
-#include <chrono>
-#include <future>
-
-#include "Oneiro/Core/Window.hpp"
+//#include <chrono>
+//#include <future>
 
 namespace oe::Core
 {
-    Window* Root::mWindowInstance{};
-    Runtime::Application* Root::mApplicationInstance{};
-    Renderer::Vulkan::Instance Root::Vulkan::mInstance{};
-    Renderer::Vulkan::PhysicalDevice Root::Vulkan::mPhysicalDevice{};
-    Renderer::Vulkan::LogicalDevice Root::Vulkan::mLogicalDevice{};
-    Renderer::Vulkan::WindowSurface Root::Vulkan::mWindowSurface{};
-    Renderer::Vulkan::SwapChain Root::Vulkan::mSwapChain{};
-    Renderer::Vulkan::ImageViews Root::Vulkan::mImageViews{};
-    Renderer::Vulkan::Pipeline Root::Vulkan::mPipeline{};
-    Renderer::Vulkan::RenderPass Root::Vulkan::mRenderPass{};
-    std::vector<Renderer::Vulkan::Framebuffer> Root::Vulkan::mFramebuffers{};
-    Renderer::Vulkan::CommandPool Root::Vulkan::mCommandPool{};
-    Renderer::Vulkan::CommandBuffer Root::Vulkan::mCommandBuffer{};
-    /*ResourceManager<Renderer::Texture>* Root::mTextureManager;*/
-    /*std::vector<std::future<void>> Root::mFutures;*/
-    //std::unordered_map<std::string, Config*> Root::mConfigsMap;
-    /*std::string Root::mGLVersion;
-    std::string Root::mGLSLVersion;*/
-
 	Root::Root() : mVulkan(new Vulkan)
 	{
 		/*mTextureManager = new ResourceManager<Renderer::Texture>;*/
-        /*mConfigsMap["user"] = new Config("user.cfg");
-        mConfigsMap["renderer"] = new Config("renderer.cfg");*/
+        mConfigsMap["user"] = new Config("user.cfg");
+        mConfigsMap["renderer"] = new Config("renderer.cfg");
 	}
 
     Root::~Root()
@@ -98,7 +83,7 @@ namespace oe::Core
 
     void Root::SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
 
-    void Root::Vulkan::Init()
+    void Root::Vulkan::PreInit()
     {
         mInstance.Create();
         mWindowSurface.Setup(GetWindow()->GetGLFW());
@@ -107,17 +92,24 @@ namespace oe::Core
         mSwapChain.Create();
         mRenderPass.Create();
         mImageViews.Create();
-        static const auto vert = Renderer::Vulkan::Shader::CreateShaderModule(
-            Renderer::Vulkan::Shader::LoadFromFile("Shaders/vert.spv"));
-        static const auto frag = Renderer::Vulkan::Shader::CreateShaderModule(
-            Renderer::Vulkan::Shader::LoadFromFile("Shaders/frag.spv"));
-        AddShaders({ vert }, { frag });
-        mPipeline.Create({ vert }, { frag });
-        CreateFramebuffers();
+        Renderer::Vulkan::DescriptorSetLayout layout;
+        layout.Create(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+        mDescriptorSetLayouts.push_back(layout);
         mCommandPool.Create();
+    }
+
+    void Root::Vulkan::Init()
+    {
+        mPipeline.Create(mVertShaders, mFragShaders);
+        CreateFramebuffers();
         mCommandBuffer.Create();
+        mUniformBuffer.Create(sizeof(UniformBufferObject));
+        mDescriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+        mDescriptorSet.Create();
         CreateAsyncObjects();
     }
+
+
 
     void Root::Vulkan::ReInit()
     {
@@ -143,14 +135,18 @@ namespace oe::Core
 
     void Root::Vulkan::Destroy()
     {
-        vkDeviceWaitIdle(mLogicalDevice.Get());
         const auto& device = mLogicalDevice.Get();
+        vkDeviceWaitIdle(device);
         for (const auto& fragShaderModule : mVertShaders)
             vkDestroyShaderModule(device, fragShaderModule, nullptr);
         for (const auto& vertShaderModule : mFragShaders)
             vkDestroyShaderModule(device, vertShaderModule, nullptr);
         DesrtoyAsyncObjects();
+        for (auto& descriptorSetLayout : mDescriptorSetLayouts)
+            descriptorSetLayout.Destroy();
+        mDescriptorPool.Destroy();
         mCommandPool.Destroy();
+        mUniformBuffer.Destroy();
         DestroyFramebuffers();
         mPipeline.Destroy();
         mImageViews.Destroy();
@@ -161,20 +157,79 @@ namespace oe::Core
         mInstance.Destroy();
     }
 
-    void Root::Vulkan::AddShaders(const std::vector<VkShaderModule>& vertShaders,
-        const std::vector<VkShaderModule>& fragShaders)
+    void Root::Vulkan::AddVertexShader(VkShaderModule shader)
     {
-        for (const auto& vertShader : vertShaders)
-            mVertShaders.push_back(vertShader);
-        
-        for (const auto& fragShader : fragShaders)
-            mFragShaders.push_back(fragShader);
+        mVertShaders.push_back(shader);
+    }
+
+    void Root::Vulkan::AddFragmentShader(VkShaderModule shader)
+    {
+        mFragShaders.push_back(shader);
+    }
+
+    const Renderer::Vulkan::Instance* Root::Vulkan::GetInstance() { return &mInstance; }
+
+    const Renderer::Vulkan::PhysicalDevice* Root::Vulkan::GetPhysDevice() { return &mPhysicalDevice; }
+
+    const std::vector<const char*>& Root::Vulkan::GetValidationLayers() { return mValidationLayers; }
+
+    const Renderer::Vulkan::WindowSurface* Root::Vulkan::GetWindowSurface() { return &mWindowSurface; }
+
+    const Renderer::Vulkan::LogicalDevice* Root::Vulkan::GetLogicalDevice() { return &mLogicalDevice; }
+
+    const Renderer::Vulkan::SwapChain* Root::Vulkan::GetSwapChain() { return &mSwapChain; }
+
+    const Renderer::Vulkan::ImageViews* Root::Vulkan::GetImageViews() { return &mImageViews; }
+
+    const Renderer::Vulkan::RenderPass* Root::Vulkan::GetRenderPass() { return &mRenderPass; }
+
+    const Renderer::Vulkan::Pipeline* Root::Vulkan::GetPipeline() { return &mPipeline; }
+
+    const std::vector<Renderer::Vulkan::Framebuffer>& Root::Vulkan::GetFramebuffers() { return mFramebuffers; }
+
+    const Renderer::Vulkan::CommandPool* Root::Vulkan::GetCommandPool() { return &mCommandPool; }
+
+    const Renderer::Vulkan::CommandBuffer* Root::Vulkan::GetCommandBuffer() { return &mCommandBuffer; }
+
+    const Renderer::Vulkan::UniformBuffer* Root::Vulkan::GetUniformBuffer() { return &mUniformBuffer; }
+
+    const Renderer::Vulkan::DescriptorPool* Root::Vulkan::GetDescriptorPool() { return &mDescriptorPool; }
+
+    const Renderer::Vulkan::DescriptorSet* Root::Vulkan::GetDescriptorSet() { return &mDescriptorSet; }
+
+    VkQueue* Root::Vulkan::GetGraphicsQueuePtr() { return &mGraphicsQueue; }
+
+    VkQueue Root::Vulkan::GetGraphicsQueue() { return mGraphicsQueue; }
+
+    VkQueue Root::Vulkan::GetPresentQueue() { return mPresentQueue; }
+
+    VkQueue* Root::Vulkan::GetPresentQueuePtr() { return &mPresentQueue; }
+
+    VkSemaphore Root::Vulkan::GetImageAvaibleSemaphores() { return mImageAvailableSemaphores; }
+
+    VkSemaphore Root::Vulkan::GetRenderFinishedSemaphores() { return mRenderFinishedSemaphores; }
+
+    VkFence Root::Vulkan::GetInFlightFence() { return mInFlightFence; }
+
+    std::vector<VkVertexInputBindingDescription>& Root::Vulkan::GetVertexInputBindingDescriptions()
+    {
+        return mVertexInputBindingDescriptions;
+    }
+
+    std::vector<VkVertexInputAttributeDescription>& Root::Vulkan::GetVertexInputAttributeDescriptions()
+    {
+        return mVertexInputAttributeDescriptions;
+    }
+
+    std::vector<Renderer::Vulkan::DescriptorSetLayout>& Root::Vulkan::GetDescriptorSetLayouts()
+    {
+        return mDescriptorSetLayouts;
     }
 
     void Root::Vulkan::UpdateCurrentImageIndex()
     {
-        VkResult result = vkAcquireNextImageKHR(mLogicalDevice.Get(), mSwapChain.Get(),
-            UINT64_MAX, mImageAvailableSemaphores, VK_NULL_HANDLE, &mCurrentImageIndex);
+        const VkResult result = vkAcquireNextImageKHR(mLogicalDevice.Get(), mSwapChain.Get(),
+                                                      UINT64_MAX, mImageAvailableSemaphores, VK_NULL_HANDLE, &mCurrentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             ReInit();
         }
@@ -194,7 +249,7 @@ namespace oe::Core
         int size = mFramebuffers.size();
         for (int i{}; i < size; ++i)
         {
-            VkImageView attachments[] = {
+            const VkImageView attachments[] = {
                 mImageViews.Get()[i]
             };
             mFramebuffers[i].Create(attachments);
@@ -234,6 +289,31 @@ namespace oe::Core
         vkDestroySemaphore(device, mRenderFinishedSemaphores, nullptr);
         vkDestroyFence(device, mInFlightFence, nullptr);
     }
+
+    Window* Root::mWindowInstance{};
+    Runtime::Application* Root::mApplicationInstance{};
+    Renderer::Vulkan::Instance Root::Vulkan::mInstance{};
+    Renderer::Vulkan::PhysicalDevice Root::Vulkan::mPhysicalDevice{};
+    Renderer::Vulkan::LogicalDevice Root::Vulkan::mLogicalDevice{};
+    Renderer::Vulkan::WindowSurface Root::Vulkan::mWindowSurface{};
+    Renderer::Vulkan::SwapChain Root::Vulkan::mSwapChain{};
+    Renderer::Vulkan::ImageViews Root::Vulkan::mImageViews{};
+    Renderer::Vulkan::Pipeline Root::Vulkan::mPipeline{};
+    Renderer::Vulkan::RenderPass Root::Vulkan::mRenderPass{};
+    std::vector<Renderer::Vulkan::Framebuffer> Root::Vulkan::mFramebuffers{};
+    Renderer::Vulkan::CommandPool Root::Vulkan::mCommandPool{};
+    Renderer::Vulkan::CommandBuffer Root::Vulkan::mCommandBuffer{};
+    Renderer::Vulkan::UniformBuffer Root::Vulkan::mUniformBuffer{};
+    Renderer::Vulkan::DescriptorPool Root::Vulkan::mDescriptorPool{};
+    Renderer::Vulkan::DescriptorSet Root::Vulkan::mDescriptorSet{};
+    std::vector<Renderer::Vulkan::DescriptorSetLayout> Root::Vulkan::mDescriptorSetLayouts{};
+    std::vector<VkShaderModule> Root::Vulkan::mVertShaders;
+    std::vector<VkShaderModule> Root::Vulkan::mFragShaders;
+    std::unordered_map<std::string, Config*> Root::mConfigsMap;
+    /*ResourceManager<Renderer::Texture>* Root::mTextureManager;*/
+    /*std::vector<std::future<void>> Root::mFutures;*/
+    /*std::string Root::mGLVersion;
+    std::string Root::mGLSLVersion;*/
 
     /*void Root::SetGLVersion(const std::string& version) { mGLVersion = version; }
 

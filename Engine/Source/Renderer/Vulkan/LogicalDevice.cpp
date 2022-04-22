@@ -38,7 +38,7 @@ namespace oe::Renderer::Vulkan
             throw std::runtime_error("Failed to create logical device!");
         }
         vkGetDeviceQueue(mDevice, Core::Root::Vulkan::GetPhysDevice()->GetQueueFamilyIndices().GraphicsFamily.value(),
-            0, Core::Root::Vulkan::GetQueuePtr());
+            0, Core::Root::Vulkan::GetGraphicsQueuePtr());
         vkGetDeviceQueue(mDevice, Core::Root::Vulkan::GetPhysDevice()->GetQueueFamilyIndices().PresentFamily.value(),
             0, Core::Root::Vulkan::GetPresentQueuePtr());
     }

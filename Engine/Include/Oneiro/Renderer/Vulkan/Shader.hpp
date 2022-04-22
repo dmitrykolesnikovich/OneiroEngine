@@ -3,15 +3,21 @@
 #include "Base.hpp"
 
 #include <string>
-#include <vector>
+
+#include "Oneiro/Core/Root.hpp"
 
 namespace oe::Renderer::Vulkan
 {
     class Shader
     {
     public:
-        static std::vector<char> LoadFromFile(const std::string& path);
-
-        static VkShaderModule CreateShaderModule(const std::vector<char>& sourceCode);
+        enum Type
+        {
+            VERTEX,
+            FRAGMENT
+        };
+        static void Create(const std::string& pathToShader, Type shaderType);
+        static void AddVertexInputBindingDescription(uint32_t binding, uint32_t stride);
+        static void AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset);
     };
 }

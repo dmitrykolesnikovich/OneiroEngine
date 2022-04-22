@@ -11,8 +11,8 @@ namespace oe::Renderer::Vulkan
 
         void Destroy();
 
-        VkCommandPool Get() const;
-        const VkCommandPool* GetPtr() const;
+        [[nodiscard]] VkCommandPool Get() const;
+        [[nodiscard]] const VkCommandPool* GetPtr() const;
     private:
         VkCommandPool mCommandPool{};
     };

@@ -7,6 +7,7 @@
 
 //#include "ResourceManager.hpp"
 
+#include <unordered_map>
 #include <vector>
 
 #include "vulkan/vulkan_core.h"
@@ -18,8 +19,19 @@ namespace oe::Renderer { class Texture;
 {
     class Instance; class PhysicalDevice; class LogicalDevice; class WindowSurface;
     class SwapChain; class ImageViews; class Pipeline; class RenderPass;
-    class Framebuffer; class CommandPool; class CommandBuffer;
+    class Framebuffer; class CommandPool; class CommandBuffer; class Shader;
+    class VertexBuffer; class IndexBuffer; class DescriptorSetLayout;
+    class UniformBuffer; class DescriptorPool; class DescriptorSet;
 } }
+
+#include "glm/glm.hpp"
+
+struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+};
+
 namespace oe::Core
 {
     class Root
@@ -38,15 +50,16 @@ namespace oe::Core
         //static const std::string& GetGLSLVersion();
         //static ALCdevice* GetALCdevice() { return mALCdevice; }
     public: // Setters (NOT STATIC!)
-        /*void LoadTexturesAsync();*/
         void SetApplication(Runtime::Application* app);
         void SetWindow(Window* window);
         /*void SetGLVersion(const std::string& version);
         void SetGLSLVersion(const std::string& version);*/
+    public:
+        /*void LoadTexturesAsync();*/
     private:
         /*static std::vector<std::future<void>> mFutures;
         static ResourceManager<Renderer::Texture>* mTextureManager;*/
-        //static std::unordered_map<std::string, Config*> mConfigsMap;
+        static std::unordered_map<std::string, Config*> mConfigsMap;
         static Window* mWindowInstance;
         static Runtime::Application* mApplicationInstance;
         Vulkan* mVulkan;
@@ -58,34 +71,43 @@ namespace oe::Core
     class Root::Vulkan
     {
     public:
+        static void PreInit();
         static void Init();
         static void ReInit();
         static void Destroy();
 
-        static void AddShaders(const std::vector<VkShaderModule>& vertShaders,
-            const std::vector<VkShaderModule>& fragShaders);
+        static void AddVertexShader(VkShaderModule shader);
+        static void AddFragmentShader(VkShaderModule shader);
 
-        static const Renderer::Vulkan::Instance* GetInstance() { return &mInstance; }
-        static const Renderer::Vulkan::PhysicalDevice* GetPhysDevice() { return &mPhysicalDevice; }
-        static const std::vector<const char*>& GetValidationLayers() { return mValidationLayers; }
-        static const Renderer::Vulkan::WindowSurface* GetWindowSurface() { return &mWindowSurface; }
-        static const Renderer::Vulkan::LogicalDevice* GetLogicalDevice() { return &mLogicalDevice; }
-        static const Renderer::Vulkan::SwapChain* GetSwapChain() { return &mSwapChain; }
-        static const Renderer::Vulkan::ImageViews* GetImageViews() { return &mImageViews; }
-        static const Renderer::Vulkan::RenderPass* GetRenderPass() { return &mRenderPass; }
-        static const Renderer::Vulkan::Pipeline* GetPipeline() { return &mPipeline; }
-        static const std::vector<Renderer::Vulkan::Framebuffer>& GetFramebuffers() { return mFramebuffers; }
-        static const Renderer::Vulkan::CommandPool* GetCommandPool() { return &mCommandPool; }
-        static const Renderer::Vulkan::CommandBuffer* GetCommandBuffer() { return &mCommandBuffer; }
-        static VkQueue* GetQueuePtr() { return &mGraphicsQueue; }
-        static VkQueue GetQueue() { return mGraphicsQueue; }
-        static VkQueue GetPresentQueue() { return mPresentQueue; }
-        static VkQueue* GetPresentQueuePtr() { return &mPresentQueue; }
-        static VkSemaphore GetImageAvaibleSemaphores() { return mImageAvailableSemaphores; }
-        static VkSemaphore GetRenderFinishedSemaphores() { return mRenderFinishedSemaphores; }
-        static VkFence GetInFlightFence() { return mInFlightFence; }
+        static const Renderer::Vulkan::Instance* GetInstance();
+        static const Renderer::Vulkan::PhysicalDevice* GetPhysDevice();
+        static const std::vector<const char*>& GetValidationLayers();
+        static const Renderer::Vulkan::WindowSurface* GetWindowSurface();
+        static const Renderer::Vulkan::LogicalDevice* GetLogicalDevice();
+        static const Renderer::Vulkan::SwapChain* GetSwapChain();
+        static const Renderer::Vulkan::ImageViews* GetImageViews();
+        static const Renderer::Vulkan::RenderPass* GetRenderPass();
+        static const Renderer::Vulkan::Pipeline* GetPipeline();
+        static const std::vector<Renderer::Vulkan::Framebuffer>& GetFramebuffers();
+        static const Renderer::Vulkan::CommandPool* GetCommandPool();
+        static const Renderer::Vulkan::CommandBuffer* GetCommandBuffer();
+        static const Renderer::Vulkan::UniformBuffer* GetUniformBuffer();
+        static const Renderer::Vulkan::DescriptorPool* GetDescriptorPool();
+        static const Renderer::Vulkan::DescriptorSet* GetDescriptorSet();
+        static VkQueue* GetGraphicsQueuePtr();
+        static VkQueue GetGraphicsQueue();
+        static VkQueue GetPresentQueue();
+        static VkQueue* GetPresentQueuePtr();
+        static VkSemaphore GetImageAvaibleSemaphores();
+        static VkSemaphore GetRenderFinishedSemaphores();
+        static VkFence GetInFlightFence();
         static void UpdateCurrentImageIndex();
         static uint32_t GetCurrentImageIndex();
+        static std::vector<VkVertexInputBindingDescription>& GetVertexInputBindingDescriptions();
+
+        static std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions();
+
+        static std::vector<Renderer::Vulkan::DescriptorSetLayout>& GetDescriptorSetLayouts();
     private:
         static void CreateFramebuffers();
         static void DestroyFramebuffers();
@@ -93,14 +115,17 @@ namespace oe::Core
         static void CreateAsyncObjects();
         static void DesrtoyAsyncObjects();
 
-        inline static std::vector<VkShaderModule> mVertShaders;
-        inline static std::vector<VkShaderModule> mFragShaders;
+        static std::vector<VkShaderModule> mVertShaders;
+        static std::vector<VkShaderModule> mFragShaders;
+        static std::vector<Renderer::Vulkan::DescriptorSetLayout> mDescriptorSetLayouts;
+        inline static std::vector<VkVertexInputBindingDescription> mVertexInputBindingDescriptions{};
+        inline static std::vector<VkVertexInputAttributeDescription> mVertexInputAttributeDescriptions{};
 
         inline static VkQueue mGraphicsQueue{};
         inline static VkQueue mPresentQueue{};
-        inline static VkSemaphore mImageAvailableSemaphores;
-        inline static VkSemaphore mRenderFinishedSemaphores;
-        inline static VkFence mInFlightFence;
+        inline static VkSemaphore mImageAvailableSemaphores{};
+        inline static VkSemaphore mRenderFinishedSemaphores{};
+        inline static VkFence mInFlightFence{};
 
         static Renderer::Vulkan::Instance mInstance;
         static Renderer::Vulkan::PhysicalDevice mPhysicalDevice;
@@ -113,7 +138,10 @@ namespace oe::Core
         static std::vector<Renderer::Vulkan::Framebuffer> mFramebuffers;
         static Renderer::Vulkan::CommandPool mCommandPool;
         static Renderer::Vulkan::CommandBuffer mCommandBuffer;
-        inline static std::vector<const char*> mValidationLayers = { "VK_LAYER_KHRONOS_validation" };
+        static Renderer::Vulkan::UniformBuffer mUniformBuffer;
+        static Renderer::Vulkan::DescriptorPool mDescriptorPool;
+        static Renderer::Vulkan::DescriptorSet mDescriptorSet;
+        inline static std::vector<const char*> mValidationLayers = { "VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_monitor" };
         inline static uint32_t mCurrentImageIndex{};
     };
 }

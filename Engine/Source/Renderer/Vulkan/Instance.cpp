@@ -63,7 +63,7 @@ namespace oe::Renderer::Vulkan
         return &mVkInstance;
     }
 
-    const VkInstance Instance::Get() const
+    VkInstance Instance::Get() const
     {
         return mVkInstance;
     }

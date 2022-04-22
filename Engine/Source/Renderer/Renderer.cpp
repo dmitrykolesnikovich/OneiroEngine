@@ -16,6 +16,7 @@
 void oe::Renderer::PreInit()
 {
     stbi_set_flip_vertically_on_load(1);
+    Core::Root::Vulkan::PreInit();
     //GuiLayer::PreInit();
 }
 
@@ -67,7 +68,7 @@ void oe::Renderer::Vulkan::EndScene()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if (vkQueueSubmit(Core::Root::Vulkan::GetQueue(), 1, &submitInfo, Core::Root::Vulkan::GetInFlightFence()) != VK_SUCCESS) {
+    if (vkQueueSubmit(Core::Root::Vulkan::GetGraphicsQueue(), 1, &submitInfo, Core::Root::Vulkan::GetInFlightFence()) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer!");
     }
 

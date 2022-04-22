@@ -14,7 +14,7 @@ namespace oe::Renderer::Vulkan
     public:
         void Create(bool enableValidationLayer = true);
 
-        const VkInstance Get() const;
+        [[nodiscard]] VkInstance Get() const;
         [[nodiscard]] const VkInstance* GetPtr() const;
 
         void Destroy() const;
