@@ -1,7 +1,14 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/Buffer.hpp"
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include <stdexcept>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -68,7 +75,7 @@ namespace oe::Renderer::Vulkan
     uint32_t Buffer::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
     {
         VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(Core::Root::Vulkan::GetPhysDevice()->Get(), &memProperties);
+        vkGetPhysicalDeviceMemoryProperties(GetPhysDevice()->Get(), &memProperties);
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
             if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
                 return i;

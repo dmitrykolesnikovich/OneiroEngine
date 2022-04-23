@@ -1,10 +1,14 @@
-#include <iostream>
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
 
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
-#include "Oneiro/Core/Root.hpp"
 
 #include <stdexcept>
 #include <vector>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace
 {
@@ -40,8 +44,8 @@ namespace oe::Renderer::Vulkan
 
         if (useValidationLayers)
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(Core::Root::Vulkan::GetValidationLayers().size());
-            createInfo.ppEnabledLayerNames = Core::Root::Vulkan::GetValidationLayers().data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(GetValidationLayers().size());
+            createInfo.ppEnabledLayerNames = GetValidationLayers().data();
         }
         else {
             createInfo.enabledLayerCount = 0;

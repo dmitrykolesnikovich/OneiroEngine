@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
 #include <algorithm>
 #include <stdexcept>
@@ -5,13 +10,14 @@
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 
 namespace oe::Renderer::Vulkan
 {
     void SwapChain::Create()
     {
-        const auto& physDevice = Core::Root::Vulkan::GetPhysDevice()->Get();
+        const auto& physDevice = GetPhysDevice()->Get();
         const auto& capabilities = PhysicalDevice::GetSurfaceCapabilities(physDevice);
         const auto& presentModes = PhysicalDevice::GetPresentModes(physDevice);
         const auto& surfaceFormats = PhysicalDevice::GetSurfaceFormats(physDevice);
@@ -27,7 +33,7 @@ namespace oe::Renderer::Vulkan
 
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = Core::Root::Vulkan::GetWindowSurface()->Get();
+        createInfo.surface = GetWindowSurface()->Get();
         createInfo.minImageCount = imageCount;
         createInfo.imageFormat = surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -54,14 +60,14 @@ namespace oe::Renderer::Vulkan
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(Core::Root::Vulkan::GetLogicalDevice()->Get(), &createInfo,
+        if (vkCreateSwapchainKHR(GetLogicalDevice()->Get(), &createInfo,
             nullptr, &mSwapchain) != VK_SUCCESS) {
             throw std::runtime_error("failed to create swap chain!");
         }
-        vkGetSwapchainImagesKHR(Core::Root::Vulkan::GetLogicalDevice()->Get(), mSwapchain,
+        vkGetSwapchainImagesKHR(GetLogicalDevice()->Get(), mSwapchain,
             &imageCount, nullptr);
         mSwapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(Core::Root::Vulkan::GetLogicalDevice()->Get(), mSwapchain,
+        vkGetSwapchainImagesKHR(GetLogicalDevice()->Get(), mSwapchain,
             &imageCount, mSwapChainImages.data());
         mSwapChainImageFormat = surfaceFormat.format;
         mSwapChainExtent = extent;
@@ -69,7 +75,7 @@ namespace oe::Renderer::Vulkan
 
     void SwapChain::Destroy()
     {
-        vkDestroySwapchainKHR(Core::Root::Vulkan::GetLogicalDevice()->Get(), mSwapchain, nullptr);
+        vkDestroySwapchainKHR(GetLogicalDevice()->Get(), mSwapchain, nullptr);
     }
 
     const std::vector<VkImage>& SwapChain::GetImages() const

@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/WindowSurface.hpp"
 
 #include "Oneiro/Core/Root.hpp"
@@ -8,13 +13,14 @@
 
 #include <stdexcept>
 
+#include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 
 namespace oe::Renderer::Vulkan
 {
     void WindowSurface::Destroy() const
     {
-        vkDestroySurfaceKHR(Core::Root::Vulkan::GetInstance()->Get(), mSurface, nullptr);
+        vkDestroySurfaceKHR(GetInstance()->Get(), mSurface, nullptr);
     }
 
     VkSurfaceKHR WindowSurface::Get() const
@@ -34,10 +40,10 @@ namespace oe::Renderer::Vulkan
         createInfo.hwnd = glfwGetWin32Window(window);
         createInfo.hinstance = GetModuleHandle(nullptr);
 
-        if (vkCreateWin32SurfaceKHR(Core::Root::Vulkan::GetInstance()->Get(), &createInfo, nullptr, &mSurface) != VK_SUCCESS) {
+        if (vkCreateWin32SurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create window surface!");
         }
-        /*if (glfwCreateWindowSurface(Core::Root::Vulkan::GetInstance()->Get(), window, nullptr, &mSurface) != VK_SUCCESS) {
+        /*if (glfwCreateWindowSurface(GetInstance()->Get(), window, nullptr, &mSurface) != VK_SUCCESS) {
                 throw std::runtime_error("Failed to create window surface!");
             }*/
     }

@@ -1,9 +1,14 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/ValidationLayers.hpp"
 
 #include <iostream>
 
 #include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace
 {
@@ -42,7 +47,7 @@ namespace oe::Renderer::Vulkan
     void ValidationLayers::Destroy() const
     {
         if (mDebugUtilsMessenger != VK_NULL_HANDLE)
-            DestroyDebugUtilsMessengerEXT(Core::Root::Vulkan::GetInstance()->Get(),
+            DestroyDebugUtilsMessengerEXT(GetInstance()->Get(),
                 mDebugUtilsMessenger, nullptr);
     }
 
@@ -54,7 +59,7 @@ namespace oe::Renderer::Vulkan
         std::vector<VkLayerProperties> availableLayers(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-        for (const char* layerName : Core::Root::Vulkan::GetValidationLayers()) {
+        for (const char* layerName : GetValidationLayers()) {
             bool layerFound = false;
 
             for (const auto& layerProperties : availableLayers) {
@@ -91,7 +96,7 @@ namespace oe::Renderer::Vulkan
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         PopulateCreateInfo(createInfo);
 
-        if (CreateDebugUtilsMessengerEXT(Core::Root::Vulkan::GetInstance()->Get(), &createInfo, nullptr, &mDebugUtilsMessenger) != VK_SUCCESS) {
+        if (CreateDebugUtilsMessengerEXT(GetInstance()->Get(), &createInfo, nullptr, &mDebugUtilsMessenger) != VK_SUCCESS) {
             throw std::runtime_error("Failed to set up debug messenger!");
         }
     }

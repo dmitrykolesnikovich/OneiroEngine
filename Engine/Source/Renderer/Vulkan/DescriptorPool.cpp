@@ -1,7 +1,13 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/DescriptorPool.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
-#include "Oneiro/Core/Root.hpp"
 #include <stdexcept>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -16,7 +22,7 @@ namespace oe::Renderer::Vulkan
         poolInfo.pPoolSizes = &poolSize;
         poolInfo.maxSets = 1;
 
-        if (vkCreateDescriptorPool(Core::Root::Vulkan::GetLogicalDevice()->Get(), 
+        if (vkCreateDescriptorPool(GetLogicalDevice()->Get(), 
                                    &poolInfo, nullptr, &mDescriptorPool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor pool!");
         }
@@ -24,7 +30,7 @@ namespace oe::Renderer::Vulkan
 
     void DescriptorPool::Destroy()
     {
-        vkDestroyDescriptorPool(Core::Root::Vulkan::GetLogicalDevice()->Get(), mDescriptorPool, nullptr);
+        vkDestroyDescriptorPool(GetLogicalDevice()->Get(), mDescriptorPool, nullptr);
     }
 
     VkDescriptorPool DescriptorPool::Get() const { return mDescriptorPool;}

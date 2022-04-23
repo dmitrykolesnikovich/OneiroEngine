@@ -1,21 +1,27 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/ImageViews.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
-#include "Oneiro/Core/Root.hpp"
 #include <stdexcept>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
     void ImageViews::Create()
     {
-        const auto swapChainImages = Core::Root::Vulkan::GetSwapChain()->GetImages();
+        const auto swapChainImages = GetSwapChain()->GetImages();
         swapChainImageViews.resize(swapChainImages.size());
         for (size_t i = 0; i < swapChainImages.size(); i++) {
             VkImageViewCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
             createInfo.image = swapChainImages[i];
             createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = Core::Root::Vulkan::GetSwapChain()->GetImageFormat();
+            createInfo.format = GetSwapChain()->GetImageFormat();
             createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
             createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -25,7 +31,7 @@ namespace oe::Renderer::Vulkan
             createInfo.subresourceRange.levelCount = 1;
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
-            if (vkCreateImageView(Core::Root::Vulkan::GetLogicalDevice()->Get(), &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
+            if (vkCreateImageView(GetLogicalDevice()->Get(), &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create image views!");
             }
         }
@@ -34,7 +40,7 @@ namespace oe::Renderer::Vulkan
     void ImageViews::Destroy()
     {
         for (auto imageView : swapChainImageViews) {
-            vkDestroyImageView(Core::Root::Vulkan::GetLogicalDevice()->Get(), imageView, nullptr);
+            vkDestroyImageView(GetLogicalDevice()->Get(), imageView, nullptr);
         }
     }
 

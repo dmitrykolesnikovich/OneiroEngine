@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 
 #include <map>
@@ -5,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 
 namespace oe::Renderer::Vulkan
@@ -83,7 +89,7 @@ namespace oe::Renderer::Vulkan
     void PhysicalDevice::Create()
     {
         uint32_t deviceCount = 0;
-        const auto instance = Core::Root::Vulkan::GetInstance()->Get();
+        const auto instance = GetInstance()->Get();
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
         if (deviceCount == 0)
             throw std::runtime_error("Failed to find GPUs with Vulkan support!");
@@ -124,7 +130,7 @@ namespace oe::Renderer::Vulkan
         int i = 0;
         for (const auto& queueFamily : queueFamilies) {
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, Core::Root::Vulkan::GetWindowSurface()->Get(), &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface()->Get(), &presentSupport);
             if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.GraphicsFamily = i;
             }
@@ -180,14 +186,14 @@ namespace oe::Renderer::Vulkan
     VkSurfaceCapabilitiesKHR PhysicalDevice::GetSurfaceCapabilities(VkPhysicalDevice device)
     {
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, Core::Root::Vulkan::GetWindowSurface()->Get(), &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, GetWindowSurface()->Get(), &capabilities);
         return capabilities;
     }
 
     std::vector<VkSurfaceFormatKHR> PhysicalDevice::GetSurfaceFormats(VkPhysicalDevice device)
     {
         std::vector<VkSurfaceFormatKHR> formats;
-        const auto surface = oe::Core::Root::Vulkan::GetWindowSurface()->Get();
+        const auto surface = GetWindowSurface()->Get();
         uint32_t formatCount;
         vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
 
@@ -202,7 +208,7 @@ namespace oe::Renderer::Vulkan
     std::vector<VkPresentModeKHR> PhysicalDevice::GetPresentModes(VkPhysicalDevice device)
     {
         std::vector<VkPresentModeKHR> presentModes;
-        const auto surface = oe::Core::Root::Vulkan::GetWindowSurface()->Get();
+        const auto surface = GetWindowSurface()->Get();
         uint32_t presentModeCount;
         vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
 

@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #pragma once
 
 #include "Base.hpp"
@@ -13,7 +18,7 @@ namespace oe::Renderer::Vulkan
             const std::vector<VkShaderModule>& fragShaderModules);
 
         void Bind() const;
-        VkPipelineLayout GetLayout() const { return mPipelineLayout; }
+        [[nodiscard]] VkPipelineLayout GetLayout() const { return mPipelineLayout; }
         void Destroy();
     private:
         VkPipelineLayout mPipelineLayout{};

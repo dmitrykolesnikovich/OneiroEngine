@@ -10,7 +10,6 @@
 #include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Window.hpp"
-//#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -22,15 +21,6 @@ namespace oe::Runtime
         Core::Init();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
-        /*std::string glVersion = Core::Root::GetConfig("renderer")->GetValue("GL_VERSION");
-        if (glVersion == "None")
-        {
-            glVersion = "3.3";
-            Core::Root::GetConfig("renderer")->WriteData("GL_VERSION", glVersion);
-        }
-        mRoot->SetGLVersion(glVersion);
-        mRoot->SetGLSLVersion(std::to_string(std::atoi(&glVersion[0])) +
-							  std::to_string(std::atoi(&glVersion[2])) + "0");*/
     }
 
     void Engine::Run(const std::shared_ptr<Application>& app)
@@ -51,14 +41,12 @@ namespace oe::Runtime
         Window::SetFramerate(1);
         SetupEvents();
 
-        Renderer::PreInit();
+        Renderer::Vulkan::PreInit();
 
         if (!app->Init())
             throw std::runtime_error("Failed to initialize application!");
 
-        Renderer::Init();
-
-        //mRoot->LoadTexturesAsync();
+        Renderer::Vulkan::Init();
 
     	while (!mWindow->IsClosed())
         {
@@ -67,13 +55,9 @@ namespace oe::Runtime
 
             Window::PollEvents();
 
-            //Renderer::GuiLayer::NewFrame();
-
             if (!app->Update())
                 break;
-
-            //Renderer::GuiLayer::Draw();
-
+            
             mWindow->SwapBuffers();
         }
 
@@ -85,7 +69,7 @@ namespace oe::Runtime
         delete mWindow;
         delete mRoot;
 
-        Renderer::Shutdown();
+        Renderer::Vulkan::Shutdown();
         Core::Shutdown();
     }
 

@@ -1,8 +1,15 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/Shader.hpp"
 #include <fstream>
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include <vector>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -24,17 +31,17 @@ namespace oe::Renderer::Vulkan
         createInfo.codeSize = buffer.size();
         createInfo.pCode = reinterpret_cast<const uint32_t*>(buffer.data());
         VkShaderModule shaderModule;
-        if (vkCreateShaderModule(Core::Root::Vulkan::GetLogicalDevice()->Get(),
+        if (vkCreateShaderModule(GetLogicalDevice()->Get(),
             &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
             throw std::runtime_error("failed to create shader module!");
         }
         switch (shaderType)
         {
         case VERTEX:
-            Core::Root::Vulkan::AddVertexShader(shaderModule);
+            AddVertexShader(shaderModule);
             break;
         case FRAGMENT: 
-            Core::Root::Vulkan::AddFragmentShader(shaderModule);
+            AddFragmentShader(shaderModule);
             break;
         default:
             break;
@@ -47,7 +54,7 @@ namespace oe::Renderer::Vulkan
         bindingDescription.binding = binding;
         bindingDescription.stride = stride;
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        Core::Root::Vulkan::GetVertexInputBindingDescriptions().push_back(bindingDescription);
+        GetVertexInputBindingDescriptions().push_back(bindingDescription);
     }
 
     void Shader::AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset)
@@ -57,6 +64,6 @@ namespace oe::Renderer::Vulkan
         attributeDescriptions.location = location;
         attributeDescriptions.format = format;
         attributeDescriptions.offset = offset;
-        Core::Root::Vulkan::GetVertexInputAttributeDescriptions().push_back(attributeDescriptions);
+        GetVertexInputAttributeDescriptions().push_back(attributeDescriptions);
     }
 }

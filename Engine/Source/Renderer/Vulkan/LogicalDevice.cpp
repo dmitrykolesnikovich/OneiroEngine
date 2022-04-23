@@ -1,9 +1,14 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 
 #include <stdexcept>
 
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
-#include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -13,22 +18,22 @@ namespace oe::Renderer::Vulkan
 
     void LogicalDevice::Create(bool enableValidationLayers)
     {
-        const auto physicalDevice = Core::Root::Vulkan::GetPhysDevice();
+        const auto physicalDevice = GetPhysDevice();
 
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        auto& queueCreateInfos = Core::Root::Vulkan::GetPhysDevice()->GetQueueInfos();
+        auto& queueCreateInfos = GetPhysDevice()->GetQueueInfos();
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
-        createInfo.pEnabledFeatures = Core::Root::Vulkan::GetPhysDevice()->GetFeaturesPtr();
+        createInfo.pEnabledFeatures = GetPhysDevice()->GetFeaturesPtr();
 
         createInfo.enabledExtensionCount = static_cast<uint32_t>(physicalDevice->GetExtensions().size());
         createInfo.ppEnabledExtensionNames = physicalDevice->GetExtensions().data();
 
         if (enableValidationLayers) {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(Core::Root::Vulkan::GetValidationLayers().size());
-            createInfo.ppEnabledLayerNames = Core::Root::Vulkan::GetValidationLayers().data();
+            createInfo.enabledLayerCount = static_cast<uint32_t>(GetValidationLayers().size());
+            createInfo.ppEnabledLayerNames = GetValidationLayers().data();
         }
         else {
             createInfo.enabledLayerCount = 0;
@@ -37,9 +42,9 @@ namespace oe::Renderer::Vulkan
         if (vkCreateDevice(physicalDevice->Get(), &createInfo, nullptr, &mDevice) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create logical device!");
         }
-        vkGetDeviceQueue(mDevice, Core::Root::Vulkan::GetPhysDevice()->GetQueueFamilyIndices().GraphicsFamily.value(),
-            0, Core::Root::Vulkan::GetGraphicsQueuePtr());
-        vkGetDeviceQueue(mDevice, Core::Root::Vulkan::GetPhysDevice()->GetQueueFamilyIndices().PresentFamily.value(),
-            0, Core::Root::Vulkan::GetPresentQueuePtr());
+        vkGetDeviceQueue(mDevice, GetPhysDevice()->GetQueueFamilyIndices().GraphicsFamily.value(),
+            0, GetGraphicsQueuePtr());
+        vkGetDeviceQueue(mDevice, GetPhysDevice()->GetQueueFamilyIndices().PresentFamily.value(),
+            0, GetPresentQueuePtr());
     }
 }

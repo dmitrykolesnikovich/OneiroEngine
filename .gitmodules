@@ -11,3 +11,6 @@
 [submodule "ThirdParty/spdlog"]
 	path = ThirdParty/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "ThirdParty/vulkan-hpp"]
+	path = ThirdParty/vulkan-hpp
+	url = https://github.com/KhronosGroup/Vulkan-Hpp.git

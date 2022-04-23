@@ -1,12 +1,17 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/Pipeline.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-#include "Oneiro/Core/Root.hpp"
 #include <vector>
 #include <stdexcept>
 
+#include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
 
 namespace oe::Renderer::Vulkan
@@ -15,7 +20,7 @@ namespace oe::Renderer::Vulkan
         const std::vector<VkShaderModule>& fragShaderModules)
     {
         std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
-        const auto& device = Core::Root::Vulkan::GetLogicalDevice()->Get();
+        const auto& device = GetLogicalDevice()->Get();
 
         for (const auto& vertShaderModule : vertShaderModules)
         {
@@ -41,8 +46,8 @@ namespace oe::Renderer::Vulkan
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        const auto& vertexBindingDescriptions = Core::Root::Vulkan::GetVertexInputBindingDescriptions();
-        const auto& vertexAttributeDescriptions = Core::Root::Vulkan::GetVertexInputAttributeDescriptions();
+        const auto& vertexBindingDescriptions = GetVertexInputBindingDescriptions();
+        const auto& vertexAttributeDescriptions = GetVertexInputAttributeDescriptions();
         vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexBindingDescriptions.size());
         vertexInputInfo.pVertexBindingDescriptions = vertexBindingDescriptions.data(); 
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexAttributeDescriptions.size());
@@ -54,13 +59,13 @@ namespace oe::Renderer::Vulkan
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = static_cast<float>(Core::Root::Vulkan::GetSwapChain()->GetExtent2D().width);
-        viewport.height = static_cast<float>(Core::Root::Vulkan::GetSwapChain()->GetExtent2D().height);
+        viewport.width = static_cast<float>(GetSwapChain()->GetExtent2D().width);
+        viewport.height = static_cast<float>(GetSwapChain()->GetExtent2D().height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         VkRect2D scissor{};
         scissor.offset = { 0, 0 };
-        scissor.extent = Core::Root::Vulkan::GetSwapChain()->GetExtent2D();
+        scissor.extent = GetSwapChain()->GetExtent2D();
         VkPipelineViewportStateCreateInfo viewportState{};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
@@ -120,7 +125,7 @@ namespace oe::Renderer::Vulkan
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        const auto& descriptorSetLayouts = Core::Root::Vulkan::GetDescriptorSetLayouts();
+        const auto& descriptorSetLayouts = GetDescriptorSetLayouts();
         pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size(); 
         pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data()->GetPtr(); 
         pipelineLayoutInfo.pushConstantRangeCount = 0; 
@@ -144,7 +149,7 @@ namespace oe::Renderer::Vulkan
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = nullptr; 
         pipelineInfo.layout = mPipelineLayout;
-        pipelineInfo.renderPass = Core::Root::Vulkan::GetRenderPass()->Get();
+        pipelineInfo.renderPass = GetRenderPass()->Get();
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; 
         pipelineInfo.basePipelineIndex = -1; 
@@ -158,13 +163,13 @@ namespace oe::Renderer::Vulkan
 
     void Pipeline::Bind() const
     {
-        vkCmdBindPipeline(Core::Root::Vulkan::GetCommandBuffer()->Get(),
+        vkCmdBindPipeline(GetCommandBuffer()->Get(),
             VK_PIPELINE_BIND_POINT_GRAPHICS, mGraphicsPipeline);
     }
 
     void Pipeline::Destroy()
     {
-        vkDestroyPipeline(Core::Root::Vulkan::GetLogicalDevice()->Get(), mGraphicsPipeline, nullptr);
-        vkDestroyPipelineLayout(Core::Root::Vulkan::GetLogicalDevice()->Get(), mPipelineLayout, nullptr);
+        vkDestroyPipeline(GetLogicalDevice()->Get(), mGraphicsPipeline, nullptr);
+        vkDestroyPipelineLayout(GetLogicalDevice()->Get(), mPipelineLayout, nullptr);
     }
 }

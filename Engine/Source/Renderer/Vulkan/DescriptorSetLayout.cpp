@@ -1,7 +1,13 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
-#include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include <stdexcept>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -17,7 +23,7 @@ namespace oe::Renderer::Vulkan
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = 1;
         layoutInfo.pBindings = &uboLayoutBinding;
-        if (vkCreateDescriptorSetLayout(Core::Root::Vulkan::GetLogicalDevice()->Get(), &layoutInfo, 
+        if (vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, 
                                         nullptr, &mDescriptorSetLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor set layout!");
         }
@@ -35,7 +41,7 @@ namespace oe::Renderer::Vulkan
 
     void DescriptorSetLayout::Destroy()
     {
-        vkDestroyDescriptorSetLayout(Core::Root::Vulkan::GetLogicalDevice()->Get(),
+        vkDestroyDescriptorSetLayout(GetLogicalDevice()->Get(),
                                      mDescriptorSetLayout, nullptr);
     }
 }

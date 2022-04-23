@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/IndexBuffer.hpp"
 
 namespace oe::Renderer::Vulkan
@@ -11,8 +16,8 @@ namespace oe::Renderer::Vulkan
 
     void IndexBuffer::Destroy()
     {
-        vkDeviceWaitIdle(Core::Root::Vulkan::GetLogicalDevice()->Get());
-        vkDestroyBuffer(Core::Root::Vulkan::GetLogicalDevice()->Get(), mBuffer, nullptr);
-        vkFreeMemory(Core::Root::Vulkan::GetLogicalDevice()->Get(), mBufferMemory, nullptr);
+        vkDeviceWaitIdle(GetLogicalDevice()->Get());
+        vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
+        vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
     }
 }

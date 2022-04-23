@@ -1,8 +1,14 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
-#include "Oneiro/Core/Root.hpp"
 #include <stdexcept>
+
+#include "Oneiro/Renderer/Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
@@ -10,11 +16,11 @@ namespace oe::Renderer::Vulkan
     {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = Core::Root::Vulkan::GetCommandPool()->Get();
+        allocInfo.commandPool = GetCommandPool()->Get();
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = 1;
 
-        if (vkAllocateCommandBuffers(Core::Root::Vulkan::GetLogicalDevice()->Get(), &allocInfo, &mCommandBuffer) != VK_SUCCESS) {
+        if (vkAllocateCommandBuffers(GetLogicalDevice()->Get(), &allocInfo, &mCommandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate command buffers!");
         }
     }

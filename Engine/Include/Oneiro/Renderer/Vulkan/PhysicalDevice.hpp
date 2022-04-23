@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #pragma once
 
 #include "Oneiro/Core/Root.hpp"
@@ -44,7 +49,6 @@ namespace oe::Renderer::Vulkan
         VkPhysicalDeviceProperties mDeviceProperties{};
         VkPhysicalDeviceFeatures mDeviceFeatures{};
         QueueFamilyIndices mQueueFamilyIndices{};
-        VkQueue mPresentQueue{};
         std::vector<VkDeviceQueueCreateInfo> mQueueCreateInfos;
         std::vector<const char*> mDeviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
