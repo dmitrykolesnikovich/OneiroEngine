@@ -119,12 +119,8 @@ namespace oe::Renderer::Vulkan
 	VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 	{
 		for (const auto& availablePresentMode : availablePresentModes)
-		{
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-			{
 				return availablePresentMode;
-			}
-		}
 
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
@@ -132,15 +128,11 @@ namespace oe::Renderer::Vulkan
 	VkExtent2D SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const
 	{
 		if (capabilities.currentExtent.width != UINT_MAX)
-		{
 			return capabilities.currentExtent;
-		}
-		int width, height;
-		glfwGetFramebufferSize(Core::Root::GetWindow()->GetGLFW(), &width, &height);
 
 		VkExtent2D actualExtent = {
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
+			static_cast<uint32_t>(Core::Root::GetWindow()->GetWidth()),
+			static_cast<uint32_t>(Core::Root::GetWindow()->GetHeight())
 		};
 
 		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
