@@ -78,7 +78,8 @@ namespace oe::Runtime
 		Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
 		{
 			const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-			Window::UpdateSize(resizeEvent.Width, resizeEvent.Height);
+			if (resizeEvent.Width > 0 || resizeEvent.Height > 0)
+				Window::UpdateSize(resizeEvent.Width, resizeEvent.Height);
 		});
 
 		Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
