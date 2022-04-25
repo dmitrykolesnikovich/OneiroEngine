@@ -5,20 +5,20 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
 #include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-    class ImageViews
-    {
-    public:
-        void Create();
+	class ImageViews
+	{
+	public:
+		void Create();
 
-        void Destroy();
+		void Destroy();
 
-        [[nodiscard]] const std::vector<VkImageView>& Get() const;
-    private:
-        std::vector<VkImageView> swapChainImageViews;
-    };
+		[[nodiscard]] const std::vector<VkImageView>& Get() const;
+	private:
+		std::vector<VkImageView> mSwapChainImageViews;
+	};
 }

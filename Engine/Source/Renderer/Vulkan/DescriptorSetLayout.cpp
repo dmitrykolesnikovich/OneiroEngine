@@ -11,37 +11,41 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void DescriptorSetLayout::Create(int binding, VkDescriptorType type, VkShaderStageFlags stageFlags)
-    {
-        VkDescriptorSetLayoutBinding uboLayoutBinding{};
-        uboLayoutBinding.binding = binding;
-        uboLayoutBinding.descriptorType = type;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = stageFlags;
-        uboLayoutBinding.pImmutableSamplers = nullptr; 
-        VkDescriptorSetLayoutCreateInfo layoutInfo{};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = 1;
-        layoutInfo.pBindings = &uboLayoutBinding;
-        if (vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, 
-                                        nullptr, &mDescriptorSetLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor set layout!");
-        }
-    }
+	void DescriptorSetLayout::AddBinding(int binding, VkDescriptorType type, VkShaderStageFlagBits stage)
+	{
+		VkDescriptorSetLayoutBinding layout{};
+		layout.binding = binding;
+		layout.descriptorCount = 1;
+		layout.descriptorType = type;
+		layout.pImmutableSamplers = nullptr;
+		layout.stageFlags = stage;
 
-    VkDescriptorSetLayout DescriptorSetLayout::Get() const
-    {
-        return mDescriptorSetLayout;
-    }
+		mBindings.push_back(layout);
+	}
 
-    const VkDescriptorSetLayout* DescriptorSetLayout::GetPtr() const
-    {
-        return &mDescriptorSetLayout;
-    }
+	void DescriptorSetLayout::Create()
+	{
+		VkDescriptorSetLayoutCreateInfo layoutInfo{};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = mBindings.size();
+		layoutInfo.pBindings = mBindings.data();
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo,
+			                nullptr, &mDescriptorSetLayout), "Failed to create descriptor set layout!")
+	}
 
-    void DescriptorSetLayout::Destroy()
-    {
-        vkDestroyDescriptorSetLayout(GetLogicalDevice()->Get(),
-                                     mDescriptorSetLayout, nullptr);
-    }
+	VkDescriptorSetLayout DescriptorSetLayout::Get() const
+	{
+		return mDescriptorSetLayout;
+	}
+
+	const VkDescriptorSetLayout* DescriptorSetLayout::GetPtr() const
+	{
+		return &mDescriptorSetLayout;
+	}
+
+	void DescriptorSetLayout::Destroy()
+	{
+		vkDestroyDescriptorSetLayout(GetLogicalDevice()->Get(),
+		                             mDescriptorSetLayout, nullptr);
+	}
 }

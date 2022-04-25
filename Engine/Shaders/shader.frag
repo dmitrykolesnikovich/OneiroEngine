@@ -1,15 +1,11 @@
 #version 450
 
-layout(location = 0) in vec2 WindowSize;
-layout(location = 1) in float uDelta;
+layout(location = 0) in vec2 fragTexCoord;
 
 layout(location = 0) out vec4 FragColor;
 
+layout(binding = 1) uniform sampler2D texSampler;
+
 void main() {
-    vec2 uv = gl_FragCoord.xy / WindowSize;
-    vec4 color = vec4(0);
-    color.rg += cos(uv + uDelta) * cos(uDelta);
-    color.gb += sin(uv + uDelta) * sin(uDelta);
-    FragColor = color;
-    FragColor.a = 1.0;
+    FragColor = texture(texSampler, fragTexCoord);
 }

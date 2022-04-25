@@ -5,16 +5,22 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
+#include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-    class DescriptorSet
-    {
-    public:
-        void Create(VkBuffer buffer, int binding, VkDeviceSize size, const VkDescriptorSetLayout* layout, VkDescriptorPool pool);
-        void Bind() const;
-    private:
-        VkDescriptorSet mDescriptorSet{};
-    };
+	class DescriptorSet
+	{
+	public:
+		void Begin(VkDescriptorPool pool, const VkDescriptorSetLayout* layout);
+		void AddBufferWriteDescriptor(int binding, VkBuffer buffer, VkDeviceSize bufferSize);
+		void AddImageWriteDescriptor(int binding, VkImageView imageView, VkSampler imageSampler);
+		void End();
+
+		void Bind() const;
+	private:
+		std::vector<VkWriteDescriptorSet> mDescriptorWrites;
+		VkDescriptorSet mDescriptorSet{};
+	};
 }

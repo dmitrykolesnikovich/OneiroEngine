@@ -7,26 +7,34 @@
 
 #include <unordered_map>
 
-namespace oe::Core { class Window; class Config; }
-namespace oe::Runtime { class Engine; class Application; }
+namespace oe::Core
+{
+	class Window;
+	class Config;
+}
+
+namespace oe::Runtime
+{
+	class Engine;
+	class Application;
+}
 
 namespace oe::Core
 {
-    class Root
-    {
-    public:
-        Root();
-        ~Root();
-        class Vulkan;
-    public: // Getters
-        static Window* GetWindow();
-        static Runtime::Application* GetApplication();
-    public: // Setters (NOT STATIC!)
-        void SetApplication(Runtime::Application* app);
-        void SetWindow(Window* window);
-    private:
-        static std::unordered_map<std::string, Config*> mConfigsMap;
-        static Window* mWindowInstance;
-        static Runtime::Application* mApplicationInstance;
-    };
+	class Root
+	{
+	public:
+		Root();
+		~Root();
+	public: // Getters
+		static Window* GetWindow();
+		static Runtime::Application* GetApplication();
+	public: // Setters (NOT STATIC!)
+		void SetApplication(Runtime::Application* app);
+		void SetWindow(Window* window);
+	private:
+		static std::unordered_map<std::string, Config*> mConfigsMap;
+		static Window* mWindowInstance;
+		static Runtime::Application* mApplicationInstance;
+	};
 }

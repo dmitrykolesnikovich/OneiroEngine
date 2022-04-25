@@ -5,20 +5,20 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
-    class CommandPool
-    {
-    public:
-        void Create();
+	class CommandPool
+	{
+	public:
+		void Create();
 
-        void Destroy();
+		void Destroy();
 
-        [[nodiscard]] VkCommandPool Get() const;
-        [[nodiscard]] const VkCommandPool* GetPtr() const;
-    private:
-        VkCommandPool mCommandPool{};
-    };
+		[[nodiscard]] VkCommandPool Get() const;
+		[[nodiscard]] const VkCommandPool* GetPtr() const;
+	private:
+		VkCommandPool mCommandPool{};
+	};
 }

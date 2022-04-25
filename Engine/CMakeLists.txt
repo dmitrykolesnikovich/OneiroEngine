@@ -26,10 +26,7 @@ add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE})
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
 add_subdirectory(../ThirdParty/spdlog ThirdParty/spdlog)
-target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/OpenGL/include
-                                                  ../ThirdParty/stb/include
-                                                  ../ThirdParty/imgui
-                                                  ../ThirdParty/miniaudio/
+target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include
                                                   Include/
                                                   )
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ThirdParty/imgui Vulkan::Headers)

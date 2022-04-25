@@ -9,28 +9,57 @@
 #include "Oneiro/Renderer/Vulkan/Buffer.hpp"
 #include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
+#include "Oneiro/Renderer/Vulkan/Texture.hpp"
 
 namespace oe::Renderer::Vulkan
 {
-    void UniformBuffer::Create(int binding, VkShaderStageFlagBits stage, VkDeviceSize size)
-    {
-        Buffer::Create(GetLogicalDevice()->Get(), size, 
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                       VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,mBuffer, mBufferMemory);
-        DescriptorSetLayout layout;
-        mDescriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-        layout.Create(binding, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, stage);
-        GetDescriptorSetLayouts().push_back(layout);
-        mDescriptorSet.Create(mBuffer, binding, size, layout.GetPtr(), mDescriptorPool.Get());
-    }
+	void UniformBuffer::BeginBindings(VkDeviceSize size)
+	{
+		Buffer::Create(size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+		               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+		               VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, mBuffer, mBufferMemory);
+		mDescriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+		mDescriptorSet.Begin(mDescriptorPool.Get(), mSetLayout.GetPtr());
+	}
 
-    VkBuffer UniformBuffer::Get() const { return mBuffer; }
+	void UniformBuffer::AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture)
+	{
+		if (texture)
+		{
+			mDescriptorSet.AddImageWriteDescriptor(binding, texture->GetView(), texture->GetSampler());
+			return;
+		}
+		mDescriptorSet.AddBufferWriteDescriptor(binding, mBuffer, size);
+	}
 
-    void UniformBuffer::Destroy()
-    {
-        vkDeviceWaitIdle(GetLogicalDevice()->Get());
-        mDescriptorPool.Destroy();
-        vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
-        vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
-    }
+	void UniformBuffer::BeginLayouts()
+	{
+	}
+
+	void UniformBuffer::AddLayout(int binding, VkDescriptorType type, VkShaderStageFlagBits stage)
+	{
+		mSetLayout.AddBinding(binding, type, stage);
+	}
+
+	void UniformBuffer::EndLayouts()
+	{
+		mSetLayout.Create();
+		GetDescriptorSetLayouts().push_back(mSetLayout);
+	}
+
+	void UniformBuffer::EndBindings()
+	{
+		mDescriptorSet.End();
+	}
+
+	VkBuffer UniformBuffer::Get() const { return mBuffer; }
+
+	void UniformBuffer::Destroy()
+	{
+		const auto device = GetLogicalDevice()->Get();
+		vkDeviceWaitIdle(device);
+		mDescriptorPool.Destroy();
+		vkDestroyBuffer(device, mBuffer, nullptr);
+		vkFreeMemory(device, mBufferMemory, nullptr);
+	}
 }

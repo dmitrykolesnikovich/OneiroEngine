@@ -9,16 +9,18 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class WindowSurface
+	class MSAA
 	{
 	public:
-		void Destroy() const;
+		void Create();
 
-		[[nodiscard]] VkSurfaceKHR Get() const;
-		[[nodiscard]] const VkSurfaceKHR* GetPtr() const;
+		[[nodiscard]] VkImageView GetView() const { return mView; };
 
-		void Setup(GLFWwindow* window);
+		void Destroy();
+
 	private:
-		VkSurfaceKHR mSurface{};
+		VkImage mImage{};
+		VkDeviceMemory mDeviceMemory{};
+		VkImageView mView{};
 	};
 }

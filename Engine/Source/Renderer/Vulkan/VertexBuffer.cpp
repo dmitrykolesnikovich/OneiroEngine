@@ -9,17 +9,18 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void VertexBuffer::Bind(VkCommandBuffer commandBuffer) const
-    {
-        const VkBuffer buffers[] = { mBuffer };
-        constexpr VkDeviceSize offsets[] = {0};
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-    }
+	void VertexBuffer::Bind(VkCommandBuffer commandBuffer) const
+	{
+		const VkBuffer buffers[] = {mBuffer};
+		constexpr VkDeviceSize offsets[] = {0};
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+	}
 
-    void VertexBuffer::Destroy()
-    {
-        vkDeviceWaitIdle(GetLogicalDevice()->Get());
-        vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
-        vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
-    }
+	void VertexBuffer::Destroy()
+	{
+		const auto device = GetLogicalDevice()->Get();
+		vkDeviceWaitIdle(device);
+		vkDestroyBuffer(device, mBuffer, nullptr);
+		vkFreeMemory(device, mBufferMemory, nullptr);
+	}
 }

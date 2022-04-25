@@ -13,10 +13,10 @@ namespace oe::Core
 	{
 		try
 		{
-			if (!std::filesystem::is_directory("configs"))
-				std::filesystem::create_directory("configs");
-			mIFile.open("configs/" + file, std::ios::app);
-			mOFile.open("configs/" + file, std::ios::app);
+			if (!std::filesystem::is_directory("Configs"))
+				std::filesystem::create_directory("Configs");
+			mIFile.open("Configs/" + file, std::ios::app);
+			mOFile.open("Configs/" + file, std::ios::app);
 			if (!mIFile.is_open() || !mOFile.is_open())
 				log::get("log")->warn("Failed to open config " + file + " file!");
 		}
@@ -34,12 +34,17 @@ namespace oe::Core
 			if (line.size() >= cfg.size() && std::string(1, line[cfg.size()]) == "=")
 			{
 				mIFile.seekg(0);
-				line.erase(0, cfg.size() + 1); return line;
+				line.erase(0, cfg.size() + 1);
+				return line;
 			}
 		}
 		mIFile.seekg(0);
 		return "None";
 	}
 
-	void Config::WriteData(const std::string& cfg, const std::string& value) { mOFile.seekp(0); mOFile << cfg << "=" << value << '\n'; }
+	void Config::WriteData(const std::string& cfg, const std::string& value)
+	{
+		mOFile.seekp(0);
+		mOFile << cfg << "=" << value << '\n';
+	}
 }

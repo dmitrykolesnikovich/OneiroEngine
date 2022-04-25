@@ -5,21 +5,24 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
+#include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-    class DescriptorSetLayout
-    {
-    public:
-        void Create(int binding, VkDescriptorType type, VkShaderStageFlags stageFlags);
+	class DescriptorSetLayout
+	{
+	public:
+		void AddBinding(int binding, VkDescriptorType type, VkShaderStageFlagBits stage);
+		void Create();
 
-        [[nodiscard]] VkDescriptorSetLayout Get() const;
+		[[nodiscard]] VkDescriptorSetLayout Get() const;
 
-        [[nodiscard]] const VkDescriptorSetLayout* GetPtr() const;
+		[[nodiscard]] const VkDescriptorSetLayout* GetPtr() const;
 
-        void Destroy();
-    private:
-        VkDescriptorSetLayout mDescriptorSetLayout{};
-    };
+		void Destroy();
+	private:
+		std::vector<VkDescriptorSetLayoutBinding> mBindings;
+		VkDescriptorSetLayout mDescriptorSetLayout{};
+	};
 }

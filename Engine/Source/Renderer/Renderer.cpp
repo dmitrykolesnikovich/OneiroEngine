@@ -4,317 +4,334 @@
 //
 
 #include "Oneiro/Renderer/Renderer.hpp"
+
+#include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Core/Window.hpp"
+
 #include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
+#include "Oneiro/Renderer/Vulkan/DepthBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
+#include "Oneiro/Renderer/Vulkan/Framebuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/ImageViews.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
-#include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
+#include "Oneiro/Renderer/Vulkan/MSAA.hpp"
+#include "Oneiro/Renderer/vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/Pipeline.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
 #include "Oneiro/Renderer/Vulkan/UniformBuffer.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stdexcept>
-
 #include "stb/stb_image.h"
 
-#include "Oneiro/Core/Root.hpp"
-#include "Oneiro/Core/Window.hpp"
-#include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
-#include "Oneiro/Renderer/Vulkan/Framebuffer.hpp"
+#include <stdexcept>
 
 namespace
 {
-    std::vector<VkShaderModule> mVertShaders;
-    std::vector<VkShaderModule> mFragShaders;
-    std::vector<oe::Renderer::Vulkan::DescriptorSetLayout> mDescriptorSetLayouts;
-    std::vector<VkVertexInputBindingDescription> mVertexInputBindingDescriptions{};
-    std::vector<VkVertexInputAttributeDescription> mVertexInputAttributeDescriptions{};
+	std::vector<VkShaderModule> _vertShaders;
+	std::vector<VkShaderModule> _fragShaders;
+	std::vector<oe::Renderer::Vulkan::DescriptorSetLayout> _descriptorSetLayouts;
+	std::vector<VkVertexInputBindingDescription> _vertexInputBindingDescriptions{};
+	std::vector<VkVertexInputAttributeDescription> _vertexInputAttributeDescriptions{};
 
-    VkQueue mGraphicsQueue{};
-    VkQueue mPresentQueue{};
-    VkSemaphore mImageAvailableSemaphores{};
-    VkSemaphore mRenderFinishedSemaphores{};
-    VkFence mInFlightFence{};
+	VkQueue _graphicsQueue{};
+	VkQueue _presentQueue{};
+	VkSemaphore _imageAvailableSemaphores{};
+	VkSemaphore _renderFinishedSemaphores{};
+	VkFence _inFlightFence{};
 
-    oe::Renderer::Vulkan::Instance mInstance;
-    oe::Renderer::Vulkan::PhysicalDevice mPhysicalDevice;
-    oe::Renderer::Vulkan::LogicalDevice mLogicalDevice;
-    oe::Renderer::Vulkan::WindowSurface mWindowSurface;
-    oe::Renderer::Vulkan::SwapChain mSwapChain;
-    oe::Renderer::Vulkan::ImageViews mImageViews;
-    oe::Renderer::Vulkan::RenderPass mRenderPass;
-    oe::Renderer::Vulkan::Pipeline mPipeline;
-    std::vector<oe::Renderer::Vulkan::Framebuffer> mFramebuffers;
-    oe::Renderer::Vulkan::CommandPool mCommandPool;
-    oe::Renderer::Vulkan::CommandBuffer mCommandBuffer;
-    oe::Renderer::Vulkan::DescriptorPool mDescriptorPool;
-    oe::Renderer::Vulkan::DescriptorSet mDescriptorSet;
-    std::vector mValidationLayers = { "VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_monitor" };
-    uint32_t mCurrentImageIndex{};
+	oe::Renderer::Vulkan::Instance _instance;
+	oe::Renderer::Vulkan::PhysicalDevice _physicalDevice;
+	oe::Renderer::Vulkan::LogicalDevice _logicalDevice;
+	oe::Renderer::Vulkan::WindowSurface _windowSurface;
+	oe::Renderer::Vulkan::SwapChain _swapChain;
+	oe::Renderer::Vulkan::ImageViews _imageViews;
+	oe::Renderer::Vulkan::RenderPass _renderPass;
+	oe::Renderer::Vulkan::Pipeline _pipeline;
+	std::vector<oe::Renderer::Vulkan::Framebuffer> _framebuffers;
+	oe::Renderer::Vulkan::CommandPool _commandPool;
+	oe::Renderer::Vulkan::CommandBuffer _commandBuffer;
+	oe::Renderer::Vulkan::DescriptorPool _descriptorPool;
+	oe::Renderer::Vulkan::DescriptorSet _descriptorSet;
+	oe::Renderer::Vulkan::DepthBuffer _depthBuffer;
+	oe::Renderer::Vulkan::MSAA _msaa;
 
-    void CreateFramebuffers()
-    {
-        mFramebuffers.resize(mImageViews.Get().size());
-        int size = mFramebuffers.size();
-        for (int i{}; i < size; ++i)
-        {
-            const VkImageView attachments[] = {
-                mImageViews.Get()[i]
-            };
-            mFramebuffers[i].Create(attachments);
-        }
-    }
+	std::vector _validationLayers = {"VK_LAYER_KHRONOS_validation", "VK_LAYER_LUNARG_monitor"};
+	uint32_t _currentImageIndex{};
 
-    void DestroyFramebuffers()
-    {
-        for (auto& framebuffer : mFramebuffers)
-            framebuffer.Destroy();
-    }
+	void CreateFramebuffers()
+	{
+		_framebuffers.resize(_imageViews.Get().size());
+		const size_t size = _framebuffers.size();
+		for (size_t i{}; i < size; ++i)
+		{
+			_framebuffers[i].Create({_msaa.GetView(), _depthBuffer.GetView(), _imageViews.Get()[i]});
+		}
+	}
 
-    void CreateAsyncObjects()
-    {
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	void DestroyFramebuffers()
+	{
+		for (auto& framebuffer : _framebuffers)
+			framebuffer.Destroy();
+	}
 
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+	void CreateAsyncObjects()
+	{
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-        const auto& device = mLogicalDevice.Get();
+		VkFenceCreateInfo fenceInfo{};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &mImageAvailableSemaphores) != VK_SUCCESS ||
-            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &mRenderFinishedSemaphores) != VK_SUCCESS ||
-            vkCreateFence(device, &fenceInfo, nullptr, &mInFlightFence) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create synchronization objects for a frame!");
-        }
-    }
+		const auto& device = _logicalDevice.Get();
 
-    void DesrtoyAsyncObjects()
-    {
-        const auto& device = mLogicalDevice.Get();
-        vkDestroySemaphore(device, mImageAvailableSemaphores, nullptr);
-        vkDestroySemaphore(device, mRenderFinishedSemaphores, nullptr);
-        vkDestroyFence(device, mInFlightFence, nullptr);
-    }
+		if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &_imageAvailableSemaphores) != VK_SUCCESS ||
+			vkCreateSemaphore(device, &semaphoreInfo, nullptr, &_renderFinishedSemaphores) != VK_SUCCESS ||
+			vkCreateFence(device, &fenceInfo, nullptr, &_inFlightFence) != VK_SUCCESS)
+		{
+			OE_THROW_ERROR("Renderer::Vulkan", "Failed to create sync objects for a frame!")
+		}
+	}
 
-    void DestroySwapChain()
-    {
-        vkDeviceWaitIdle(mLogicalDevice.Get());
-        DestroyFramebuffers();
-        mPipeline.Destroy();
-        mRenderPass.Destroy();
-        mImageViews.Destroy();
-        mSwapChain.Destroy();
-    }
+	void DesrtoyAsyncObjects()
+	{
+		const auto device = _logicalDevice.Get();
+		vkDestroySemaphore(device, _imageAvailableSemaphores, nullptr);
+		vkDestroySemaphore(device, _renderFinishedSemaphores, nullptr);
+		vkDestroyFence(device, _inFlightFence, nullptr);
+	}
+
+	void DestroySwapChain()
+	{
+		vkDeviceWaitIdle(_logicalDevice.Get());
+		DestroyFramebuffers();
+		_pipeline.Destroy();
+		_renderPass.Destroy();
+		_msaa.Destroy();
+		_depthBuffer.Destroy();
+		_imageViews.Destroy();
+		_swapChain.Destroy();
+	}
 }
 
 namespace oe::Renderer::Vulkan
 {
-    void PreInit()
-    {
-        stbi_set_flip_vertically_on_load(1);
-        mInstance.Create();
-        mWindowSurface.Setup(Core::Root::GetWindow()->GetGLFW());
-        mPhysicalDevice.Create();
-        mLogicalDevice.Create();
-        mSwapChain.Create();
-        mRenderPass.Create();
-        mImageViews.Create();
-        mCommandPool.Create();
-	    mDescriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-        //GuiLayer::PreInit();
-    }
+	void PreInit()
+	{
+		stbi_set_flip_vertically_on_load(1);
+		_instance.Create();
+		_windowSurface.Setup(Core::Root::GetWindow()->GetGLFW());
+		_physicalDevice.Create();
+		_logicalDevice.Create();
+		_swapChain.Create();
+		_renderPass.Create();
+		_imageViews.Create();
+		_commandPool.Create();
+		_msaa.Create();
+		_depthBuffer.Create();
+		_descriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+		//GuiLayer::PreInit();
+	}
 
-    void Init()
-    {
-        mPipeline.Create(mVertShaders, mFragShaders);
-        CreateFramebuffers();
-        mCommandBuffer.Create();
-        CreateAsyncObjects();
-        //GuiLayer::Init();
-    }
+	void Init()
+	{
+		_pipeline.Create(_vertShaders, _fragShaders);
+		CreateFramebuffers();
+		_commandBuffer.Create();
+		CreateAsyncObjects();
+		//GuiLayer::Init();
+	}
 
-    void Shutdown()
-    {
-        const auto& device = mLogicalDevice.Get();
-        vkDeviceWaitIdle(device);
-        for (const auto& fragShaderModule : mVertShaders)
-            vkDestroyShaderModule(device, fragShaderModule, nullptr);
-        for (const auto& vertShaderModule : mFragShaders)
-            vkDestroyShaderModule(device, vertShaderModule, nullptr);
-        DesrtoyAsyncObjects();
-        for (auto& descriptorSetLayout : mDescriptorSetLayouts)
-            descriptorSetLayout.Destroy();
-        mDescriptorPool.Destroy();
-        mCommandPool.Destroy();
-        DestroySwapChain();
-        mLogicalDevice.Destroy();
-        mWindowSurface.Destroy();
-        mInstance.Destroy();
+	void Shutdown()
+	{
+		const auto device = _logicalDevice.Get();
+		vkDeviceWaitIdle(device);
+		for (const auto& fragShaderModule : _vertShaders)
+			vkDestroyShaderModule(device, fragShaderModule, nullptr);
+		for (const auto& vertShaderModule : _fragShaders)
+			vkDestroyShaderModule(device, vertShaderModule, nullptr);
+		DesrtoyAsyncObjects();
+		for (auto& descriptorSetLayout : _descriptorSetLayouts)
+			descriptorSetLayout.Destroy();
+		_descriptorPool.Destroy();
+		_commandPool.Destroy();
+		DestroySwapChain();
+		_logicalDevice.Destroy();
+		_windowSurface.Destroy();
+		_instance.Destroy();
 
-        //GuiLayer::Shutdown();
-    }
+		//GuiLayer::Shutdown();
+	}
 
-    void ReCreateSwapChain()
-    {
-        int width{}, height{};
-        glfwGetFramebufferSize(Core::Root::GetWindow()->GetGLFW(), &width, &height);
-        while (width == 0 || height == 0) {
-            glfwGetFramebufferSize(Core::Root::GetWindow()->GetGLFW(), &width, &height);
-            glfwWaitEvents();
-        }
-        DestroySwapChain();
+	void ReCreateSwapChain()
+	{
+		int width{}, height{};
+		glfwGetFramebufferSize(Core::Root::GetWindow()->GetGLFW(), &width, &height);
+		while (width == 0 || height == 0)
+		{
+			glfwGetFramebufferSize(Core::Root::GetWindow()->GetGLFW(), &width, &height);
+			glfwWaitEvents();
+		}
+		DestroySwapChain();
 
-        mSwapChain.Create();
-        mImageViews.Create();
-        mRenderPass.Create();
-        mPipeline.Create(mVertShaders, mFragShaders);
-        CreateFramebuffers();
-    }
+		_swapChain.Create();
+		_imageViews.Create();
+		_msaa.Create();
+		_depthBuffer.Create();
+		_renderPass.Create();
+		_pipeline.Create(_vertShaders, _fragShaders);
+		CreateFramebuffers();
+	}
 
-    void AddVertexShader(VkShaderModule shader)
-    {
-        mVertShaders.push_back(shader);
-    }
+	void AddVertexShader(VkShaderModule shader)
+	{
+		_vertShaders.push_back(shader);
+	}
 
-    void AddFragmentShader(VkShaderModule shader)
-    {
-        mFragShaders.push_back(shader);
-    }
+	void AddFragmentShader(VkShaderModule shader)
+	{
+		_fragShaders.push_back(shader);
+	}
 
-    void UpdateCurrentImageIndex()
-    {
-        const VkResult result = vkAcquireNextImageKHR(mLogicalDevice.Get(), mSwapChain.Get(),
-                                                      UINT64_MAX, mImageAvailableSemaphores, VK_NULL_HANDLE, &mCurrentImageIndex);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-            ReCreateSwapChain();
-        }
-        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("Failed to acquire swap chain image!");
-        }
-    }
+	void UpdateCurrentImageIndex()
+	{
+		const VkResult result = vkAcquireNextImageKHR(_logicalDevice.Get(), _swapChain.Get(),
+		                                              UINT64_MAX, _imageAvailableSemaphores, VK_NULL_HANDLE,
+		                                              &_currentImageIndex);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		{
+			ReCreateSwapChain();
+		}
+		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+		{
+			OE_THROW_ERROR("Renderer::Vulkan", "Failed to acquire swapchain image!");
+		}
+	}
 
-    const Instance* GetInstance() { return &mInstance; }
+	const Instance* GetInstance() { return &_instance; }
 
-    const PhysicalDevice* GetPhysDevice() { return &mPhysicalDevice; }
+	const PhysicalDevice* GetPhysDevice() { return &_physicalDevice; }
 
-    const std::vector<const char*>& GetValidationLayers() { return mValidationLayers; }
+	const std::vector<const char*>& GetValidationLayers() { return _validationLayers; }
 
-    const WindowSurface* GetWindowSurface() { return &mWindowSurface;}
+	const WindowSurface* GetWindowSurface() { return &_windowSurface; }
 
-    const LogicalDevice* GetLogicalDevice() { return &mLogicalDevice; }
+	const LogicalDevice* GetLogicalDevice() { return &_logicalDevice; }
 
-    const SwapChain* GetSwapChain() { return &mSwapChain; }
+	const SwapChain* GetSwapChain() { return &_swapChain; }
 
-    const ImageViews* GetImageViews() { return &mImageViews; }
+	const ImageViews* GetImageViews() { return &_imageViews; }
 
-    const RenderPass* GetRenderPass() { return &mRenderPass; }
+	const RenderPass* GetRenderPass() { return &_renderPass; }
 
-    const Pipeline* GetPipeline() { return &mPipeline; }
+	const Pipeline* GetPipeline() { return &_pipeline; }
 
-    const std::vector<Framebuffer>& GetFramebuffers() { return mFramebuffers; }
+	const std::vector<Framebuffer>& GetFramebuffers() { return _framebuffers; }
 
-    const CommandPool* GetCommandPool() { return &mCommandPool; }
+	const CommandPool* GetCommandPool() { return &_commandPool; }
 
-    const CommandBuffer* GetCommandBuffer() { return &mCommandBuffer; }
+	const CommandBuffer* GetCommandBuffer() { return &_commandBuffer; }
 
-    const DescriptorPool* GetDescriptorPool() { return &mDescriptorPool; }
+	const DescriptorPool* GetDescriptorPool() { return &_descriptorPool; }
 
-    const DescriptorSet* GetDescriptorSet() { return &mDescriptorSet; }
+	const DescriptorSet* GetDescriptorSet() { return &_descriptorSet; }
 
-    VkQueue* GetGraphicsQueuePtr() { return &mGraphicsQueue; }
+	VkQueue* GetGraphicsQueuePtr() { return &_graphicsQueue; }
 
-    VkQueue GetGraphicsQueue() { return mGraphicsQueue; }
+	VkQueue GetGraphicsQueue() { return _graphicsQueue; }
 
-    VkQueue GetPresentQueue() { return mPresentQueue; }
+	VkQueue GetPresentQueue() { return _presentQueue; }
 
-    VkQueue* GetPresentQueuePtr() { return &mPresentQueue; }
+	VkQueue* GetPresentQueuePtr() { return &_presentQueue; }
 
-    VkSemaphore GetImageAvaibleSemaphores() { return mImageAvailableSemaphores; }
+	VkSemaphore GetImageAvaibleSemaphores() { return _imageAvailableSemaphores; }
 
-    VkSemaphore GetRenderFinishedSemaphores() { return mRenderFinishedSemaphores; }
+	VkSemaphore GetRenderFinishedSemaphores() { return _renderFinishedSemaphores; }
 
-    VkFence GetInFlightFence() { return mInFlightFence; }
+	VkFence GetInFlightFence() { return _inFlightFence; }
 
-    uint32_t GetCurrentImageIndex() { return mCurrentImageIndex; }
+	uint32_t GetCurrentImageIndex() { return _currentImageIndex; }
 
-    std::vector<VkVertexInputBindingDescription>& GetVertexInputBindingDescriptions()
-    {
-        return mVertexInputBindingDescriptions;
-    }
+	std::vector<VkVertexInputBindingDescription>& GetVertexInputBindingDescriptions()
+	{
+		return _vertexInputBindingDescriptions;
+	}
 
-    std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions()
-    {
-        return mVertexInputAttributeDescriptions;
-    }
+	std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions()
+	{
+		return _vertexInputAttributeDescriptions;
+	}
 
-    std::vector<DescriptorSetLayout>& GetDescriptorSetLayouts()
-    {
-        return mDescriptorSetLayouts;
-    }
+	std::vector<DescriptorSetLayout>& GetDescriptorSetLayouts()
+	{
+		return _descriptorSetLayouts;
+	}
 
-    void BeginScene()
-    {
-        const auto& commandBuffer = GetCommandBuffer();
-        const auto& inFlightFence = GetInFlightFence();
-        const auto& device = GetLogicalDevice()->Get();
-        vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(device, 1, &inFlightFence);
+	void BeginScene()
+	{
+		const auto& commandBuffer = GetCommandBuffer();
+		const auto& inFlightFence = GetInFlightFence();
+		const auto& device = GetLogicalDevice()->Get();
+		vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+		vkResetFences(device, 1, &inFlightFence);
 
-        commandBuffer->Reset();
-        commandBuffer->Begin();
+		commandBuffer->Reset();
+		commandBuffer->Begin();
 
-        GetRenderPass()->Begin();
-    }
+		GetRenderPass()->Begin();
+	}
 
-    void EndScene()
-    {
-        mRenderPass.End();
+	void EndScene()
+	{
+		_renderPass.End();
 
-        mCommandBuffer.End();
+		_commandBuffer.End();
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        const VkSemaphore waitSemaphores[] = { mImageAvailableSemaphores };
-        const VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
+		const VkSemaphore waitSemaphores[] = {_imageAvailableSemaphores};
+		const VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
 
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = mCommandBuffer.GetPtr();
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = _commandBuffer.GetPtr();
 
-        const VkSemaphore signalSemaphores[] = { mRenderFinishedSemaphores };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
+		const VkSemaphore signalSemaphores[] = {_renderFinishedSemaphores};
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphores;
 
-        if (vkQueueSubmit(mGraphicsQueue, 1, &submitInfo, mInFlightFence) != VK_SUCCESS) {
-            throw std::runtime_error("failed to submit draw command buffer!");
-        }
+		if (vkQueueSubmit(_graphicsQueue, 1, &submitInfo, _inFlightFence) != VK_SUCCESS)
+		{
+			OE_THROW_ERROR("Renderer::Vulkan", "Failed to submit draw command buffer!")
+		}
 
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphores;
 
-        const VkSwapchainKHR swapChains[] = { mSwapChain.Get() };
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
+		const VkSwapchainKHR swapChains[] = {_swapChain.Get()};
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = swapChains;
 
-        const uint32_t imageIndex = GetCurrentImageIndex();
-        presentInfo.pImageIndices = &imageIndex;
+		const uint32_t imageIndex = GetCurrentImageIndex();
+		presentInfo.pImageIndices = &imageIndex;
 
-        VkResult result = vkQueuePresentKHR(GetPresentQueue(), &presentInfo);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
-            ReCreateSwapChain();
-        }
-        else if (result != VK_SUCCESS) {
-            throw std::runtime_error("failed to present swap chain image!");
-        }
-    }
+		VkResult result = vkQueuePresentKHR(GetPresentQueue(), &presentInfo);
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+		{
+			ReCreateSwapChain();
+		}
+		else if (result != VK_SUCCESS)
+		{
+			OE_THROW_ERROR("Renderer::Vulkan", "Failed to present swapchain image!")
+		}
+	}
 }

@@ -11,27 +11,25 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void DescriptorPool::Create(VkDescriptorType type)
-    {
-        VkDescriptorPoolSize poolSize{};
-        poolSize.type = type;
-        poolSize.descriptorCount = 1;
-        VkDescriptorPoolCreateInfo poolInfo{};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.poolSizeCount = 1;
-        poolInfo.pPoolSizes = &poolSize;
-        poolInfo.maxSets = 1;
+	void DescriptorPool::Create(VkDescriptorType type)
+	{
+		VkDescriptorPoolSize poolSize;
+		poolSize.type = type;
+		poolSize.descriptorCount = 200;
+		VkDescriptorPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.maxSets = 200;
 
-        if (vkCreateDescriptorPool(GetLogicalDevice()->Get(), 
-                                   &poolInfo, nullptr, &mDescriptorPool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create descriptor pool!");
-        }
-    }
+		VK_CHECK_RESULT(vkCreateDescriptorPool(GetLogicalDevice()->Get(),
+			                &poolInfo, nullptr, &mDescriptorPool), "Failed to create descriptor pool!")
+	}
 
-    void DescriptorPool::Destroy()
-    {
-        vkDestroyDescriptorPool(GetLogicalDevice()->Get(), mDescriptorPool, nullptr);
-    }
+	void DescriptorPool::Destroy()
+	{
+		vkDestroyDescriptorPool(GetLogicalDevice()->Get(), mDescriptorPool, nullptr);
+	}
 
-    VkDescriptorPool DescriptorPool::Get() const { return mDescriptorPool;}
+	VkDescriptorPool DescriptorPool::Get() const { return mDescriptorPool; }
 }

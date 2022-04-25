@@ -7,17 +7,15 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void IndexBuffer::Bind(VkCommandBuffer commandBuffer) const
-    {
-        const VkBuffer buffers[] = { mBuffer };
-        constexpr VkDeviceSize offsets[] = {0};
-        vkCmdBindIndexBuffer(commandBuffer, mBuffer, 0, VK_INDEX_TYPE_UINT16);
-    }
+	void IndexBuffer::Bind(VkCommandBuffer commandBuffer) const
+	{
+		vkCmdBindIndexBuffer(commandBuffer, mBuffer, 0, VK_INDEX_TYPE_UINT16);
+	}
 
-    void IndexBuffer::Destroy()
-    {
-        vkDeviceWaitIdle(GetLogicalDevice()->Get());
-        vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
-        vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
-    }
+	void IndexBuffer::Destroy()
+	{
+		vkDeviceWaitIdle(GetLogicalDevice()->Get());
+		vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
+		vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
+	}
 }

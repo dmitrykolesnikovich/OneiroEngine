@@ -3,109 +3,99 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Core/Core.hpp"
-#include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Core/Event.hpp"
-#include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Runtime/Engine.hpp"
-#include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/Core/Window.hpp"
+
 #include <memory>
 #include <stdexcept>
 #include <string>
 
+#include "Oneiro/Core/Config.hpp"
+#include "Oneiro/Core/Core.hpp"
+#include "Oneiro/Core/Event.hpp"
+#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/Renderer.hpp"
+
 namespace oe::Runtime
 {
-    void Engine::Init()
-    {
-        Core::Init();
-        mRoot = new Core::Root;
-        mWindow = new Core::Window;
-    }
+	void Engine::Init()
+	{
+		Core::Init();
+		mRoot = new Core::Root;
+		mWindow = new Core::Window;
+	}
 
-    void Engine::Run(const std::shared_ptr<Application>& app)
-    {
-        using namespace Core;
-        mRoot->SetApplication(app.get());
-        mRoot->SetWindow(mWindow);
+	void Engine::Run(const std::shared_ptr<Application>& app)
+	{
+		using namespace Core;
+		mRoot->SetApplication(app.get());
+		mRoot->SetWindow(mWindow);
 
-        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
-			{
-                const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
-                log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
-												   errorEvent.Description);
-            });
-        if (!mWindow->Create())
-            throw std::runtime_error("Failed to create window!");
+		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
+		{
+			const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
+			log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
+				errorEvent.Description);
+		});
+		if (!mWindow->Create())
+			throw std::runtime_error("Failed to create window!");
 
-        Window::SetFramerate(1);
-        SetupEvents();
+		SetupEvents();
 
-        Renderer::Vulkan::PreInit();
+		Renderer::Vulkan::PreInit();
 
-        if (!app->Init())
-            throw std::runtime_error("Failed to initialize application!");
+		if (!app->Init())
+			throw std::runtime_error("Failed to initialize application!");
 
-        Renderer::Vulkan::Init();
+		Renderer::Vulkan::Init();
 
-    	while (!mWindow->IsClosed())
-        {
-            if (app->IsStopped())
-                break;
+		while (!mWindow->IsClosed())
+		{
+			if (app->IsStopped())
+				break;
 
-            Window::PollEvents();
+			Window::PollEvents();
 
-            if (!app->Update())
-                break;
-            
-            mWindow->SwapBuffers();
-        }
+			if (!app->Update())
+				break;
+		}
 
-        app->Shutdown();
-    }
+		app->Shutdown();
+	}
 
-    void Engine::Shutdown()
-    {
-        delete mWindow;
-        delete mRoot;
+	void Engine::Shutdown()
+	{
+		delete mWindow;
+		delete mRoot;
 
-        Renderer::Vulkan::Shutdown();
-        Core::Shutdown();
-    }
+		Renderer::Vulkan::Shutdown();
+		Core::Shutdown();
+	}
 
-    void Engine::SetupEvents()
-    {
-        using namespace oe::Core;
-        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
-            {
-                const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-                //Renderer::Viewport(resizeEvent.Width, resizeEvent.Height);
-            });
+	void Engine::SetupEvents()
+	{
+		using namespace Core;
+		Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
+		{
+			const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+			Window::UpdateSize(resizeEvent.Width, resizeEvent.Height);
+		});
 
-        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
-            {
-                const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
-                Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
-                    static_cast<Input::Action>(keyInputEvent.Action));
-            });
+		Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
+		{
+			const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
+			Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
+			                                  static_cast<Input::Action>(keyInputEvent.Action));
+		});
 
-        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
-            {
-                const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
-                Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
-                    static_cast<Input::Action>(mouseButtonEvent.Action));
-            });
-        
-        Event::Dispatcher::Subscribe<Event::FocusEvent>([](const Event::Base& e)
-            {
-                const auto& focusEvent = dynamic_cast<const Event::FocusEvent&>(e);
-                if (focusEvent.IsFocused)
-                    Window::SetFramerate(1); // 60 fps
-                else
-                    Window::SetFramerate(-3); // 15 fps
-            });
-    }
+		Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
+		{
+			const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
+			Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
+			                                     static_cast<Input::Action>(mouseButtonEvent.Action));
+		});
+	}
 
-    Core::Root* Engine::mRoot{};
-    Core::Window* Engine::mWindow{};
+	Core::Root* Engine::mRoot{};
+	Core::Window* Engine::mWindow{};
 }

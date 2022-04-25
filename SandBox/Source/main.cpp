@@ -3,19 +3,19 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Core/Root.hpp"
-#include "Oneiro/Runtime/Application.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/IndexBuffer.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "Oneiro/Renderer/Vulkan/Shader.hpp"
+#include "Oneiro/Renderer/Vulkan/Texture.hpp"
 #include "Oneiro/Renderer/Vulkan/UniformBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
+#include "Oneiro/Runtime/Application.hpp"
 
 #include "glm/glm.hpp"
-#include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -23,39 +23,46 @@ public:
     bool Init() override
     {
         namespace VkRenderer = oe::Renderer::Vulkan;
-
+        
 	    oe::log::get("log")->info("Initializing...");
 
         mVertexBuffer.Create<Vertex>(mVertices);
         mIndexBuffer.Create<uint16_t>(mIndices);
-        VkRenderer::Shader::Create("Shaders/vert.spv", VkRenderer::Shader::VERTEX);
+
+    	VkRenderer::Shader::Create("Shaders/vert.spv", VkRenderer::Shader::VERTEX);
         VkRenderer::Shader::Create("Shaders/frag.spv", VkRenderer::Shader::FRAGMENT);
+
         VkRenderer::Shader::AddVertexInputBindingDescription(0, sizeof(Vertex));
-        VkRenderer::Shader::AddVertexInputDescription(0, 0, VK_FORMAT_R32G32_SFLOAT,
-                                                          sizeof(Vertex), offsetof(Vertex, Position));
-        mUniformBuffer.Create(1, VK_SHADER_STAGE_VERTEX_BIT, sizeof(UniformBufferObject));
+        VkRenderer::Shader::AddVertexInputDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT,
+            sizeof(Vertex), offsetof(Vertex, Position));
+        VkRenderer::Shader::AddVertexInputDescription(0, 1, VK_FORMAT_R32G32_SFLOAT,
+            sizeof(Vertex), offsetof(Vertex, TexPosition));
+
+        mTexture.Load("Textures/texture.jpg"); // texture loading before uniform buffer creation
+
+    	mUniformBuffer.BeginLayouts();
+        mUniformBuffer.AddLayout(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+        mUniformBuffer.AddLayout(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+        mUniformBuffer.EndLayouts();
+
+        mUniformBuffer.BeginBindings(sizeof(UniformBufferObject));
+        mUniformBuffer.AddBinding(0, sizeof(UniformBufferObject), VK_SHADER_STAGE_VERTEX_BIT);
+        mUniformBuffer.AddBinding(1, 0, VK_SHADER_STAGE_FRAGMENT_BIT, &mTexture);
+        mUniformBuffer.EndBindings();
+
         return true;
     }
 
     bool Update() override
     {
         using namespace oe;
-
-        static auto startTime = std::chrono::high_resolution_clock::now();
-
-        const auto currentTime = std::chrono::high_resolution_clock::now();
-        const float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
         UniformBufferObject ubo{};
-        ubo.model = rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.view = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.proj = glm::perspective(glm::radians(45.0f),
-                                    Renderer::Vulkan::GetSwapChain()->GetExtent2D().width /
-                                    static_cast<float>(Renderer::Vulkan::GetSwapChain()->GetExtent2D().height),
-                                    0.1f, 10.0f);
-        ubo.proj[1][1] *= -1;
-        ubo.time = glfwGetTime();
-        ubo.windowSize = glm::vec2(Renderer::Vulkan::GetSwapChain()->GetExtent2D().width, 
-                                   Renderer::Vulkan::GetSwapChain()->GetExtent2D().height);
+        ubo.Model = rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime()) * glm::radians(90.0f) / 3, glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.View = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        ubo.Proj = glm::perspective(glm::radians(45.0f), static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
+													     static_cast<float>(Core::Root::GetWindow()->GetHeight()),
+																		    0.1f, 10.0f);
+        ubo.Proj[1][1] *= -1;
 
         const auto commandBuffer = Renderer::Vulkan::GetCommandBuffer();
         Renderer::Vulkan::BeginScene();
@@ -72,10 +79,12 @@ public:
 
     void Shutdown() override
     {
+        oe::log::get("log")->info("Closing...");
+        
+        mTexture.Destroy();
         mUniformBuffer.Destroy();
         mVertexBuffer.Destroy();
         mIndexBuffer.Destroy();
-        oe::log::get("log")->info("Closing...");
     }
 
     void HandleKey(oe::Input::Key key, oe::Input::Action action) override
@@ -109,34 +118,41 @@ public:
     }
 
 private:
-    const std::vector<uint16_t> mIndices = {
-        0, 1, 2, 2, 3, 0
-    };
 
     struct Vertex
     {
-        glm::vec2 Position{};
+        glm::vec3 Position{};
+        glm::vec2 TexPosition{};
     };
 
     const std::vector<Vertex> mVertices = {
-        {{-0.5f, -0.5f}},
-        {{0.5f, -0.5f}},
-        {{0.5f, 0.5f}},
-        {{-0.5f, 0.5f}}
+		{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
+		{{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}},
+
+	    {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
+	    {{0.5f, -0.5f, -0.5f} , {1.0f, 0.0f}},
+	    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
+	    {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}}
+    };
+
+    const std::vector<uint16_t> mIndices = {
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4
     };
 
     struct UniformBufferObject
     {
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
-        glm::vec2 windowSize;
-        float time;
+        glm::mat4 Model{1.0f};
+        glm::mat4 View{1.0f};
+        glm::mat4 Proj{1.0f};
     };
 
     oe::Renderer::Vulkan::VertexBuffer mVertexBuffer;
     oe::Renderer::Vulkan::IndexBuffer mIndexBuffer;
     oe::Renderer::Vulkan::UniformBuffer mUniformBuffer;
+    oe::Renderer::Vulkan::Texture mTexture;
 };
 
 namespace oe::Runtime

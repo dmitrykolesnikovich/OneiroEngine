@@ -11,10 +11,7 @@
 #define OE_LOG_WARNING(...) SPDLOG_WARNING(__VA_ARGS__)
 #define OE_LOG_ERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 
-namespace oe
+namespace oe::log
 {
-    namespace log
-    {
-        using namespace spdlog;
-    }
+	using namespace spdlog;
 }

@@ -5,23 +5,24 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
 #include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-    class Shader;
-    class Pipeline
-    {
-    public:
-        void Create(const std::vector<VkShaderModule>& vertShaderModules, 
-            const std::vector<VkShaderModule>& fragShaderModules);
+	class Shader;
 
-        void Bind() const;
-        [[nodiscard]] VkPipelineLayout GetLayout() const { return mPipelineLayout; }
-        void Destroy();
-    private:
-        VkPipelineLayout mPipelineLayout{};
-        VkPipeline mGraphicsPipeline{};
-    };
+	class Pipeline
+	{
+	public:
+		void Create(const std::vector<VkShaderModule>& vertShaderModules,
+		            const std::vector<VkShaderModule>& fragShaderModules);
+
+		void Bind() const;
+		[[nodiscard]] VkPipelineLayout GetLayout() const { return mPipelineLayout; }
+		void Destroy();
+	private:
+		VkPipelineLayout mPipelineLayout{};
+		VkPipeline mGraphicsPipeline{};
+	};
 }

@@ -5,20 +5,20 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include "../Renderer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
-    class LogicalDevice
-    {
-    public:
-        void Destroy();
+	class LogicalDevice
+	{
+	public:
+		void Destroy();
 
-        [[nodiscard]] VkDevice Get() const;
-        [[nodiscard]] const VkDevice* GetPtr() const;
+		[[nodiscard]] VkDevice Get() const;
+		[[nodiscard]] const VkDevice* GetPtr() const;
 
-        void Create(bool enableValidationLayers = true);
-    private:
-        VkDevice mDevice{};
-    };
+		void Create(bool enableValidationLayers = true);
+	private:
+		VkDevice mDevice{};
+	};
 }

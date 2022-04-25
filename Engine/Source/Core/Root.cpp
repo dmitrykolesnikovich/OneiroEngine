@@ -12,25 +12,25 @@ namespace oe::Core
 {
 	Root::Root()
 	{
-        mConfigsMap["user"] = new Config("user.cfg");
-        mConfigsMap["renderer"] = new Config("renderer.cfg");
+		mConfigsMap["user"] = new Config("user.cfg");
+		mConfigsMap["renderer"] = new Config("renderer.cfg");
 	}
 
-    Root::~Root()
-    {
-	    mWindowInstance = nullptr;
-	    mApplicationInstance = nullptr;
-    }
+	Root::~Root()
+	{
+		mWindowInstance = nullptr;
+		mApplicationInstance = nullptr;
+	}
 
-    Window* Root::GetWindow() { return mWindowInstance; }
+	Window* Root::GetWindow() { return mWindowInstance; }
 
-    Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
+	Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
 
-    void Root::SetApplication(Runtime::Application* app) { if (!mApplicationInstance) mApplicationInstance = app; }
+	void Root::SetApplication(Runtime::Application* app) { if (!mApplicationInstance) mApplicationInstance = app; }
 
-    void Root::SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
+	void Root::SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
 
-    Window* Root::mWindowInstance{};
-    Runtime::Application* Root::mApplicationInstance{};
-    std::unordered_map<std::string, Config*> Root::mConfigsMap;
+	Window* Root::mWindowInstance{};
+	Runtime::Application* Root::mApplicationInstance{};
+	std::unordered_map<std::string, Config*> Root::mConfigsMap;
 }
