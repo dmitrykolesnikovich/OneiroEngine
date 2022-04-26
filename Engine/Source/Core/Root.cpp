@@ -7,6 +7,7 @@
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Core/Oneiro.hpp"
 #include "Oneiro/Scene/Scene.hpp"
 #include "Oneiro/Scene/SceneManager.hpp"
 
