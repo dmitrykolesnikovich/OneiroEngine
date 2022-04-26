@@ -1,3 +1,8 @@
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #pragma once
 
 #include "../Renderer.hpp"
@@ -13,7 +18,6 @@ namespace oe::Renderer::Vulkan
 		 * WARNING: Load texture before creating uniform buffer.
 		 * \param path path to texture
 		 */
-
 		void Load(const std::string& path);
 
 		static void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout,
