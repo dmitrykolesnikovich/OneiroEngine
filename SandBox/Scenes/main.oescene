@@ -1,0 +1,9 @@
+Scene: Main
+Entities:
+  - Entity: c6e9cf51-ab35-44af-8749-a1137a289cbc
+    TagComponent:
+      Tag: Entity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 1, 0]
+      Scale: [1, 1, 1]

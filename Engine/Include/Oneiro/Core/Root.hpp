@@ -19,6 +19,12 @@ namespace oe::Runtime
 	class Application;
 }
 
+namespace oe::Scene
+{
+	class Scene;
+	class SceneManager;
+}
+
 namespace oe::Core
 {
 	class Root
@@ -29,12 +35,18 @@ namespace oe::Core
 	public: // Getters
 		static Window* GetWindow();
 		static Runtime::Application* GetApplication();
+		static Scene::Scene* GetScene();
+		static void LoadScene(const std::string& filePath);
 	public: // Setters (NOT STATIC!)
 		void SetApplication(Runtime::Application* app);
 		void SetWindow(Window* window);
+	public: // Getters (NON STATIC!)
+		Scene::SceneManager* GetSceneManager();
 	private:
 		static std::unordered_map<std::string, Config*> mConfigsMap;
 		static Window* mWindowInstance;
 		static Runtime::Application* mApplicationInstance;
+		static Scene::Scene* mScene;
+		static Scene::SceneManager* mSceneManager;
 	};
 }

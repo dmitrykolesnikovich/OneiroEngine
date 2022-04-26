@@ -14,8 +14,8 @@
 #include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
 #include "Oneiro/Runtime/Application.hpp"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include "Oneiro/Scene/Entity.hpp"
+#include "Oneiro/Scene/Components.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -23,6 +23,7 @@ public:
     bool Init() override
     {
         namespace VkRenderer = oe::Renderer::Vulkan;
+        using namespace oe::Core;
         
 	    oe::log::get("log")->info("Initializing...");
 
@@ -50,6 +51,8 @@ public:
         mUniformBuffer.AddBinding(1, 0, VK_SHADER_STAGE_FRAGMENT_BIT, &mTexture);
         mUniformBuffer.EndBindings();
 
+        mQuadEntity = Root::GetScene()->GetEntity("Entity");
+
         return true;
     }
 
@@ -57,7 +60,9 @@ public:
     {
         using namespace oe;
         UniformBufferObject ubo{};
-        ubo.Model = rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime()) * glm::radians(90.0f) / 3, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        ubo.Model = mQuadEntity.GetComponent<TransformComponent>().GetTransform();
+
         ubo.View = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         ubo.Proj = glm::perspective(glm::radians(45.0f), static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
 													     static_cast<float>(Core::Root::GetWindow()->GetHeight()),
@@ -80,7 +85,6 @@ public:
     void Shutdown() override
     {
         oe::log::get("log")->info("Closing...");
-        
         mTexture.Destroy();
         mUniformBuffer.Destroy();
         mVertexBuffer.Destroy();
@@ -153,6 +157,8 @@ private:
     oe::Renderer::Vulkan::IndexBuffer mIndexBuffer;
     oe::Renderer::Vulkan::UniformBuffer mUniformBuffer;
     oe::Renderer::Vulkan::Texture mTexture;
+    
+    oe::Scene::Entity mQuadEntity{};
 };
 
 namespace oe::Runtime

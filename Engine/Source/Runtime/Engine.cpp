@@ -15,6 +15,7 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Scene/SceneManager.hpp"
 
 namespace oe::Runtime
 {
@@ -44,6 +45,8 @@ namespace oe::Runtime
 
 		Renderer::Vulkan::PreInit();
 
+		mRoot->LoadScene("Scenes/main.oescene");
+
 		if (!app->Init())
 			throw std::runtime_error("Failed to initialize application!");
 
@@ -60,7 +63,7 @@ namespace oe::Runtime
 				break;
 		}
 
-		app->Shutdown();
+		mRoot->GetSceneManager()->Save("Scenes/main.oescene", "Main");
 	}
 
 	void Engine::Shutdown()

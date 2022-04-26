@@ -6,6 +6,9 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(YAML_BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 
 find_package(Vulkan REQUIRED)
 
@@ -16,6 +19,7 @@ file(GLOB ONEIRO_SOURCE
         "Source/Core/*.cpp"
         "Source/Renderer/*.cpp" "Source/Renderer/Vulkan/*.cpp"
         "Source/Runtime/*.cpp"
+        "Source/Scene/*.cpp"
         )
 file(GLOB IMGUI_SOURCE
         "../ThirdParty/imgui/*.cpp"
@@ -26,9 +30,11 @@ add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE})
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
 add_subdirectory(../ThirdParty/spdlog ThirdParty/spdlog)
+add_subdirectory(../ThirdParty/entt ThirdParty/entt)
+add_subdirectory(../ThirdParty/yaml-cpp ThirdParty/yaml-cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include
                                                   Include/
                                                   )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ThirdParty/imgui Vulkan::Headers)
-target_link_libraries(${PROJECT_NAME} glfw glm spdlog Vulkan::Vulkan)
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ThirdParty/imgui)
+target_link_libraries(${PROJECT_NAME} glfw glm spdlog Vulkan::Vulkan EnTT yaml-cpp::yaml-cpp)
 target_link_libraries(${CMAKE_PROJECT_NAME} Oneiro)
