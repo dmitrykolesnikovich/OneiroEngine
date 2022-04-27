@@ -15,7 +15,11 @@ namespace oe::Core
 		static int DiceInt(int min, int max);
 		static float DiceFloat(float min, float max);
 		static double DiceDouble(double min, double max);
+
+		static std::string DiceUUID();
 	private:
-		static std::mt19937 mGenerator;
+		inline static std::mt19937 mGenerator;
+		inline static std::uniform_int_distribution<> mDis{0, 15};
+		inline static std::uniform_int_distribution<> mDis2{8, 11};
 	};
 }
