@@ -11,13 +11,19 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 
+#include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Core/Window.hpp"
+
 namespace oe
 {
 	struct TagComponent
 	{
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
-		TagComponent(std::string tag) : Tag(std::move(tag)) {}
+
+		TagComponent(std::string tag) : Tag(std::move(tag))
+		{
+		}
 
 		std::string Tag{};
 	};
@@ -26,7 +32,10 @@ namespace oe
 	{
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::vec3 & translation) : Translation(translation) {}
+		TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale) :
+			Translation(translation), Rotation(rotation), Scale(scale)
+		{
+		}
 
 		glm::vec3 Translation{};
 		glm::vec3 Rotation{};
@@ -38,6 +47,34 @@ namespace oe
 			return translate(glm::mat4(1.0f), Translation)
 				* rotation
 				* scale(glm::mat4(1.0f), Scale);
+		}
+	};
+
+	struct CameraComponent
+	{
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		//CameraComponent(const glm::vec3 & translation) : Translation(translation) {}
+		glm::vec3 Translation{2.0f};
+		glm::vec3 Up{};
+		glm::vec3 Center{};
+
+		float Near{0.1f};
+		float Far{100.0f};
+		float Fov{45.0f};
+
+		[[nodiscard]] glm::mat4 GetView() const { return lookAt(Translation, Center, Up); }
+
+		[[nodiscard]] glm::mat4 GetPerspectiveProjection() const
+		{
+			return glm::perspective(glm::radians(Fov),
+				static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
+				static_cast<float>(Core::Root::GetWindow()->GetHeight()), Near, Far);
+		}
+
+		[[nodiscard]] glm::mat4 GetOrthoProjection() const
+		{
+			return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, Near, Far);
 		}
 	};
 }
