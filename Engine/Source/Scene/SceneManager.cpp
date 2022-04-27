@@ -84,7 +84,7 @@ namespace
 		return out;
 	}
 
-	static void SaveEntity(YAML::Emitter& out, oe::Scene::Entity entity)
+	void SaveEntity(YAML::Emitter& out, oe::Scene::Entity entity)
 	{
 		out << YAML::BeginMap; // Begin Entity
 
@@ -104,15 +104,33 @@ namespace
 
 		{ // Begin TransformComponent
 			out << YAML::Key << "TransformComponent";
-			out << YAML::BeginMap; // TransformComponent
+			out << YAML::BeginMap;
 
-			auto& tc = entity.GetComponent<oe::TransformComponent>();
+			const auto& tc = entity.GetComponent<oe::TransformComponent>();
 			out << YAML::Key << "Translation" << YAML::Value << tc.Translation;
 			out << YAML::Key << "Rotation" << YAML::Value << tc.Rotation;
 			out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
 
-			out << YAML::EndMap; // TransformComponent
+			out << YAML::EndMap;
 		} // End TransformComponent
+
+		if (entity.HasComponent<oe::CameraComponent>())
+		{ // Begin CameraComponent
+			out << YAML::Key << "CameraComponent";
+			out << YAML::BeginMap;
+
+			const auto& camera = entity.GetComponent<oe::CameraComponent>();
+			out << YAML::Key << "Translation" << YAML::Value << camera.Translation;
+			out << YAML::Key << "Up" << YAML::Value << camera.Up;
+			out << YAML::Key << "Center" << YAML::Value << camera.Center;
+
+			out << YAML::Key << "Near" << YAML::Value << camera.Near;
+			out << YAML::Key << "Far" << YAML::Value << camera.Far;
+			out << YAML::Key << "Fov" << YAML::Value << camera.Fov;
+
+			out << YAML::EndMap;
+
+		} // End CameraComponent
 
 		out << YAML::EndMap; // End Entity
 	}
@@ -163,6 +181,7 @@ namespace oe::Scene
 			// Entities always have Tag and Transform components
 			const auto& name = entity["TagComponent"]["Tag"].as<std::string>();
 			auto transformComponent = entity["TransformComponent"];
+			auto cameraComponent = entity["CameraComponent"];
 
 			Entity loaddedEntity = mScene->CreateEntity(name);
 
@@ -171,6 +190,19 @@ namespace oe::Scene
 			tc.Translation = transformComponent["Translation"].as<glm::vec3>();
 			tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
 			tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+
+			if (cameraComponent)
+			{
+				auto& camera = loaddedEntity.AddComponent<CameraComponent>();
+
+				camera.Translation = cameraComponent["Translation"].as<glm::vec3>();
+				camera.Up = cameraComponent["Up"].as<glm::vec3>();
+				camera.Center = cameraComponent["Center"].as<glm::vec3>();
+
+				camera.Near = cameraComponent["Near"].as<float>();
+				camera.Far = cameraComponent["Far"].as<float>();
+				camera.Fov = cameraComponent["Fov"].as<float>();
+			}
 		}
 
 		return true;

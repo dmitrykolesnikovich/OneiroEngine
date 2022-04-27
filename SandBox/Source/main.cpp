@@ -52,9 +52,6 @@ public:
         mUniformBuffer.EndBindings();
 
         mEntity = Root::GetScene()->GetEntity("Entity");
-        auto& camera = mEntity.AddComponent<oe::CameraComponent>();
-        camera.Translation = glm::vec3(1.5f);
-        camera.Up = glm::vec3(0.0f, 0.0f, 1.0f);
 
         return true;
     }
@@ -64,10 +61,11 @@ public:
         using namespace oe;
         UniformBufferObject ubo{};
 
-        ubo.Model = mEntity.GetComponent<TransformComponent>().GetTransform();
+        const auto& cameraComponent = mEntity.GetComponent<CameraComponent>();
 
-        ubo.View = mEntity.GetComponent<CameraComponent>().GetView();
-        ubo.Proj = mEntity.GetComponent<CameraComponent>().GetPerspectiveProjection();
+        ubo.Model = mEntity.GetComponent<TransformComponent>().GetTransform();
+        ubo.View = cameraComponent.GetView();
+        ubo.Proj = cameraComponent.GetPerspectiveProjection();
         ubo.Proj[1][1] *= -1;
 
         const auto commandBuffer = Renderer::Vulkan::GetCommandBuffer();
