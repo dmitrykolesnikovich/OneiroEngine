@@ -9,15 +9,16 @@
 
 namespace oe::Scene
 {
-	class SceneManager
-	{
-	public:
-		SceneManager(Scene* scene) : mScene(scene) {}
+    class SceneManager
+    {
+    public:
+        SceneManager();
 
-		void Save(const std::string& filepath, const std::string& sceneName);
-
-		bool Load(const std::string& filePath) const;
-	private:
-		Scene* mScene{};
-	};
+        Scene* GetScene();
+        void Save(const std::string& filepath, const std::string& sceneName);
+        bool Load(const std::string& filePath) const;
+    private:
+        inline static SceneManager* mInstance{};
+        std::unique_ptr<Scene> mScene{};
+    };
 }

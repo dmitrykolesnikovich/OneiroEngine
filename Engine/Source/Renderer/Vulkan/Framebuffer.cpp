@@ -4,37 +4,41 @@
 //
 
 #include "Oneiro/Renderer/Vulkan/Framebuffer.hpp"
-
-#include <stdexcept>
-
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 
+#include <stdexcept>
+
 namespace oe::Renderer::Vulkan
 {
-	void Framebuffer::Create(const std::vector<VkImageView>& attachments)
-	{
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = GetRenderPass()->Get();
-		framebufferInfo.attachmentCount = attachments.size();
-		framebufferInfo.pAttachments = attachments.data();
-		framebufferInfo.width = GetSwapChain()->GetExtent2D().width;
-		framebufferInfo.height = GetSwapChain()->GetExtent2D().height;
-		framebufferInfo.layers = 1;
+    void Framebuffer::Create(const std::vector<VkImageView>& attachments)
+    {
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = GetRenderPass()->Get();
+        framebufferInfo.attachmentCount = attachments.size();
+        framebufferInfo.pAttachments = attachments.data();
+        framebufferInfo.width = GetSwapChain()->GetExtent2D().width;
+        framebufferInfo.height = GetSwapChain()->GetExtent2D().height;
+        framebufferInfo.layers = 1;
 
-		VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(),
-			                &framebufferInfo, nullptr, &mFramebuffer), "Failed to create framebuffer!")
-	}
+        VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(), &framebufferInfo, nullptr, &mFramebuffer), "Failed to create framebuffer!")
+    }
 
-	VkFramebuffer Framebuffer::Get() const { return mFramebuffer; }
+    VkFramebuffer Framebuffer::Get() const
+    {
+        return mFramebuffer;
+    }
 
-	const VkFramebuffer* Framebuffer::GetPtr() const { return &mFramebuffer; }
+    const VkFramebuffer* Framebuffer::GetPtr() const
+    {
+        return &mFramebuffer;
+    }
 
-	void Framebuffer::Destroy()
-	{
-		vkDestroyFramebuffer(GetLogicalDevice()->Get(), mFramebuffer, nullptr);
-	}
+    void Framebuffer::Destroy()
+    {
+        vkDestroyFramebuffer(GetLogicalDevice()->Get(), mFramebuffer, nullptr);
+    }
 }

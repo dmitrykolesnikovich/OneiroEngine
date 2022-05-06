@@ -9,18 +9,20 @@
 
 namespace oe::Core
 {
-	class Timer
-	{
-	public:
-		Timer() { Start(); }
-		void Start() { mStart  = std::chrono::high_resolution_clock::now(); }
-		[[nodiscard]] float End() const
-		{
-			return std::chrono::duration_cast<std::chrono::nanoseconds>(
-				std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f * 0.001f;
-		}
+    class Timer
+    {
+    public:
+        Timer() { }
+        void Start() { mStart = std::chrono::high_resolution_clock::now(); }
 
-	private:
-		std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
-	};
+        /**
+         * @return returns total time in milliseconds
+         */
+        [[nodiscard]] float End() const
+        {
+            return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f * 0.001f * 1000.0f;
+        }
+    private:
+        std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
+    };
 }

@@ -6,23 +6,53 @@
 #pragma once
 
 #include "../Renderer.hpp"
-#include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-	class Shader;
+    class Shader;
 
-	class Pipeline
-	{
-	public:
-		void Create(const std::vector<VkShaderModule>& vertShaderModules,
-		            const std::vector<VkShaderModule>& fragShaderModules);
+    class Pipeline
+    {
+    public:
+        bool IsCreated() { return mGraphicsPipeline != VK_NULL_HANDLE && mPipelineLayout != VK_NULL_HANDLE; }
+        void Create(VkFrontFace frontFace, bool reCreate = false);
 
-		void Bind() const;
-		[[nodiscard]] VkPipelineLayout GetLayout() const { return mPipelineLayout; }
-		void Destroy();
-	private:
-		VkPipelineLayout mPipelineLayout{};
-		VkPipeline mGraphicsPipeline{};
-	};
+        void Bind() const;
+
+        [[nodiscard]] VkPipelineLayout GetLayout() const
+        {
+            return mPipelineLayout;
+        }
+
+        void Destroy(bool destroyShaders = false);
+
+        void SetVertexShaderModule(VkShaderModule vertShaderModule)
+        {
+            if (!mVertShaderModule)
+                mVertShaderModule = vertShaderModule;
+        }
+
+        void SetFragmentShaderModule(VkShaderModule fragShaderModule)
+        {
+            mFragShaderModule = fragShaderModule;
+        }
+
+        void SetVertexInputDescription(VkVertexInputBindingDescription binding)
+        {
+            mVertexInputBinding = binding;
+        }
+
+        void SetVertexInputDescription(VkVertexInputAttributeDescription attribute)
+        {
+            mVertexInputAttribute = attribute;
+        }
+
+    private:
+        VkShaderModule mVertShaderModule{};
+        VkShaderModule mFragShaderModule{};
+        VkVertexInputBindingDescription mVertexInputBinding{};
+        VkVertexInputAttributeDescription mVertexInputAttribute{};
+        VkPipelineLayout mPipelineLayout{};
+        VkPipeline mGraphicsPipeline{};
+    };
 }

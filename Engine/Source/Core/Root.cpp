@@ -13,44 +13,40 @@
 
 namespace oe::Core
 {
-	Root::Root()
-	{
-		mConfigsMap["user"] = new Config("user.cfg");
-		mConfigsMap["renderer"] = new Config("renderer.cfg");
-		mScene = new Scene::Scene;
-		mSceneManager = new Scene::SceneManager(mScene);
-	}
+    Root::Root()
+    {
+        if (mIsCreated) return;
+        mSceneManager = std::make_unique<Scene::SceneManager>();
+        mIsCreated = true;
+    }
 
-	Root::~Root()
-	{
-		mWindowInstance = nullptr;
-		mApplicationInstance = nullptr;
-	}
+    Root::~Root()
+    {
+        mWindowInstance = nullptr;
+        mApplicationInstance = nullptr;
+    }
 
-	Window* Root::GetWindow() { return mWindowInstance; }
+    Window* Root::GetWindow() { return mWindowInstance; }
 
-	Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
+    Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
 
-	Scene::Scene* Root::GetScene()
-	{
-		return mScene;
-	}
+    Scene::SceneManager* Root::GetSceneManager()
+    {
+        return mSceneManager.get();
+    }
 
-	void Root::LoadScene(const std::string& filePath)
-	{
-		if (!mSceneManager->Load(filePath))
-			OE_THROW_ERROR("Scene", "Failed to load scene: " + filePath)
-	}
+    void Root::SetApplication(Runtime::Application* app)
+    {
+        if (mApplicationInstance) OE_THROW_ERROR("Root", "Failed to set application instance, because it's already set!")
+        mApplicationInstance = app;
+    }
 
-	void Root::SetApplication(Runtime::Application* app) { if (!mApplicationInstance) mApplicationInstance = app; }
-
-	void Root::SetWindow(Window* window) { if (!mWindowInstance) mWindowInstance = window; }
-
-	Scene::SceneManager* Root::GetSceneManager() { return mSceneManager; }
-
-	Window* Root::mWindowInstance{};
-	Runtime::Application* Root::mApplicationInstance{};
-	std::unordered_map<std::string, Config*> Root::mConfigsMap;
-	Scene::Scene* Root::mScene{};
-	Scene::SceneManager* Root::mSceneManager{};
+    void Root::SetWindow(Window* window)
+    {
+        if (mWindowInstance) OE_THROW_ERROR("Root", "Failed to set window instance, because it's already set!")
+        mWindowInstance = window;
+    }
+    Window* Root::mWindowInstance{};
+    Runtime::Application* Root::mApplicationInstance{};
+    std::unique_ptr<Scene::SceneManager> Root::mSceneManager{};
 }

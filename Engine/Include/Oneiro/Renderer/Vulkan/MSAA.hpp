@@ -9,18 +9,21 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class MSAA
-	{
-	public:
-		void Create();
+    class MSAA
+    {
+    public:
+        void Create();
 
-		[[nodiscard]] VkImageView GetView() const { return mView; };
+        [[nodiscard]] VkImageView GetView() const
+        {
+            return mView;
+        };
 
-		void Destroy();
+        void Destroy();
 
-	private:
-		VkImage mImage{};
-		VkDeviceMemory mDeviceMemory{};
-		VkImageView mView{};
-	};
+    private:
+        VkImage mImage{};
+        VkDeviceMemory mDeviceMemory{};
+        VkImageView mView{};
+    };
 }

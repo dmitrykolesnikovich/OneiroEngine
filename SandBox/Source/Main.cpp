@@ -3,91 +3,37 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Core/Window.hpp"
-#include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/IndexBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/Shader.hpp"
-#include "Oneiro/Renderer/Vulkan/Texture.hpp"
-#include "Oneiro/Renderer/Vulkan/UniformBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
-#include "Oneiro/Runtime/Application.hpp"
+#include "HazelAudio/HazelAudio.h"
 
-#include "Oneiro/Scene/Entity.hpp"
-#include "Oneiro/Scene/Components.hpp"
+#include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "Oneiro/Runtime/Application.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
 public:
     bool Init() override
     {
-        namespace VkRenderer = oe::Renderer::Vulkan;
-        using namespace oe::Core;
-        
-	    oe::log::get("log")->info("Initializing...");
+        oe::log::get("log")->info("Initializing...");
 
-        mVertexBuffer.Create<Vertex>(mVertices);
-        mIndexBuffer.Create<uint16_t>(mIndices);
+        mSource.LoadFromFile("AcousticGuitar1.ogg");
+        mSource.Play();
+        mSource.SetVolume(0.01f);
 
-    	VkRenderer::Shader::Create("Shaders/vert.spv", VkRenderer::Shader::VERTEX);
-        VkRenderer::Shader::Create("Shaders/frag.spv", VkRenderer::Shader::FRAGMENT);
-
-        VkRenderer::Shader::AddVertexInputBindingDescription(0, sizeof(Vertex));
-        VkRenderer::Shader::AddVertexInputDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT,
-            sizeof(Vertex), offsetof(Vertex, Position));
-        VkRenderer::Shader::AddVertexInputDescription(0, 1, VK_FORMAT_R32G32_SFLOAT,
-            sizeof(Vertex), offsetof(Vertex, TexPosition));
-
-        mTexture.Load("Textures/texture.jpg"); // texture loading before uniform buffer creation
-
-    	mUniformBuffer.BeginLayouts();
-        mUniformBuffer.AddLayout(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-        mUniformBuffer.AddLayout(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-        mUniformBuffer.EndLayouts();
-
-        mUniformBuffer.BeginBindings(sizeof(UniformBufferObject));
-        mUniformBuffer.AddBinding(0, sizeof(UniformBufferObject), VK_SHADER_STAGE_VERTEX_BIT);
-        mUniformBuffer.AddBinding(1, 0, VK_SHADER_STAGE_FRAGMENT_BIT, &mTexture);
-        mUniformBuffer.EndBindings();
-
-        mEntity = Root::GetScene()->GetEntity("Entity");
+        mSprite2D.Init("Textures/sprite.png");
 
         return true;
     }
 
     bool Update() override
     {
-        using namespace oe;
-        UniformBufferObject ubo{};
-
-        const auto& cameraComponent = mEntity.GetComponent<CameraComponent>();
-
-        ubo.Model = mEntity.GetComponent<TransformComponent>().GetTransform();
-        ubo.View = cameraComponent.GetView();
-        ubo.Proj = cameraComponent.GetPerspectiveProjection();
-        ubo.Proj[1][1] *= -1;
-
-        const auto commandBuffer = Renderer::Vulkan::GetCommandBuffer();
-        Renderer::Vulkan::BeginScene();
-
-        mVertexBuffer.Bind(commandBuffer->Get());
-        mIndexBuffer.Bind(commandBuffer->Get());
-        mUniformBuffer.PushData<UniformBufferObject>(ubo);
-        vkCmdDrawIndexed(commandBuffer->Get(), static_cast<uint32_t>(mIndices.size()), 1, 0, 0, 0);
-
-        Renderer::Vulkan::EndScene();
-
+        mSprite2D.Draw();
         return true;
     }
 
     void Shutdown() override
     {
         oe::log::get("log")->info("Closing...");
-        mTexture.Destroy();
-        mUniformBuffer.Destroy();
-        mVertexBuffer.Destroy();
-        mIndexBuffer.Destroy();
     }
 
     void HandleKey(oe::Input::Key key, oe::Input::Action action) override
@@ -100,64 +46,16 @@ public:
             case Input::Key::ESC:
                 Stop();
                 break;
-            default: break;
-            }
-        }
-    }
-
-    void HandleButton(oe::Input::Button button, oe::Input::Action action) override
-    {
-        using namespace oe;
-        if (action == Input::Action::PRESS)
-        {
-            switch (button)
-            {
-            case Input::Button::LEFT:
-                break;
             default:
                 break;
             }
         }
     }
 
+
 private:
-
-    struct Vertex
-    {
-        glm::vec3 Position{};
-        glm::vec2 TexPosition{};
-    };
-
-    const std::vector<Vertex> mVertices = {
-		{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-		{{0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}},
-
-	    {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},
-	    {{0.5f, -0.5f, -0.5f} , {1.0f, 0.0f}},
-	    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},
-	    {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}}
-    };
-
-    const std::vector<uint16_t> mIndices = {
-        0, 1, 2, 2, 3, 0,
-        4, 5, 6, 6, 7, 4
-    };
-
-    struct UniformBufferObject
-    {
-        glm::mat4 Model{1.0f};
-        glm::mat4 View{1.0f};
-        glm::mat4 Proj{1.0f};
-    };
-
-    oe::Renderer::Vulkan::VertexBuffer mVertexBuffer;
-    oe::Renderer::Vulkan::IndexBuffer mIndexBuffer;
-    oe::Renderer::Vulkan::UniformBuffer mUniformBuffer;
-    oe::Renderer::Vulkan::Texture mTexture;
-    
-    oe::Scene::Entity mEntity{};
+    Hazel::Audio::Source mSource;
+    oe::Renderer::Sprite2D mSprite2D;
 };
 
 namespace oe::Runtime

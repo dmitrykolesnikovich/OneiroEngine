@@ -5,85 +5,103 @@
 
 #pragma once
 
-#include <vector>
+namespace oe::Renderer
+{
+    void PreInit();
+    void Init();
+    void Shutdown();
+}
 
-#include "Oneiro/Core/Oneiro.hpp"
+#ifndef OE_VULKAN_API
 
+#include "OpenGL/gl_core_4_5.hpp"
+
+namespace oe::Renderer::GL
+{
+    enum DrawMode
+    {
+        TRIANGLES = gl::TRIANGLES
+    };
+
+    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+    void Viewport(GLsizei width, GLsizei height);
+    void DrawArrays(DrawMode mode, GLint count);
+    void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
+}
+#else
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "vulkan/vulkan_core.h"
 
-namespace oe::Core
-{
-	class Window;
-	class Config;
-}
+#include "Oneiro/Core/Oneiro.hpp"
 
-namespace oe::Runtime
-{
-	class Engine;
-	class Application;
-}
+#include <vector>
 
 namespace oe::Renderer::Vulkan
 {
-	class Instance;
-	class PhysicalDevice;
-	class LogicalDevice;
-	class WindowSurface;
-	class SwapChain;
-	class ImageViews;
-	class Pipeline;
-	class RenderPass;
-	class Framebuffer;
-	class CommandPool;
-	class CommandBuffer;
-	class Shader;
-	class VertexBuffer;
-	class IndexBuffer;
-	class DescriptorSetLayout;
-	class UniformBuffer;
-	class DescriptorPool;
-	class DescriptorSet;
+    class Instance;
+    class PhysicalDevice;
+    class LogicalDevice;
+    class WindowSurface;
+    class SwapChain;
+    class ImageViews;
+    class Pipeline;
+    class RenderPass;
+    class Framebuffer;
+    class CommandPool;
+    class CommandBuffer;
+    class Shader;
+    class DescriptorSetLayout;
+    class DescriptorSet;
 
-	void PreInit();
-	void Init();
-	void Shutdown();
+    void ReCreateSwapChain();
 
-	void ReCreateSwapChain();
+    void BeginScene();
+    void BeginGuiScene();
+    void EndGuiScene();
+    void EndScene();
 
-	void BeginScene();
-	void EndScene();
+    void Bind2DPipeline();
+    void Bind3DPipeline();
 
-	void AddVertexShader(VkShaderModule shader);
-	void AddFragmentShader(VkShaderModule shader);
+    void Draw(uint32_t verticesCount);
+    void DrawIndexed(uint32_t indexCount);
 
-	void UpdateCurrentImageIndex();
+    void AddVertexShader(VkShaderModule shader);
+    void AddFragmentShader(VkShaderModule shader);
 
-	const Instance* GetInstance();
-	const PhysicalDevice* GetPhysDevice();
-	const std::vector<const char*>& GetValidationLayers();
-	const WindowSurface* GetWindowSurface();
-	const LogicalDevice* GetLogicalDevice();
-	const SwapChain* GetSwapChain();
-	const ImageViews* GetImageViews();
-	const RenderPass* GetRenderPass();
-	const Pipeline* GetPipeline();
-	const std::vector<Framebuffer>& GetFramebuffers();
-	const CommandPool* GetCommandPool();
-	const CommandBuffer* GetCommandBuffer();
-	const DescriptorPool* GetDescriptorPool();
-	const DescriptorSet* GetDescriptorSet();
-	VkQueue* GetGraphicsQueuePtr();
-	VkQueue GetGraphicsQueue();
-	VkQueue GetPresentQueue();
-	VkQueue* GetPresentQueuePtr();
-	VkSemaphore GetImageAvaibleSemaphores();
-	VkSemaphore GetRenderFinishedSemaphores();
-	VkFence GetInFlightFence();
-	uint32_t GetCurrentImageIndex();
+    uint32_t UpdateCurrentImageIndex();
+    VkDescriptorPool GetGuiDescriptorPool();
 
-	std::vector<VkVertexInputBindingDescription>& GetVertexInputBindingDescriptions();
-	std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions();
-	std::vector<DescriptorSetLayout>& GetDescriptorSetLayouts();
+    const Instance* GetInstance();
+    const PhysicalDevice* GetPhysDevice();
+    const std::vector<const char*>& GetValidationLayers();
+    const WindowSurface* GetWindowSurface();
+    const SwapChain* GetGuiSwapChain();
+    const LogicalDevice* GetLogicalDevice();
+    const SwapChain* GetSwapChain();
+    const ImageViews* GetImageViews();
+    const RenderPass* GetRenderPass();
+    const std::vector<Framebuffer>& GetFramebuffers();
+    const CommandPool* GetCommandPool();
+    const CommandBuffer* GetCommandBuffer();
+    const DescriptorSet* GetDescriptorSet();
+    VkQueue* GetGraphicsQueuePtr();
+    VkQueue GetGraphicsQueue();
+    VkQueue GetPresentQueue();
+    VkQueue* GetPresentQueuePtr();
+    VkSemaphore GetImageAvailableSemaphores();
+    VkSemaphore GetRenderFinishedSemaphores();
+    VkFence GetInFlightFence();
+    uint32_t GetCurrentImageIndex();
+    Pipeline* GetCurrentPipeline();
+
+    void SetCurrentPipeline(Pipeline* pipeline);
+    void AddPipeline(Pipeline* pipeline);
+
+    std::vector<VkVertexInputBindingDescription>& GetVertexInputBindingDescriptions();
+    std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions();
+    std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts();
+    std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts3D();
 }
+#endif

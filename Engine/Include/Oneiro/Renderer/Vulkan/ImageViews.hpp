@@ -10,15 +10,16 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class ImageViews
-	{
-	public:
-		void Create();
+    class ImageViews
+    {
+    public:
+        void Create(const SwapChain* swapChain);
 
-		void Destroy();
+        void Destroy();
 
-		[[nodiscard]] const std::vector<VkImageView>& Get() const;
-	private:
-		std::vector<VkImageView> mSwapChainImageViews;
-	};
+        [[nodiscard]] const std::vector<VkImageView>& Get() const;
+    private:
+        void CreateImageView(VkImage swapChainImage, VkImageViewCreateInfo& createInfo) const;
+        std::vector<VkImageView> mSwapChainImageViews;
+    };
 }

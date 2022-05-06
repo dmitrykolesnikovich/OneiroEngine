@@ -9,72 +9,75 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include "glm/gtx/quaternion.hpp"
 
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
 
+//#include "Oneiro/Renderer/Vulkan/Sprite2D.hpp"
+
 namespace oe
 {
-	struct TagComponent
-	{
-		TagComponent() = default;
-		TagComponent(const TagComponent&) = default;
+    struct TagComponent
+    {
+        TagComponent() = default;
+        TagComponent(const TagComponent&) = default;
 
-		TagComponent(std::string tag) : Tag(std::move(tag))
-		{
-		}
+        TagComponent(std::string tag) : Tag(std::move(tag))
+        {
+        }
 
-		std::string Tag{};
-	};
+        std::string Tag{};
+    };
 
-	struct TransformComponent
-	{
-		TransformComponent() = default;
-		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale) :
-			Translation(translation), Rotation(rotation), Scale(scale)
-		{
-		}
+    struct TransformComponent
+    {
+        TransformComponent() = default;
+        TransformComponent(const TransformComponent&) = default;
 
-		glm::vec3 Translation{};
-		glm::vec3 Rotation{};
-		glm::vec3 Scale{1.0f};
+        TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale) : Translation(translation), Rotation(rotation), Scale(scale)
+        {
+        }
 
-		[[nodiscard]] glm::mat4 GetTransform() const
-		{
-			const glm::mat4 rotation = toMat4(glm::quat(Rotation));
-			return translate(glm::mat4(1.0f), Translation)
-				* rotation
-				* scale(glm::mat4(1.0f), Scale);
-		}
-	};
+        glm::vec3 Translation{};
+        glm::vec3 Rotation{};
+        glm::vec3 Scale{1.0f};
 
-	struct CameraComponent
-	{
-		CameraComponent() = default;
-		CameraComponent(const CameraComponent&) = default;
-		//CameraComponent(const glm::vec3 & translation) : Translation(translation) {}
-		glm::vec3 Translation{2.0f};
-		glm::vec3 Up{};
-		glm::vec3 Center{};
+        [[nodiscard]] glm::mat4 GetTransform() const
+        {
+            const glm::mat4 rotation = toMat4(glm::quat(Rotation));
+            return translate(glm::mat4(1.0f), Translation) * rotation * scale(glm::mat4(1.0f), Scale);
+        }
+    };
 
-		float Near{0.1f};
-		float Far{100.0f};
-		float Fov{45.0f};
+    struct CameraComponent
+    {
+        CameraComponent() = default;
+        CameraComponent(const CameraComponent&) = default;
+        //CameraComponent(const glm::vec3 & translation) : Translation(translation) {}
+        glm::vec3 Translation{2.0f};
+        glm::vec3 Up{};
+        glm::vec3 Center{};
 
-		[[nodiscard]] glm::mat4 GetView() const { return lookAt(Translation, Center, Up); }
+        float Near{0.1f};
+        float Far{100.0f};
+        float Fov{45.0f};
 
-		[[nodiscard]] glm::mat4 GetPerspectiveProjection() const
-		{
-			return glm::perspective(glm::radians(Fov),
-				static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
-				static_cast<float>(Core::Root::GetWindow()->GetHeight()), Near, Far);
-		}
+        [[nodiscard]] glm::mat4 GetView() const
+        {
+            return lookAt(Translation, Center, Up);
+        }
 
-		[[nodiscard]] glm::mat4 GetOrthoProjection() const
-		{
-			return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, Near, Far);
-		}
-	};
+        [[nodiscard]] glm::mat4 GetPerspectiveProjection() const
+        {
+            return glm::perspective(glm::radians(Fov), static_cast<float>(Core::Root::GetWindow()->GetWidth()) / static_cast<float>(
+                    Core::Root::GetWindow()->GetHeight()), Near, Far);
+        }
+
+        [[nodiscard]] glm::mat4 GetOrthoProjection() const
+        {
+            return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, Near, Far);
+        }
+    };
 }

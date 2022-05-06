@@ -8,6 +8,7 @@
 #include "Oneiro/Core/Event.hpp"
 
 #define GLFW_INCLUDE_NONE
+
 #include "GLFW/glfw3.h"
 
 #include "spdlog/spdlog.h"
@@ -18,28 +19,30 @@
 
 namespace oe::Core
 {
-	void Init()
-	{
-		glfwSetErrorCallback([](int error, const char* description)
-		{
-			Event::Dispatcher::Post(Event::ErrorEvent(error, description));
-		});
+    void Init()
+    {
+        glfwSetErrorCallback([](int error, const char* description) {
+            Event::Dispatcher::Post(Event::ErrorEvent(error, description));
+        });
 
-		std::vector<log::sink_ptr> sinks;
-		sinks.push_back(std::make_shared<log::sinks::basic_file_sink_mt>("log.txt", true));
-		sinks.push_back(std::make_shared<log::sinks::stdout_color_sink_mt>());
+        std::vector<log::sink_ptr> sinks;
+        sinks.push_back(std::make_shared<log::sinks::basic_file_sink_mt>("log.txt", true));
+        sinks.push_back(std::make_shared<log::sinks::stdout_color_sink_mt>());
 
-		const auto firstLogger = std::make_shared<log::logger>("log", begin(sinks), end(sinks));
-		const auto secondLogger = std::make_shared<log::logger>("dbg",
-		                                                        std::make_shared<log::sinks::stdout_color_sink_mt>());
-		firstLogger->set_pattern("[%H:%M:%S] [%t] [%^%l%$] %v");
-		secondLogger->set_pattern("[%H:%M:%S] [%t] [%^%l in %s:%#%$] %v");
-		set_default_logger(secondLogger);
-		register_logger(firstLogger);
+        const auto firstLogger = std::make_shared<log::logger>("log", begin(sinks), end(sinks));
+        const auto secondLogger = std::make_shared<log::logger>("dbg", std::make_shared<log::sinks::stdout_color_sink_mt>());
 
-		if (!glfwInit())
-			throw std::runtime_error("Failed to init glfw!");
-	}
+        firstLogger->set_pattern("[%H:%M:%S] [%t] [%^%l%$] %v");
+        secondLogger->set_pattern("[%H:%M:%S] [%t] [%^%l in %s:%#%$] %v");
+        set_default_logger(secondLogger);
+        register_logger(firstLogger);
 
-	void Shutdown() { glfwTerminate(); }
+        if (!glfwInit())
+            throw std::runtime_error("Failed to init glfw!");
+    }
+
+    void Shutdown()
+    {
+        glfwTerminate();
+    }
 }

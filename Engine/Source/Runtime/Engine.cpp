@@ -9,97 +9,115 @@
 #include <stdexcept>
 #include <string>
 
-#include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Core/Core.hpp"
 #include "Oneiro/Core/Event.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Scene/SceneManager.hpp"
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include "HazelAudio/HazelAudio.h"
 
 namespace oe::Runtime
 {
-	void Engine::Init()
-	{
-		Core::Init();
-		mRoot = new Core::Root;
-		mWindow = new Core::Window;
-	}
+    void Engine::Init()
+    {
+        Core::Init();
+        Renderer::PreInit();
+        Hazel::Audio::Init();
+        mRoot = new Core::Root;
+        mWindow = new Core::Window;
+    }
 
-	void Engine::Run(const std::shared_ptr<Application>& app)
-	{
-		using namespace Core;
-		mRoot->SetApplication(app.get());
-		mRoot->SetWindow(mWindow);
+    void Engine::Run(const std::shared_ptr<Application>& app)
+    {
+        using namespace Core;
 
-		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
-		{
-			const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
-			log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
-				errorEvent.Description);
-		});
-		if (!mWindow->Create())
-			throw std::runtime_error("Failed to create window!");
+        if (mRoot == nullptr || mWindow == nullptr)
+            return;
 
-		SetupEvents();
+        mRoot->SetApplication(app.get());
+        mRoot->SetWindow(mWindow);
 
-		Renderer::Vulkan::PreInit();
+        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e) {
+            const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
+            log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " + errorEvent.Description);
+        });
 
-		mRoot->LoadScene("Scenes/main.oescene");
+        if (!mWindow->Create())
+            throw std::runtime_error("Failed to create window!");
 
-		if (!app->Init())
-			throw std::runtime_error("Failed to initialize application!");
+        SetupEvents();
 
-		Renderer::Vulkan::Init();
+        if (!app->Init())
+            throw std::runtime_error("Failed to initialize application!");
 
-		while (!mWindow->IsClosed())
-		{
-			if (app->IsStopped())
-				break;
+        Renderer::Init();
 
-			Window::PollEvents();
+        while (!mWindow->IsClosed())
+        {
+            if (!UpdateGame(app)) break;
+        }
 
-			if (!app->Update())
-				break;
-		}
+        app->Shutdown();
+    }
 
-		mRoot->GetSceneManager()->Save("Scenes/main.oescene", "Main");
-	}
+    bool Engine::UpdateGame(const std::shared_ptr<Application>& app)
+    {
+        if (app->IsStopped())
+            return false;
 
-	void Engine::Shutdown()
-	{
-		delete mWindow;
-		delete mRoot;
+        Core::Window::PollEvents();
 
-		Renderer::Vulkan::Shutdown();
-		Core::Shutdown();
-	}
+#ifdef OE_RENDERER_VULKAN
+        Renderer::Vulkan::BeginScene();
+        Renderer::GuiLayer::NewFrame();
+#endif
 
-	void Engine::SetupEvents()
-	{
-		using namespace Core;
-		Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
-		{
-			const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-			if (resizeEvent.Width > 0 || resizeEvent.Height > 0)
-				Window::UpdateSize(resizeEvent.Width, resizeEvent.Height);
-		});
+        if (!app->Update())
+            return false;
+#ifdef OE_RENDERER_VULKAN
+        Renderer::GuiLayer::Draw();
+        Renderer::Vulkan::EndScene();
+#else
+        mWindow->SwapBuffers();
+#endif
+        return true;
+    }
 
-		Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
-		{
-			const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
-			Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
-			                                  static_cast<Input::Action>(keyInputEvent.Action));
-		});
+    void Engine::Shutdown()
+    {
+        delete mWindow;
+        delete mRoot;
 
-		Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
-		{
-			const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
-			Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
-			                                     static_cast<Input::Action>(mouseButtonEvent.Action));
-		});
-	}
+        Hazel::Audio::Shutdown();
+        Renderer::Shutdown();
+        Core::Shutdown();
+    }
 
-	Core::Root* Engine::mRoot{};
-	Core::Window* Engine::mWindow{};
+    void Engine::SetupEvents()
+    {
+        using namespace Core;
+        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e) {
+            const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+            if (resizeEvent.Width > 0 || resizeEvent.Height > 0)
+            {
+                Root::GetWindow()->UpdateSize(resizeEvent.Width, resizeEvent.Height);
+                Renderer::GL::Viewport(resizeEvent.Width, resizeEvent.Height);
+            }
+        });
+
+        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e) {
+            const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
+            Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key), static_cast<Input::Action>(keyInputEvent.Action));
+        });
+
+        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e) {
+            const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
+            Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button), static_cast<Input::Action>(mouseButtonEvent.Action));
+        });
+    }
+
+    Core::Root* Engine::mRoot{};
+    Core::Window* Engine::mWindow{};
 }

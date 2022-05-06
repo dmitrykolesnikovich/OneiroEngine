@@ -12,24 +12,30 @@
 
 namespace oe::Renderer::Vulkan
 {
-	void CommandPool::Create()
-	{
-		const auto [GraphicsFamily, PresentFamily] = PhysicalDevice::FindQueueFamilies(
-			GetPhysDevice()->Get());
+    void CommandPool::Create()
+    {
+        const auto [GraphicsFamily, PresentFamily] = PhysicalDevice::FindQueueFamilies(GetPhysDevice()->Get());
 
-		VkCommandPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-		poolInfo.queueFamilyIndex = GraphicsFamily.value();
-		VK_CHECK_RESULT(vkCreateCommandPool(GetLogicalDevice()->Get(), &poolInfo,
-			                nullptr, &mCommandPool), "Failed to create command pool!")
-	}
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex = GraphicsFamily.value();
 
-	void CommandPool::Destroy()
-	{
-		vkDestroyCommandPool(GetLogicalDevice()->Get(), mCommandPool, nullptr);
-	}
+        VK_CHECK_RESULT(vkCreateCommandPool(GetLogicalDevice()->Get(), &poolInfo, nullptr, &mCommandPool), "Failed to create command pool!")
+    }
 
-	VkCommandPool CommandPool::Get() const { return mCommandPool; }
-	const VkCommandPool* CommandPool::GetPtr() const { return &mCommandPool; }
+    void CommandPool::Destroy()
+    {
+        vkDestroyCommandPool(GetLogicalDevice()->Get(), mCommandPool, nullptr);
+    }
+
+    VkCommandPool CommandPool::Get() const
+    {
+        return mCommandPool;
+    }
+
+    const VkCommandPool* CommandPool::GetPtr() const
+    {
+        return &mCommandPool;
+    }
 }

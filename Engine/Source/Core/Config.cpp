@@ -6,45 +6,48 @@
 #include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Core/Logger.hpp"
 
+#include <filesystem>
+#include <fstream>
+
+namespace
+{
+    std::unordered_map<std::string, std::unique_ptr<oe::Core::Config>> configsMap;
+}
 
 namespace oe::Core
 {
-	Config::Config(const std::string& file)
-	{
-		try
-		{
-			if (!std::filesystem::is_directory("Configs"))
-				std::filesystem::create_directory("Configs");
-			mIFile.open("Configs/" + file, std::ios::app);
-			mOFile.open("Configs/" + file, std::ios::app);
-			if (!mIFile.is_open() || !mOFile.is_open())
-				log::get("log")->warn("Failed to open config " + file + " file!");
-		}
-		catch (const std::exception& ex)
-		{
-			throw std::runtime_error(ex.what());
-		}
-	}
+    Config::Config(const std::string& file)
+    {
+        try
+        {
+            if (!std::filesystem::is_directory("Configs"))
+                std::filesystem::create_directory("Configs");
 
-	std::string Config::GetValue(const std::string& cfg)
-	{
-		std::string line;
-		while (std::getline(mIFile, line))
-		{
-			if (line.size() >= cfg.size() && std::string(1, line[cfg.size()]) == "=")
-			{
-				mIFile.seekg(0);
-				line.erase(0, cfg.size() + 1);
-				return line;
-			}
-		}
-		mIFile.seekg(0);
-		return "None";
-	}
+            mFileState.OpenLibraries(sol::lib::base);
+            if (!mFileState.LoadFile("Configs/" + file + ".cfg").valid() || !mFileState.GetFile().is_open())
+                log::get("log")->warn("Failed to open config " + file + ".cfg" + " file!");
+        }
+        catch (const std::exception& ex)
+        {
+            throw std::runtime_error(ex.what());
+        }
+    }
 
-	void Config::WriteData(const std::string& cfg, const std::string& value)
-	{
-		mOFile.seekp(0);
-		mOFile << cfg << "=" << value << '\n';
-	}
+    void Config::WriteData(const std::string& cfg, const std::string& value)
+    {
+        (*mFileState.GetState())[cfg] = value;
+        mFileState.GetFile() << cfg << " = " << value;
+    }
+
+    Config* Config::Get(const std::string& name)
+    {
+        if (const auto& it = configsMap.find(name); it != configsMap.end())
+            return it->second.get();
+        return nullptr;
+    }
+
+    Config* Config::Add(const std::string& name)
+    {
+        return (configsMap[name] = std::make_unique<Config>(name)).get();
+    }
 }

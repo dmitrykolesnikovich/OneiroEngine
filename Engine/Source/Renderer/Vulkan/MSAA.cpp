@@ -11,23 +11,19 @@
 
 namespace oe::Renderer::Vulkan
 {
-	void MSAA::Create()
-	{
-		const VkFormat colorFormat = GetSwapChain()->GetImageFormat();
-		Texture::CreateImage(GetSwapChain()->GetExtent2D().width, GetSwapChain()->GetExtent2D().height,
-		                     colorFormat, VK_IMAGE_TILING_OPTIMAL,
-		                     VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, mImage, mDeviceMemory,
-		                     GetPhysDevice()->GetMsaaSamples());
-		Texture::CreateImageView(&mView, mImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-	}
+    void MSAA::Create()
+    {
+        const VkFormat colorFormat = GetSwapChain()->GetImageFormat();
+        Image::Create(GetSwapChain()->GetExtent2D().width, GetSwapChain()->GetExtent2D().height, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, mImage, mDeviceMemory, GetPhysDevice()->GetMsaaSamples());
+        Image::CreateView(&mView, mImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    }
 
-	void MSAA::Destroy()
-	{
-		const auto device = GetLogicalDevice()->Get();
-		vkDeviceWaitIdle(device);
-		vkDestroyImageView(device, mView, nullptr);
-		vkDestroyImage(device, mImage, nullptr);
-		vkFreeMemory(device, mDeviceMemory, nullptr);
-	}
+    void MSAA::Destroy()
+    {
+        const auto logicalDevice = GetLogicalDevice();
+        logicalDevice->WaitIdle();
+        vkDestroyImageView(logicalDevice->Get(), mView, nullptr);
+        vkDestroyImage(logicalDevice->Get(), mImage, nullptr);
+        vkFreeMemory(logicalDevice->Get(), mDeviceMemory, nullptr);
+    }
 }

@@ -9,24 +9,24 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class CommandBuffer
-	{
-	public:
-		void Create();
+    class CommandBuffer
+    {
+    public:
+        void Create();
 
-		void Begin() const;
+        void Begin() const;
 
-		void End() const;
+        void End() const;
 
-		void Reset() const;
+        void Reset() const;
 
-		static VkCommandBuffer BeginSingleTimeCommands();
+        static VkCommandBuffer BeginSingleTimeCommands();
 
-		static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
+        static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-		[[nodiscard]] VkCommandBuffer Get() const;
-		[[nodiscard]] const VkCommandBuffer* GetPtr() const;
-	private:
-		VkCommandBuffer mCommandBuffer{};
-	};
+        [[nodiscard]] VkCommandBuffer Get() const;
+        [[nodiscard]] const VkCommandBuffer* GetPtr() const;
+    private:
+        VkCommandBuffer mCommandBuffer{};
+    };
 }

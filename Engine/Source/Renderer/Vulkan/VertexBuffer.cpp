@@ -6,21 +6,22 @@
 #include "Oneiro/Renderer/Vulkan/VertexBuffer.hpp"
 
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
-	void VertexBuffer::Bind(VkCommandBuffer commandBuffer) const
-	{
-		const VkBuffer buffers[] = {mBuffer};
-		constexpr VkDeviceSize offsets[] = {0};
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
-	}
+    void VertexBuffer::Bind() const
+    {
+        const VkBuffer buffers[] = {mBuffer};
+        constexpr VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(GetCommandBuffer()->Get(), 0, 1, buffers, offsets);
+    }
 
-	void VertexBuffer::Destroy()
-	{
-		const auto device = GetLogicalDevice()->Get();
-		vkDeviceWaitIdle(device);
-		vkDestroyBuffer(device, mBuffer, nullptr);
-		vkFreeMemory(device, mBufferMemory, nullptr);
-	}
+    void VertexBuffer::Destroy()
+    {
+        GetLogicalDevice()->WaitIdle();
+        const auto device = GetLogicalDevice()->Get();
+        vkDestroyBuffer(device, mBuffer, nullptr);
+        vkFreeMemory(device, mBufferMemory, nullptr);
+    }
 }

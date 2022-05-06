@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(Oneiro)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -9,32 +9,50 @@ set(SPDLOG_ENABLE_PCH ON CACHE BOOL "" FORCE)
 set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
 set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(YAML_BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+set(BUILD_IMGUI ON CACHE BOOL "" FORCE)
+set(BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXTENSIONS OFF CACHE BOOL "" FORCE)
 
-find_package(Vulkan REQUIRED)
-
-file(GLOB SHADERFILES "Shaders/*.spv")
-file(COPY ${SHADERFILES} DESTINATION ${BINARY_DIRECTORY}/Shaders/)
+if (OE_API_VULKAN)
+    message(FATAL_ERROR "Currently Oneiro Engine dont support Vulkan API")
+else ()
+    find_package(OpenGL REQUIRED)
+    file(GLOB OPENGL_SOURCE "../ThirdParty/OpenGL/src/*.cpp")
+    file(GLOB IMGUI_SOURCE
+            "../ThirdParty/imgui/*.cpp"
+            "../ThirdParty/imgui/backends/imgui_impl_opengl3.cpp"
+            "../ThirdParty/imgui/backends/imgui_impl_glfw.cpp"
+            )
+    file(GLOB ONEIRO_RENDERER_SOURCE
+            "Source/Renderer/OpenGL/*.cpp"
+            )
+endif ()
 
 file(GLOB ONEIRO_SOURCE
         "Source/Core/*.cpp"
-        "Source/Renderer/*.cpp" "Source/Renderer/Vulkan/*.cpp"
+        "Source/Renderer/*.cpp"
+        "Source/Renderer/Gui/*.cpp"
         "Source/Runtime/*.cpp"
         "Source/Scene/*.cpp"
         )
-file(GLOB IMGUI_SOURCE
-        "../ThirdParty/imgui/*.cpp"
-        "../ThirdParty/imgui/backends/imgui_impl_glfw.cpp"
-        )
 
-add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE})
+add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE} ${IMGUI_SOURCE} ${OPENGL_SOURCE} ${ONEIRO_RENDERER_SOURCE})
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
 add_subdirectory(../ThirdParty/spdlog ThirdParty/spdlog)
 add_subdirectory(../ThirdParty/entt ThirdParty/entt)
 add_subdirectory(../ThirdParty/yaml-cpp ThirdParty/yaml-cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include
-                                                  Include/
-                                                  )
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ThirdParty/imgui)
-target_link_libraries(${PROJECT_NAME} glfw glm spdlog Vulkan::Vulkan EnTT yaml-cpp::yaml-cpp)
+add_subdirectory(../ThirdParty/sol2 ThirdParty/sol2)
+add_subdirectory(../ThirdParty/lua ThirdParty/lua)
+add_subdirectory(../ThirdParty/HazelAudio ThirdParty/HazelAudio)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include ../ThirdParty/imgui/ Include/ ../ThirdParty/OpenGL/include)
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ../ThirdParty/imgui)
+target_link_libraries(${PROJECT_NAME} glfw glm spdlog EnTT yaml-cpp::yaml-cpp lua_static sol2::sol2 Hazel.Audio)
+if (OE_API_VULKAN)
+    # Link Vulkan...
+else ()
+    target_link_libraries(${PROJECT_NAME} OpenGL::GL)
+endif ()
 target_link_libraries(${CMAKE_PROJECT_NAME} Oneiro)

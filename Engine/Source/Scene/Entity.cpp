@@ -7,8 +7,9 @@
 
 namespace oe::Scene
 {
-	Entity::Entity() = default;
+    Entity::Entity() = default;
 
-	Entity::Entity(entt::entity handle, Scene * scene) : mHandle(handle), mScene(scene)
-	{}
+    Entity::Entity(entt::entity handle, Scene* scene) : mHandle(handle), mScene(scene)
+    {
+    }
 }

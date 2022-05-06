@@ -11,18 +11,11 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class Shader
-	{
-	public:
-		enum Type
-		{
-			VERTEX,
-			FRAGMENT
-		};
-
-		static void Create(const std::string& pathToShader, Type shaderType);
-		static void AddVertexInputBindingDescription(uint32_t binding, uint32_t stride);
-		static void AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride,
-		                                      uint32_t offset);
-	};
+    class Shader
+    {
+    public:
+        VkShaderModule Create(const std::string& pathToShader);
+        VkVertexInputBindingDescription AddVertexInputBindingDescription(uint32_t binding, uint32_t stride);
+        VkVertexInputAttributeDescription AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset);
+    };
 }

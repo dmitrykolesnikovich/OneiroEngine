@@ -6,47 +6,44 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
+#include <memory>
 
 namespace oe::Core
 {
-	class Window;
-	class Config;
+    class Window;
+    class Config;
 }
 
 namespace oe::Runtime
 {
-	class Engine;
-	class Application;
+    class Application;
 }
 
 namespace oe::Scene
 {
-	class Scene;
-	class SceneManager;
+    class Scene;
+    class SceneManager;
 }
 
 namespace oe::Core
 {
-	class Root
-	{
-	public:
-		Root();
-		~Root();
-	public: // Getters
-		static Window* GetWindow();
-		static Runtime::Application* GetApplication();
-		static Scene::Scene* GetScene();
-		static void LoadScene(const std::string& filePath);
-	public: // Setters (NOT STATIC!)
-		void SetApplication(Runtime::Application* app);
-		void SetWindow(Window* window);
-	public: // Getters (NON STATIC!)
-		Scene::SceneManager* GetSceneManager();
-	private:
-		static std::unordered_map<std::string, Config*> mConfigsMap;
-		static Window* mWindowInstance;
-		static Runtime::Application* mApplicationInstance;
-		static Scene::Scene* mScene;
-		static Scene::SceneManager* mSceneManager;
-	};
+    class Root
+    {
+    public:
+        Root();
+        ~Root();
+    public: // Getters
+        static Window* GetWindow();
+        static Runtime::Application* GetApplication();
+        static Scene::SceneManager* GetSceneManager();
+    public: // Setters (NOT STATIC!)
+        void SetApplication(Runtime::Application* app);
+        void SetWindow(Window* window);
+    private:
+        static Window* mWindowInstance;
+        static Runtime::Application* mApplicationInstance;
+        static std::unique_ptr<Scene::SceneManager> mSceneManager;
+        inline static bool mIsCreated{};
+    };
 }

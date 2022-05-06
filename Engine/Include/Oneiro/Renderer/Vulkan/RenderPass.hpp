@@ -9,20 +9,19 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class RenderPass
-	{
-	public:
-		void Create();
+    class RenderPass
+    {
+    public:
+        void Create();
 
-		void Begin() const;
+        static void Begin(VkRenderPass renderPass);
+        static void End();
 
-		static void End();
+        [[nodiscard]] VkRenderPass Get() const;
+        [[nodiscard]] const VkRenderPass* GetPtr() const;
 
-		[[nodiscard]] VkRenderPass Get() const;
-		[[nodiscard]] const VkRenderPass* GetPtr() const;
-
-		void Destroy();
-	private:
-		VkRenderPass mRenderPass{};
-	};
+        void Destroy();
+    private:
+        VkRenderPass mRenderPass{};
+    };
 }

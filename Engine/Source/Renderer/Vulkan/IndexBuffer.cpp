@@ -4,18 +4,20 @@
 //
 
 #include "Oneiro/Renderer/Vulkan/IndexBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
 
 namespace oe::Renderer::Vulkan
 {
-	void IndexBuffer::Bind(VkCommandBuffer commandBuffer) const
-	{
-		vkCmdBindIndexBuffer(commandBuffer, mBuffer, 0, VK_INDEX_TYPE_UINT16);
-	}
+    void IndexBuffer::Bind() const
+    {
+        vkCmdBindIndexBuffer(GetCommandBuffer()->Get(), mBuffer, 0, VK_INDEX_TYPE_UINT16);
+    }
 
-	void IndexBuffer::Destroy()
-	{
-		vkDeviceWaitIdle(GetLogicalDevice()->Get());
-		vkDestroyBuffer(GetLogicalDevice()->Get(), mBuffer, nullptr);
-		vkFreeMemory(GetLogicalDevice()->Get(), mBufferMemory, nullptr);
-	}
+    void IndexBuffer::Destroy()
+    {
+        GetLogicalDevice()->WaitIdle();
+        const auto device = GetLogicalDevice()->Get();
+        vkDestroyBuffer(device, mBuffer, nullptr);
+        vkFreeMemory(device, mBufferMemory, nullptr);
+    }
 }

@@ -9,16 +9,16 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class ValidationLayers
-	{
-	public:
-		void Destroy() const;
+    class ValidationLayers
+    {
+    public:
+        void Destroy() const;
 
-		static bool CheckSupport();
-		static void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+        static bool CheckSupport();
+        static void PopulateCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
-		void Setup();
-	private:
-		VkDebugUtilsMessengerEXT mDebugUtilsMessenger{};
-	};
+        void Setup();
+    private:
+        VkDebugUtilsMessengerEXT mDebugUtilsMessenger{};
+    };
 }

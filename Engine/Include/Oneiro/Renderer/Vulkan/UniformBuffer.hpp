@@ -14,39 +14,39 @@
 
 namespace oe::Renderer::Vulkan
 {
-	class UniformBuffer
-	{
-	public:
-		void BeginLayouts();
-		void AddLayout(int binding, VkDescriptorType type, VkShaderStageFlagBits stage);
-		void EndLayouts();
+    class UniformBuffer
+    {
+    public:
+        void BeginLayouts();
+        void AddLayout(int binding, VkDescriptorType type, VkShaderStageFlagBits stage);
+        void EndLayouts(bool is3d);
 
-		void BeginBindings(VkDeviceSize size);
-		void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture = nullptr);
-		void EndBindings();
+        void BeginBindings(VkDeviceSize size, uint32_t bindingsCount);
+        void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture = nullptr);
+        void EndBindings();
 
-		template <class T>
-		void PushData(const T& data) const;
+        template<class T>
+        void PushData(const T& data) const;
 
-		[[nodiscard]] VkBuffer Get() const;
+        [[nodiscard]] VkBuffer Get() const;
 
-		void Destroy();
-	private:
-		DescriptorSetLayout mSetLayout;
-		DescriptorPool mDescriptorPool;
-		DescriptorSet mDescriptorSet;
-		VkBuffer mBuffer{};
-		VkDeviceMemory mBufferMemory{};
-	};
+        void Destroy();
+    private:
+        DescriptorSetLayout mSetLayout;
+        DescriptorPool mDescriptorPool;
+        DescriptorSet mDescriptorSet;
+        VkBuffer mBuffer{};
+        VkDeviceMemory mBufferMemory{};
+    };
 
-	template <class T>
-	void UniformBuffer::PushData(const T& data) const
-	{
-		void* memData;
-		const auto device = GetLogicalDevice()->Get();
-		vkMapMemory(device, mBufferMemory, 0, sizeof(T), 0, &memData);
-		memcpy(memData, &data, sizeof(T));
-		vkUnmapMemory(device, mBufferMemory);
-		mDescriptorSet.Bind();
-	}
+    template<class T>
+    void UniformBuffer::PushData(const T& data) const
+    {
+        void* memData;
+        const auto device = GetLogicalDevice()->Get();
+        vkMapMemory(device, mBufferMemory, 0, sizeof(T), 0, &memData);
+        memcpy(memData, &data, sizeof(T));
+        vkUnmapMemory(device, mBufferMemory);
+        mDescriptorSet.Bind();
+    }
 }

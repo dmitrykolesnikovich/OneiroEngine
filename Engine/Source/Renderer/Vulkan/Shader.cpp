@@ -13,56 +13,47 @@
 
 namespace oe::Renderer::Vulkan
 {
-	void Shader::Create(const std::string& pathToShader, Type shaderType)
-	{
-		std::ifstream file(pathToShader, std::ios::ate | std::ios::binary);
+    VkShaderModule Shader::Create(const std::string& pathToShader)
+    {
+        std::ifstream file(pathToShader, std::ios::ate | std::ios::binary);
 
-		if (!file.is_open())
-			log::get("log")->info("Failed to open shader file: " + pathToShader);
+        if (!file.is_open())
+            log::get("log")->info("Failed to open shader file: " + pathToShader);
 
-		const std::streamsize fileSize = file.tellg();
+        const std::streamsize fileSize = file.tellg();
 
-		std::vector<char> buffer(fileSize);
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-		file.close();
+        std::vector<char> buffer(fileSize);
+        file.seekg(0);
+        file.read(buffer.data(), fileSize);
+        file.close();
 
-		VkShaderModuleCreateInfo createInfo{};
-		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = buffer.size();
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(buffer.data());
-		VkShaderModule shaderModule;
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = buffer.size();
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(buffer.data());
+        VkShaderModule shaderModule;
 
-		VK_CHECK_RESULT(vkCreateShaderModule(GetLogicalDevice()->Get(),
-			                &createInfo, nullptr, &shaderModule), "Failed to create shader module: " + pathToShader)
+        VK_CHECK_RESULT(vkCreateShaderModule(GetLogicalDevice()->Get(), &createInfo, nullptr, &shaderModule), "Failed to create shader module: " + pathToShader)
 
-		switch (shaderType)
-		{
-		case VERTEX:
-			AddVertexShader(shaderModule);
-			break;
-		case FRAGMENT:
-			AddFragmentShader(shaderModule);
-			break;
-		}
-	}
+        return shaderModule;
+    }
 
-	void Shader::AddVertexInputBindingDescription(uint32_t binding, uint32_t stride)
-	{
-		VkVertexInputBindingDescription bindingDescription{};
-		bindingDescription.binding = binding;
-		bindingDescription.stride = stride;
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		GetVertexInputBindingDescriptions().push_back(bindingDescription);
-	}
+    VkVertexInputBindingDescription Shader::AddVertexInputBindingDescription(uint32_t binding, uint32_t stride)
+    {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = binding;
+        bindingDescription.stride = stride;
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+        return bindingDescription;
+    }
 
-	void Shader::AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset)
-	{
-		VkVertexInputAttributeDescription attributeDescriptions{};
-		attributeDescriptions.binding = binding;
-		attributeDescriptions.location = location;
-		attributeDescriptions.format = format;
-		attributeDescriptions.offset = offset;
-		GetVertexInputAttributeDescriptions().push_back(attributeDescriptions);
-	}
+    VkVertexInputAttributeDescription Shader::AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset)
+    {
+        VkVertexInputAttributeDescription attributeDescriptions{};
+        attributeDescriptions.binding = binding;
+        attributeDescriptions.location = location;
+        attributeDescriptions.format = format;
+        attributeDescriptions.offset = offset;
+        return attributeDescriptions;
+    }
 }
