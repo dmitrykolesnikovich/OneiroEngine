@@ -15,9 +15,9 @@ namespace oe::Runtime
     public:
         static void Init();
         static void Run(const std::shared_ptr<Application>& app);
-        static bool UpdateGame(const std::shared_ptr<Application>& app);
         static void Shutdown();
     private:
+        static bool UpdateGame(const std::shared_ptr<Application>& app);
         static void SetupEvents();
         static Core::Window* mWindow;
         static Core::Root* mRoot;

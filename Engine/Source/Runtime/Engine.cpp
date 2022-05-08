@@ -15,8 +15,9 @@
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Scene/SceneManager.hpp"
-#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+//#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include "HazelAudio/HazelAudio.h"
+#include "Oneiro/Core/ResourceManager.hpp"
 
 namespace oe::Runtime
 {
@@ -53,6 +54,8 @@ namespace oe::Runtime
             throw std::runtime_error("Failed to initialize application!");
 
         Renderer::Init();
+        
+        LoadResources();
 
         while (!mWindow->IsClosed())
         {

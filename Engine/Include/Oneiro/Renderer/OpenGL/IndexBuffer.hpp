@@ -13,7 +13,7 @@ namespace oe::Renderer
     {
     public:
         ~IndexBuffer();
-        void Init(const uint32_t* data, uint32_t count);
+        void Init(const void* data, int64_t count);
         void Bind() const;
         void UnBind() const;
     private:

@@ -6,22 +6,25 @@
 #include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-oe::Renderer::VertexArray::~VertexArray()
+namespace oe::Renderer
 {
-    gl::DeleteVertexArrays(1, &mID);
-}
+    VertexArray::~VertexArray()
+    {
+        gl::DeleteVertexArrays(1, &mID);
+    }
 
-void oe::Renderer::VertexArray::Init()
-{
-    gl::GenVertexArrays(1, &mID);
-}
+    void VertexArray::Init()
+    {
+        gl::GenVertexArrays(1, &mID);
+    }
 
-void oe::Renderer::VertexArray::Bind() const
-{
-    gl::BindVertexArray(mID);
-}
+    void VertexArray::Bind() const
+    {
+        gl::BindVertexArray(mID);
+    }
 
-void oe::Renderer::VertexArray::UnBind() const
-{
-    gl::BindVertexArray(0);
+    void VertexArray::UnBind() const
+    {
+        gl::BindVertexArray(0);
+    }
 }

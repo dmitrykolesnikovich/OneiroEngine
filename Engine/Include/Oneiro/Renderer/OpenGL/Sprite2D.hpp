@@ -23,7 +23,7 @@ namespace oe::Renderer
         void Scale(glm::vec2 scale);
     private:
         glm::mat4 mModel{1.0f};
-        Texture mTexture{};
+        Texture* mTexture{};
         Shader mShader{};
         VertexBuffer mVBO;
         VertexArray mVAO;

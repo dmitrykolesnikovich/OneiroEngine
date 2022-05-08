@@ -3,6 +3,7 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
+#include <Oneiro/Core/ResourceManager.hpp>
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
@@ -61,15 +62,15 @@ namespace oe::Renderer
         VertexBuffer::PushLayout(0, 3, 3, 0);
         mVAO.UnBind();
         mVBO.UnBind();
-        mTexture.PreLoad(path);
-        mTexture.Load();
+        mTexture = Core::GetTextureManager().Add(std::make_shared<Texture>());
+        mTexture->Init(path);
     }
 
     bool Sprite2D::Load()
     {
-        if (!mTexture.IsLoaded())
+        if (!mTexture->IsLoaded())
         {
-            mTexture.Load();
+            mTexture->Load();
             return true;
         }
         return false;
@@ -77,9 +78,9 @@ namespace oe::Renderer
 
     bool Sprite2D::UnLoad()
     {
-        if (mTexture.IsLoaded())
+        if (mTexture->IsLoaded())
         {
-            mTexture.UnLoad();
+            mTexture->UnLoad();
             return true;
         }
         return false;
@@ -89,9 +90,9 @@ namespace oe::Renderer
     {
         mShader.Use();
         if (mKeepAR)
-            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture.GetAR());
+            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
         mVAO.Bind();
-        mTexture.Bind();
+        mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);
     }
 

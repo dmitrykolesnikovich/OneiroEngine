@@ -40,7 +40,7 @@ namespace oe::Renderer
         gl::DrawArrays(mode, 0, count);
     }
 
-    void GL::DrawArraysInstanced(GL::DrawMode mode, GLsizei arraysCount, GLsizei instanceCount)
+    [[maybe_unused]] void GL::DrawArraysInstanced(GL::DrawMode mode, GLsizei arraysCount, GLsizei instanceCount)
     {
         gl::DrawArraysInstanced(mode, 0, arraysCount, instanceCount);
     }

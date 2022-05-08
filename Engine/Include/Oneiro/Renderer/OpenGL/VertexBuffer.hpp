@@ -17,7 +17,7 @@ namespace oe::Renderer
         void Bind() const;
         void UnBind() const;
 
-        static void PushLayout(uint32_t id, uint32_t size, uint32_t stride, uint32_t p);
+        static void PushLayout(uint32_t id, int size, uint32_t stride, uint32_t p);
     private:
         uint32_t mID{};
     };

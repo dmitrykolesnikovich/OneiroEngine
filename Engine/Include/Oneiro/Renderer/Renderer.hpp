@@ -26,7 +26,7 @@ namespace oe::Renderer::GL
     void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
     void Viewport(GLsizei width, GLsizei height);
     void DrawArrays(DrawMode mode, GLint count);
-    void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
+    [[maybe_unused]] void DrawArraysInstanced(DrawMode mode, GLsizei arraysCount, GLsizei instanceCount);
 }
 #else
 #define GLFW_INCLUDE_NONE

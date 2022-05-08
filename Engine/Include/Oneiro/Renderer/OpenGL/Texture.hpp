@@ -14,7 +14,8 @@ namespace oe::Renderer
         struct TextureData;
     public:
         ~Texture();
-        bool PreLoad(const std::string& path);
+        void Init(const std::string& path);
+        bool PreLoad();
         void Load();
         void UnLoad();
         void Bind() const;
@@ -34,6 +35,7 @@ namespace oe::Renderer
             float AR{};
             uint8_t* Data{};
         };
+        std::string mTexturePath;
         void GenerateTexture();
         TextureData mData;
         uint32_t mID{};

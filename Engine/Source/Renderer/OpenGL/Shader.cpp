@@ -4,117 +4,123 @@
 //
 
 #include <fstream>
-#include <sstream>
 #include <cstring>
 #include <iostream>
 #include "Oneiro/Renderer/OpenGL/Shader.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Root.hpp"
 
-uint32_t CreateVertexShader(const char* src);
-uint32_t CreateFragmentShader(const char* src);
-uint32_t CreateProgram(uint32_t vID, uint32_t fID);
-void CheckCompileErrors(uint32_t ID, const char* type);
-
-enum ShaderType
+namespace
 {
-    VERTEX, FRAGMENT
-};
+    uint32_t createVertexShader(const char* shaderSource);
+    uint32_t createFragmentShader(const char* shaderSource);
+    uint32_t createProgram(GLuint vertexShaderId, GLuint fragmentShaderId);
+    void checkCompileErrors(GLuint id, const char* type);
 
-oe::Renderer::Shader::~Shader()
-{
-    gl::DeleteShader(mID);
+    enum ShaderType
+    {
+        VERTEX,
+        FRAGMENT
+    };
 }
 
-void oe::Renderer::Shader::LoadFromFile(const std::string& path)
+namespace oe::Renderer
 {
-    std::string vertexShaderSrc{};
-    std::string fragmentShaderSrc{};
-
-    std::ifstream shaderFile{};
-
-    try
+    Shader::~Shader()
     {
-        shaderFile.open(path);
+        gl::DeleteShader(mID);
+    }
 
-        std::stringstream ss[2];
-        std::string line{};
-        ShaderType type{};
-        while (std::getline(shaderFile, line))
+    void Shader::LoadFromFile(const std::string& path)
+    {
+        std::string vertexShaderSrc{};
+        std::string fragmentShaderSrc{};
+
+        std::ifstream shaderFile{};
+
+        try
         {
-            if (line.find("// VERTEX SHADER") != std::string::npos)
+            shaderFile.open(path);
+
+            std::stringstream ss[2];
+            std::string line{};
+            ShaderType type{};
+            while (std::getline(shaderFile, line))
             {
-                type = VERTEX;
-                ss[static_cast<int>(type)] << "#version 330 core" << '\n';
+                if (line.find("// VERTEX SHADER") != std::string::npos)
+                {
+                    type = VERTEX;
+                    ss[static_cast<int>(type)] << "#version 330 core" << '\n';
+                }
+                else if (line.find("// FRAGMENT SHADER") != std::string::npos)
+                {
+                    type = FRAGMENT;
+                    ss[static_cast<int>(type)] << "#version 330 core" << '\n';
+                    ss[static_cast<int>(type)] << "out vec4 FragColor;" << '\n';
+                }
+                else
+                {
+                    ss[static_cast<int>(type)] << line << '\n';
+                }
             }
-            else if (line.find("// FRAGMENT SHADER") != std::string::npos)
-            {
-                type = FRAGMENT;
-                ss[static_cast<int>(type)] << "#version 330 core" << '\n';
-                ss[static_cast<int>(type)] << "out vec4 FragColor;" << '\n';
-            }
-            else
-            {
-                ss[static_cast<int>(type)] << line << '\n';
-            }
+
+            shaderFile.close();
+
+            vertexShaderSrc = ss[static_cast<int>(VERTEX)].str();
+            fragmentShaderSrc = ss[static_cast<int>(FRAGMENT)].str();
+        }
+        catch (const std::exception& ex)
+        {
+            log::get("log")->warn("Failed to load shader at" + path + " path! Exception: " + ex.what());
         }
 
-        shaderFile.close();
+        const uint32_t vertexShader = createVertexShader(vertexShaderSrc.c_str());
+        const uint32_t fragmentShader = createFragmentShader(fragmentShaderSrc.c_str());
 
-        vertexShaderSrc = ss[static_cast<int>(VERTEX)].str();
-        fragmentShaderSrc = ss[static_cast<int>(FRAGMENT)].str();
+        mID = createProgram(vertexShader, fragmentShader);
+
+        gl::DeleteShader(vertexShader);
+        gl::DeleteShader(fragmentShader);
     }
-    catch (const std::exception& ex)
+
+    void Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc)
     {
-        log::get("log")->warn("Failed to load shader at" + path + " path! Exception: " + ex.what());
+        const uint32_t vShader = createVertexShader(vSrc.c_str());
+        const uint32_t fShader = createFragmentShader(fSrc.c_str());
+        mID = createProgram(vShader, fShader);
+        gl::DeleteShader(vShader);
+        gl::DeleteShader(fShader);
     }
 
-    const uint32_t vertexShader = CreateVertexShader(vertexShaderSrc.c_str());
-    const uint32_t fragmentShader = CreateFragmentShader(fragmentShaderSrc.c_str());
+    void Shader::Use() const
+    {
+        gl::UseProgram(mID);
+    }
 
-    mID = CreateProgram(vertexShader, fragmentShader);
+    void Shader::SetUniform(const char* uName, int uVal) const
+    {
+        gl::Uniform1i(GetUniformLocation(uName), uVal);
+    }
 
-    gl::DeleteShader(vertexShader);
-    gl::DeleteShader(fragmentShader);
-}
+    void Shader::SetUniform(const char* uName, float uVal) const
+    {
+        gl::Uniform1f(GetUniformLocation(uName), uVal);
+    }
 
-void oe::Renderer::Shader::LoadFromSource(const std::string& vSrc, const std::string& fSrc)
-{
-    const uint32_t vShader = CreateVertexShader(vSrc.c_str());
-    const uint32_t fShader = CreateFragmentShader(fSrc.c_str());
-    mID = CreateProgram(vShader, fShader);
-    gl::DeleteShader(vShader);
-    gl::DeleteShader(fShader);
-}
+    void Shader::SetUniform(const char* uName, const glm::vec2& uVal) const
+    {
+        gl::Uniform2fv(GetUniformLocation(uName), 1, &uVal[0]);
+    }
 
-void oe::Renderer::Shader::Use() const
-{
-    gl::UseProgram(mID);
-}
+    void Shader::SetUniform(const char* uName, const glm::vec3& uVal) const
+    {
+        gl::Uniform3fv(GetUniformLocation(uName), 1, &uVal[0]);
+    }
 
-void oe::Renderer::Shader::SetUniform(const char* uName, int uVal) const
-{
-    gl::Uniform1i(GetUniformLocation(uName), uVal);
-}
-
-void oe::Renderer::Shader::SetUniform(const char* uName, float uVal) const
-{
-    gl::Uniform1f(GetUniformLocation(uName), uVal);
-}
-
-void oe::Renderer::Shader::SetUniform(const char* uName, const glm::vec2& uVal) const
-{
-    gl::Uniform2fv(GetUniformLocation(uName), 1, &uVal[0]);
-}
-
-void oe::Renderer::Shader::SetUniform(const char* uName, const glm::vec3& uVal) const
-{
-    gl::Uniform3fv(GetUniformLocation(uName), 1, &uVal[0]);
-}
-
-void oe::Renderer::Shader::SetUniform(const char* uName, const glm::mat4& uVal) const
-{
-    gl::UniformMatrix4fv(GetUniformLocation(uName), 1, gl::FALSE_, &uVal[0][0]);
+    void Shader::SetUniform(const char* uName, const glm::mat4& uVal) const
+    {
+        gl::UniformMatrix4fv(GetUniformLocation(uName), 1, gl::FALSE_, &uVal[0][0]);
+    }
 }
 
 GLint oe::Renderer::Shader::GetUniformLocation(const char* name) const
@@ -126,55 +132,58 @@ GLint oe::Renderer::Shader::GetUniformLocation(const char* name) const
     return location;
 }
 
-uint32_t CreateVertexShader(const char* src)
+namespace
 {
-    const uint32_t ID = gl::CreateShader(gl::VERTEX_SHADER);
-    gl::ShaderSource(ID, 1, &src, nullptr);
-    gl::CompileShader(ID);
-    CheckCompileErrors(ID, "VERTEX");
-    return ID;
-}
-
-uint32_t CreateFragmentShader(const char* src)
-{
-    const uint32_t ID = gl::CreateShader(gl::FRAGMENT_SHADER);
-    gl::ShaderSource(ID, 1, &src, nullptr);
-    gl::CompileShader(ID);
-    CheckCompileErrors(ID, "FRAGMENT");
-    return ID;
-}
-
-uint32_t CreateProgram(uint32_t vID, uint32_t fID)
-{
-    const uint32_t ID = gl::CreateProgram();
-    gl::AttachShader(ID, vID);
-    gl::AttachShader(ID, fID);
-    gl::LinkProgram(ID);
-    CheckCompileErrors(ID, "PROGRAM");
-    return ID;
-}
-
-void CheckCompileErrors(uint32_t ID, const char* type)
-{
-    int success{};
-    char infoLog[512];
-
-    if (std::strcmp(type, "PROGRAM") != 0)
+    uint32_t createVertexShader(const char* shaderSource)
     {
-        gl::GetShaderiv(ID, gl::COMPILE_STATUS, &success);
-        if (!success)
-        {
-            gl::GetShaderInfoLog(ID, 512, nullptr, infoLog);
-            std::cerr << infoLog << '\n';
-        }
+        const auto id = gl::CreateShader(gl::VERTEX_SHADER);
+        gl::ShaderSource(id, 1, &shaderSource, nullptr);
+        gl::CompileShader(id);
+        checkCompileErrors(id, "VERTEX");
+        return id;
     }
-    else
+
+    uint32_t createFragmentShader(const char* shaderSource)
     {
-        gl::GetProgramiv(ID, gl::LINK_STATUS, &success);
-        if (!success)
+        const auto id = gl::CreateShader(gl::FRAGMENT_SHADER);
+        gl::ShaderSource(id, 1, &shaderSource, nullptr);
+        gl::CompileShader(id);
+        checkCompileErrors(id, "FRAGMENT");
+        return id;
+    }
+
+    uint32_t createProgram(GLuint vertexShaderId, GLuint fragmentShaderId)
+    {
+        const auto id = gl::CreateProgram();
+        gl::AttachShader(id, vertexShaderId);
+        gl::AttachShader(id, fragmentShaderId);
+        gl::LinkProgram(id);
+        checkCompileErrors(id, "PROGRAM");
+        return id;
+    }
+
+    void checkCompileErrors(GLuint id, const char* type)
+    {
+        int success{};
+        char infoLog[512];
+
+        if (std::strcmp(type, "PROGRAM") != 0)
         {
-            gl::GetProgramInfoLog(ID, 512, nullptr, infoLog);
-            std::cerr << infoLog << '\n';
+            gl::GetShaderiv(id, gl::COMPILE_STATUS, &success);
+            if (!success)
+            {
+                gl::GetShaderInfoLog(id, 512, nullptr, infoLog);
+                std::cerr << infoLog << '\n';
+            }
+        }
+        else
+        {
+            gl::GetProgramiv(id, gl::LINK_STATUS, &success);
+            if (!success)
+            {
+                gl::GetProgramInfoLog(id, 512, nullptr, infoLog);
+                std::cerr << infoLog << '\n';
+            }
         }
     }
 }
