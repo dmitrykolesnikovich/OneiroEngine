@@ -3,25 +3,23 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "HazelAudio/HazelAudio.h"
-
 #include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Runtime/Application.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "Oneiro/Core/ResourceManager.hpp"
+#include "HazelAudio/HazelAudio.h"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
 public:
     bool Init() override
     {
+        using namespace oe;
         oe::log::get("log")->info("Initializing...");
-
-        mSource.LoadFromFile("AcousticGuitar1.ogg");
-        mSource.Play();
-        mSource.SetVolume(0.01f);
-
         mSprite2D.Init("Textures/sprite.png");
-
+        mSource.LoadFromFile("AcousticGuitar1.ogg");
+        mSource.SetVolume(0.01f);
+        mSource.Play();
         return true;
     }
 
@@ -60,7 +58,7 @@ private:
 
 namespace oe::Runtime
 {
-    std::shared_ptr<Application> CreateApplication(int argc, char* argv[])
+    std::shared_ptr<Application> CreateApplication(int, char* [])
     {
         return std::make_shared<SandBoxApp>();
     }
