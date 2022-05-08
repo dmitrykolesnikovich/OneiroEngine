@@ -1,6 +1,7 @@
 .git
 .idea
 .vs
+.PVS-Studio
 .github
 
 bin/
