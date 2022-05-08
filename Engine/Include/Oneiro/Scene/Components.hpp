@@ -15,8 +15,6 @@
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
 
-//#include "Oneiro/Renderer/Vulkan/Sprite2D.hpp"
-
 namespace oe
 {
     struct TagComponent
@@ -55,7 +53,6 @@ namespace oe
     {
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;
-        //CameraComponent(const glm::vec3 & translation) : Translation(translation) {}
         glm::vec3 Translation{2.0f};
         glm::vec3 Up{};
         glm::vec3 Center{};
