@@ -37,7 +37,7 @@ namespace oe::Core
         static Window* GetWindow();
         static Runtime::Application* GetApplication();
         static Scene::SceneManager* GetSceneManager();
-    public: // Setters (NOT STATIC!)
+    public: // Setters | Non static to protect against unexpected behavior
         void SetApplication(Runtime::Application* app);
         void SetWindow(Window* window);
     private:
