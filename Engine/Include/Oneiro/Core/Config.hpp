@@ -27,6 +27,6 @@ namespace oe::Core
     template<class T>
     T Config::GetValue(const std::string& cfg)
     {
-        return mFileState.GetState().get_or<T>(cfg, {});
+        return mFileState.GetState()->get_or<T>(cfg, {});
     }
 }
