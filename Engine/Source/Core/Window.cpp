@@ -80,14 +80,13 @@ namespace oe::Core
 
     void Window::UpdateAR(int width, int height)
     {
-        Root::GetWindow()->SetAR(static_cast<float>(width) / static_cast<float>(height));
+        SetAR(static_cast<float>(width) / static_cast<float>(height));
     }
 
     bool Window::Create()
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
