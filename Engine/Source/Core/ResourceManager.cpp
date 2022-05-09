@@ -10,9 +10,7 @@
 #include <chrono>
 #include <deque>
 
-std::deque<std::future<void>> futures{};
 oe::Core::ResourceManager<oe::Renderer::Texture> textureManager;
-// TODO: add async loading
 
 namespace oe::Core
 {
@@ -21,6 +19,7 @@ namespace oe::Core
     {
         using namespace std::chrono_literals;
         {
+            std::deque<std::future<void>> futures{};
             // Load textures
             {
                 const auto& textures = textureManager.GetResources();
