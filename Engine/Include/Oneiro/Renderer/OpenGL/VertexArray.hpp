@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     class VertexArray
     {

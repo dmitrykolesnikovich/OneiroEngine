@@ -13,7 +13,7 @@ namespace oe::Audio
     class Source;
 }
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     class Texture;
 }
@@ -41,6 +41,6 @@ namespace oe::Core
     };
 
     void LoadResources();
-    
-    ResourceManager<Renderer::Texture>& GetTextureManager();
+
+    ResourceManager<Renderer::GL::Texture>& GetTextureManager();
 }

@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     class Texture
     {

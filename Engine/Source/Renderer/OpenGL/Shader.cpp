@@ -24,7 +24,7 @@ namespace
     };
 }
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     Shader::~Shader()
     {
@@ -121,15 +121,15 @@ namespace oe::Renderer
     {
         gl::UniformMatrix4fv(GetUniformLocation(uName), 1, gl::FALSE_, &uVal[0][0]);
     }
-}
 
-GLint oe::Renderer::Shader::GetUniformLocation(const char* name) const
-{
-    if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
-        return mUniformLocationCache[name];
-    const GLint location = gl::GetUniformLocation(mID, name);
-    mUniformLocationCache[name] = location;
-    return location;
+    GLint Shader::GetUniformLocation(const char* name) const
+    {
+        if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
+            return mUniformLocationCache[name];
+        const GLint location = gl::GetUniformLocation(mID, name);
+        mUniformLocationCache[name] = location;
+        return location;
+    }
 }
 
 namespace

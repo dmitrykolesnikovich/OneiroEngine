@@ -9,7 +9,7 @@
 #include "stb/stb_image.h"
 #include "Oneiro/Core/Logger.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     Texture::~Texture()
     {

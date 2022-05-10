@@ -6,7 +6,7 @@
 #include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     IndexBuffer::~IndexBuffer()
     {

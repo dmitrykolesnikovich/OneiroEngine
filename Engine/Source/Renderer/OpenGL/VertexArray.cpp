@@ -6,7 +6,7 @@
 #include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
 #include "OpenGL/gl_core_4_5.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     VertexArray::~VertexArray()
     {

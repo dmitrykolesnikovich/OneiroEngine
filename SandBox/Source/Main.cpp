@@ -6,7 +6,6 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Runtime/Application.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
-#include "Oneiro/Core/ResourceManager.hpp"
 #include "HazelAudio/HazelAudio.h"
 #include "Oneiro/Renderer/OpenGL/ErrorHandler.hpp"
 
@@ -56,7 +55,7 @@ public:
 
 private:
     Hazel::Audio::Source mSource;
-    oe::Renderer::Sprite2D mSprite2D;
+    oe::Renderer::GL::Sprite2D mSprite2D;
 };
 
 namespace oe::Runtime

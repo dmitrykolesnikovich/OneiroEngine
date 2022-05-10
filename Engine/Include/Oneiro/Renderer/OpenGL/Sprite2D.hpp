@@ -10,7 +10,7 @@
 #include "Oneiro/Renderer/OpenGL/Base.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     class Sprite2D
     {

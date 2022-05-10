@@ -9,7 +9,7 @@
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Root.hpp"
 
-namespace oe::Renderer
+namespace oe::Renderer::GL
 {
     void Sprite2D::Init(const std::string& path, bool keepAspectRatio)
     {
