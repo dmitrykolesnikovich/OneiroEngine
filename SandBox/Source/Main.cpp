@@ -8,6 +8,7 @@
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Core/ResourceManager.hpp"
 #include "HazelAudio/HazelAudio.h"
+#include "Oneiro/Renderer/OpenGL/ErrorHandler.hpp"
 
 class SandBoxApp final : public oe::Runtime::Application
 {
@@ -16,16 +17,18 @@ public:
     {
         using namespace oe;
         oe::log::get("log")->info("Initializing...");
-        mSprite2D.Init("Textures/sprite.png");
-        mSource.LoadFromFile("AcousticGuitar1.ogg");
-        mSource.SetVolume(0.01f);
+        mSprite2D.Init("Assets/Textures/sprite.png");
+        mSource.LoadFromFile("Assets/Audio/music.mp3");
+        mSource.SetVolume(0.45f);
         mSource.Play();
         return true;
     }
 
     bool Update() override
     {
+        oe::Renderer::GL::ErrorHandler::GLClearError();
         mSprite2D.Draw();
+        oe::Renderer::GL::ErrorHandler::GLLogCall();
         return true;
     }
 
