@@ -8,6 +8,7 @@
 #include "Oneiro/Lua/LuaSprite2D.hpp"
 #include "Oneiro/Lua/LuaAudioSource.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include <filesystem>
 
 namespace
 {
@@ -36,7 +37,8 @@ namespace oe::VisualNovel
         {
             auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
             sprite2D.Load();
-            sceneManager.GetScene()->GetEntity(sprite2D.GetTexture()->GetPath())
+            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
+            sceneManager.GetScene()->GetEntity(path.filename().string())
                     .AddComponent<Sprite2DComponent>(&sprite2D);
             currentIt++;
             NextStep();
@@ -46,7 +48,8 @@ namespace oe::VisualNovel
         {
             auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
             sprite2D.Load();
-            sceneManager.GetScene()->GetEntity(sprite2D.GetTexture()->GetPath())
+            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
+            sceneManager.GetScene()->GetEntity(path.filename().string())
                     .AddComponent<Sprite2DComponent>(&sprite2D);
             currentIt++;
             NextStep();
@@ -54,8 +57,9 @@ namespace oe::VisualNovel
         }
         case HIDE_SPRITE:
         {
-            sceneManager.GetScene()
-                    ->GetEntity(instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath())
+            std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
+                    ->GetPath();
+            sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
             NextStep();
@@ -63,8 +67,9 @@ namespace oe::VisualNovel
         }
         case HIDE_BACKGROUND:
         {
-            sceneManager.GetScene()
-                    ->GetEntity(instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath())
+            std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
+                    ->GetPath();
+            sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
             NextStep();
