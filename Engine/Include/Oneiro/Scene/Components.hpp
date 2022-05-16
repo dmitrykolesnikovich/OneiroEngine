@@ -14,6 +14,7 @@
 
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 namespace oe
 {
@@ -47,6 +48,18 @@ namespace oe
             const glm::mat4 rotation = toMat4(glm::quat(Rotation));
             return translate(glm::mat4(1.0f), Translation) * rotation * scale(glm::mat4(1.0f), Scale);
         }
+    };
+
+    struct Sprite2DComponent
+    {
+        Sprite2DComponent() = default;
+        Sprite2DComponent(const Sprite2DComponent&) = default;
+
+        Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D) : Sprite2D(sprite2D)
+        {
+        }
+        
+        Renderer::GL::Sprite2D* Sprite2D;
     };
 
     struct CameraComponent

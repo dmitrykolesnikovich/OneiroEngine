@@ -25,7 +25,9 @@ namespace oe::Renderer::GL
 
         [[nodiscard]] int GetWidth() const;
         [[nodiscard]] int GetHeight() const;
-        float GetAR() const;
+        [[nodiscard]] float GetAR() const;
+        std::string GetPath() const { return mTexturePath; }
+
     private:
         struct TextureData
         {

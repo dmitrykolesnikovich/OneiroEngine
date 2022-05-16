@@ -24,14 +24,16 @@ namespace oe::Renderer::GL
 
     bool Texture::PreLoad()
     {
-        mData.Data = stbi_load(mTexturePath.c_str(), &mData.Width, &mData.Height, &mData.NrChannels, 0);
+        mData.Data = stbi_load(mTexturePath.c_str(), &mData.Width, &mData.Height, &mData.NrChannels,
+                               0);
         if (mData.Data)
         {
             mData.AR = static_cast<float>(mData.Width) / static_cast<float>(mData.Height);
             mIsLoaded = true;
             return true;
         }
-        log::get("log")->warn(std::string("Failed to load texture from ") + mTexturePath + " path!");
+        log::get("log")
+                ->warn(std::string("Failed to load texture from ") + mTexturePath + " path!");
         stbi_image_free(mData.Data);
         return false;
     }
@@ -82,6 +84,7 @@ namespace oe::Renderer::GL
         mIsLoaded = false;
         gl::DeleteTextures(1, &mID);
     }
+
     void Texture::GenerateTexture()
     {
         gl::GenTextures(1, &mID);
@@ -103,7 +106,8 @@ namespace oe::Renderer::GL
             format = gl::RGB;
             break;
         }
-        gl::TexImage2D(gl::TEXTURE_2D, 0, level, mData.Width, mData.Height, 0, format, gl::UNSIGNED_BYTE, mData.Data);
+        gl::TexImage2D(gl::TEXTURE_2D, 0, level, mData.Width, mData.Height, 0, format,
+                       gl::UNSIGNED_BYTE, mData.Data);
         gl::GenerateMipmap(gl::TEXTURE_2D);
     }
 }

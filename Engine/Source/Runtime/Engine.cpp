@@ -33,7 +33,7 @@ namespace oe::Runtime
     void Engine::Run(const std::shared_ptr<Application>& app)
     {
         using namespace Core;
-
+        
         if (mRoot == nullptr || mWindow == nullptr)
             return;
 
@@ -54,7 +54,7 @@ namespace oe::Runtime
             throw std::runtime_error("Failed to initialize application!");
 
         Renderer::Init();
-        
+
         LoadResources();
 
         while (!mWindow->IsClosed())

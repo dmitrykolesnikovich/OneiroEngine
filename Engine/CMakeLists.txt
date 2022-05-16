@@ -35,6 +35,7 @@ file(GLOB ONEIRO_SOURCE
         "Source/Renderer/Gui/*.cpp"
         "Source/Runtime/*.cpp"
         "Source/Scene/*.cpp"
+        "Source/VisualNovel/*.cpp"
         )
 
 add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE} ${IMGUI_SOURCE} ${OPENGL_SOURCE} ${ONEIRO_RENDERER_SOURCE})

@@ -29,6 +29,11 @@ namespace oe::Scene
         mRegistry.destroy(entity);
     }
 
+    void Scene::DestroyAllEntities()
+    {
+        mRegistry.clear();
+    }
+
     Entity Scene::GetEntity(const std::string& name)
     {
         for (auto [fst, snd]: mRegistry.storage())
@@ -40,6 +45,6 @@ namespace oe::Scene
                     return {to_entity(mRegistry, comp), this};
             }
         }
-        return {};
+        return CreateEntity(name);
     }
 }
