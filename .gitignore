@@ -5,6 +5,7 @@
 .github
 
 bin/
+build/
 SandBox/cmake-build-debug/
 SandBox/cmake-build-release/
 
@@ -13,3 +14,5 @@ SandBox/CMakeSettings.json
 
 Folder.DotSettings.user
 Folder.DotSettings
+
+Oneiro.code-workspace
