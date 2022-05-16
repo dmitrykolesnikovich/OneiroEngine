@@ -33,17 +33,6 @@ namespace oe::VisualNovel
         auto instruction = instructions[currentIt];
         switch (instruction.Type)
         {
-        case SHOW_SPRITE:
-        {
-            auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
-            sprite2D.Load();
-            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
-            sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .AddComponent<Sprite2DComponent>(&sprite2D);
-            currentIt++;
-            NextStep();
-            break;
-        }
         case SHOW_BACKGROUND:
         {
             auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
@@ -55,7 +44,18 @@ namespace oe::VisualNovel
             NextStep();
             break;
         }
-        case HIDE_SPRITE:
+        case SHOW_SPRITE:
+        {
+            auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
+            sprite2D.Load();
+            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
+            sceneManager.GetScene()->GetEntity(path.filename().string())
+                    .AddComponent<Sprite2DComponent>(&sprite2D);
+            currentIt++;
+            NextStep();
+            break;
+        }
+        case HIDE_BACKGROUND:
         {
             std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
                     ->GetPath();
@@ -65,7 +65,7 @@ namespace oe::VisualNovel
             NextStep();
             break;
         }
-        case HIDE_BACKGROUND:
+        case HIDE_SPRITE:
         {
             std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
                     ->GetPath();
@@ -107,10 +107,9 @@ namespace oe::VisualNovel
     void Update()
     {
         auto view = sceneManager.GetScene()->GetEntities().view<Sprite2DComponent>();
+
         for (auto entity: view)
-        {
             view.get<Sprite2DComponent>(entity).Sprite2D->Draw();
-        }
     }
     std::vector<Instruction>& GetInstructions()
     {
@@ -130,8 +129,9 @@ namespace oe::VisualNovel
             {
                 currentIt = 0;
                 instructions.clear();
-                if (!file->CallFunction(labelName))
+                if (!file->CallFunction("main", labelName))
                     log::get("log")->warn("Failed to jump to " + labelName + " label!");
+                return;
             }
         }
     }

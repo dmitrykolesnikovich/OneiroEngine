@@ -69,17 +69,28 @@ namespace oe::Lua
                 end
                 Character = Class()
 
-                function Character:init(charname)
-                    self.charname = charname
+                function Character:init(charName)
+                    self.charName = charName
                 end
 
                 function Character:__tostring()
-                    return self.charname
+                    return self.charName
                 end
 
                 function Character:__call(text)
-                     showText(self.charname, text)
+                     showText(self.charName, text)
                 end
+
+                Label = Class()
+                function Label:init(labelName)
+                    registerLabel(labelName)
+                end
+
+                Jump = Class()
+                function Jump:__call(labelName)
+                    jumpToLabel(labelName)
+                end
+                jump = Jump()
             )";
 
             mState.script(characterScript);
@@ -89,6 +100,18 @@ namespace oe::Lua
         bool CallFunction(const std::string& name) const
         {
             sol::protected_function function = mState[name];
+            if (function.valid())
+            {
+                function();
+                return true;
+            }
+            return false;
+        }
+
+        bool CallFunction(const std::string& name, const std::string& tableName) const
+        {
+            sol::table table = mState[tableName];
+            sol::protected_function function = table[name];
             if (function.valid())
             {
                 function();
