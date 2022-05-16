@@ -1,8 +1,8 @@
--- register label fuctions
+-- register label functions
 registerLabel("start")
 registerLabel("goodbye")
 
--- creates characters, sprites and other means
+-- creates characters, sprites, and other means
 me = Character("Me")
 sprite = Sprite2D("Assets/Textures/sprite.png", true);
 music = Audio("Assets/Audio/music.mp3")
@@ -14,7 +14,7 @@ function start()
     music:stop()
     sprite:hide()
     
-    -- jump to another label which is registered
+    -- jump to another registered label
     jumpToLabel("goodbye")
 end
 
