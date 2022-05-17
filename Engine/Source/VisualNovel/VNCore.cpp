@@ -108,8 +108,11 @@ namespace oe::VisualNovel
     {
         auto view = sceneManager.GetScene()->GetEntities().view<Sprite2DComponent>();
 
-        for (auto entity: view)
+        for (size_t i{view.storage().size()}; i > 0; --i)
+        {
+            auto entity = *(view.begin() + i - 1);
             view.get<Sprite2DComponent>(entity).Sprite2D->Draw();
+        }
     }
     std::vector<Instruction>& GetInstructions()
     {
@@ -123,7 +126,7 @@ namespace oe::VisualNovel
 
     void JumpToLabel(const Lua::File* file, const std::string& labelName)
     {
-        for (const std::string& label: labels)
+        for (const std::string& label : labels)
         {
             if (label == labelName)
             {
