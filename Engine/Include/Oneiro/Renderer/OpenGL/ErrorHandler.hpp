@@ -18,7 +18,7 @@ namespace oe::Renderer::GL::ErrorHandler
     {
         while (GLenum error = gl::GetError())
         {
-            log::get("log")->error("[OpenGL]: " + error);
+            log::get("log")->error("[OpenGL]: " + std::to_string(error));
             return false;
         }
         return true;
