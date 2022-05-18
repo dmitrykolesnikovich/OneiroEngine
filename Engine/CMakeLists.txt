@@ -47,10 +47,12 @@ add_subdirectory(../ThirdParty/yaml-cpp ThirdParty/yaml-cpp)
 add_subdirectory(../ThirdParty/sol2 ThirdParty/sol2)
 add_subdirectory(../ThirdParty/lua ThirdParty/lua)
 add_subdirectory(../ThirdParty/HazelAudio ThirdParty/HazelAudio)
+add_subdirectory(../ThirdParty/freetype ThirdParty/freetype)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include ../ThirdParty/imgui/ Include/ ../ThirdParty/OpenGL/include)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ../ThirdParty/imgui)
-target_link_libraries(${PROJECT_NAME} glfw glm spdlog EnTT yaml-cpp::yaml-cpp lua_static sol2::sol2 Hazel.Audio)
+target_link_libraries(${PROJECT_NAME} glfw glm spdlog EnTT yaml-cpp::yaml-cpp lua_static
+        sol2::sol2 Hazel.Audio freetype)
 if (OE_API_VULKAN)
     # Link Vulkan...
 else ()

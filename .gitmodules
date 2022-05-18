@@ -29,3 +29,6 @@
 [submodule "ThirdParty/HazelAudio"]
 	path = ThirdParty/HazelAudio
 	url = https://github.com/DezlowNG/HazelAudioCMake
+[submodule "ThirdParty/freetype"]
+	path = ThirdParty/freetype
+	url = https://github.com/freetype/freetype.git

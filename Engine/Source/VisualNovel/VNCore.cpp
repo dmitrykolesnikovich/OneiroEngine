@@ -8,10 +8,12 @@
 #include "Oneiro/Lua/LuaSprite2D.hpp"
 #include "Oneiro/Lua/LuaAudioSource.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Renderer/OpenGL/Text.hpp"
 #include <filesystem>
 
 namespace
 {
+    oe::Renderer::GL::Text text{};
     size_t currentIt{};
     oe::Scene::SceneManager sceneManager{};
     std::vector<std::string> labels{};
@@ -22,7 +24,10 @@ namespace oe::VisualNovel
 {
     void Init(const Lua::File* file)
     {
-        if (labels.size() > 0)
+        gl::Enable(gl::BLEND);
+        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+        text.Init();
+        if (!labels.empty())
             JumpToLabel(file, labels[0]);
     }
 
@@ -57,8 +62,8 @@ namespace oe::VisualNovel
         }
         case HIDE_BACKGROUND:
         {
-            std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
-                    ->GetPath();
+            std::filesystem::path
+                    path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
@@ -67,8 +72,8 @@ namespace oe::VisualNovel
         }
         case HIDE_SPRITE:
         {
-            std::filesystem::path path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()
-                    ->GetPath();
+            std::filesystem::path
+                    path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
@@ -97,7 +102,7 @@ namespace oe::VisualNovel
         }
         case SAY_TEXT:
         {
-            std::cout << instruction.Text.Who << ": " << instruction.Text.What << '\n';
+            text.SetString(instruction.Text.Who + ": " + instruction.Text.What);
             currentIt++;
             return;
         }
@@ -113,6 +118,7 @@ namespace oe::VisualNovel
             auto entity = *(view.begin() + i - 1);
             view.get<Sprite2DComponent>(entity).Sprite2D->Draw();
         }
+        text.Draw();
     }
     std::vector<Instruction>& GetInstructions()
     {
