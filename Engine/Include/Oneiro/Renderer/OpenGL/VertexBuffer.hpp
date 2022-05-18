@@ -13,10 +13,11 @@ namespace oe::Renderer::GL
     {
     public:
         ~VertexBuffer();
-        void Create(uint32_t size, const float* pVertices);
+        void Create(uint32_t size, const float* pVertices, bool dynamicDraw = false);
         void Bind() const;
         void UnBind() const;
 
+        static void SubData(size_t size, const void* data);
         static void PushLayout(uint32_t id, int size, uint32_t stride, uint32_t p);
     private:
         uint32_t mID{};
