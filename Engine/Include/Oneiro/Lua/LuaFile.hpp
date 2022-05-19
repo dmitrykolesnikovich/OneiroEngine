@@ -29,16 +29,16 @@ namespace oe::Lua
                 mFile.open(pathToFile, std::ios::out);
             OpenLibraries(sol::lib::base);
             mState.set_function("showText", [](const std::string& who, const std::string& what) {
-                VisualNovel::GetInstructions()
-                        .push_back({VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
+                VisualNovel::PushInstruction(
+                        {VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
             });
 
             mState.set_function("registerLabel", [](const std::string& name) {
-                VisualNovel::GetLabels().push_back(name);
+                VisualNovel::PushLabel(name);
             });
 
             mState.set_function("jumpToLabel", [&](const std::string& name) {
-                VisualNovel::GetInstructions().push_back(
+                VisualNovel::PushInstruction(
                         {VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
             });
 

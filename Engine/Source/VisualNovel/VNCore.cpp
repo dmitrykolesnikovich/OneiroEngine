@@ -160,4 +160,19 @@ namespace oe::VisualNovel
     {
         instructions.push_back({STOP_MUSIC, {}, {}, audioSource});
     }
+
+    void PushInstruction(Instruction& instruction)
+    {
+        instructions.push_back(instruction);
+    }
+
+    void VisualNovel::PushInstruction(Instruction&& instruction)
+    {
+        instructions.push_back(instruction);
+    }
+
+    void PushLabel(const std::string& labelName)
+    {
+        labels.push_back(labelName);
+    }
 }

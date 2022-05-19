@@ -52,8 +52,10 @@ namespace oe::VisualNovel
         LabelData Label;
     };
 
-    std::vector<Instruction>& GetInstructions();
-    std::vector<std::string>& GetLabels();
+    void PushInstruction(Instruction& instruction);
+    void PushInstruction(Instruction&& instruction);
+    void PushLabel(const std::string& labelName);
+
     void JumpToLabel(const Lua::File* file, const std::string& labelName);
 
     void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D);
