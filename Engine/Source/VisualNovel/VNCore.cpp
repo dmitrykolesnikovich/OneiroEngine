@@ -51,6 +51,7 @@ namespace oe::VisualNovel
         {
             auto& sprite2D = instruction.Sprite2D;
             sprite2D->Load();
+            sprite2D->Move({});
             std::filesystem::path path = sprite2D->GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
                     .AddComponent<Sprite2DComponent>(sprite2D);
@@ -93,6 +94,13 @@ namespace oe::VisualNovel
         case JUMP_TO_LABEL:
         {
             JumpToLabel(instruction.Label.File, instruction.Label.Name);
+            NextStep();
+            break;
+        }
+        case MOVE_SPRITE:
+        {
+            instruction.Sprite2D->Move(instruction.Vector3);
+            currentIt++;
             NextStep();
             break;
         }
@@ -164,6 +172,11 @@ namespace oe::VisualNovel
     void PushInstruction(Instruction& instruction)
     {
         instructions.push_back(instruction);
+    }
+
+    void MoveSprite2D(Renderer::GL::Sprite2D* sprite2D, const glm::vec3& pos)
+    {
+        instructions.push_back({MOVE_SPRITE, sprite2D, {}, {}, {}, pos});
     }
 
     void VisualNovel::PushInstruction(Instruction&& instruction)

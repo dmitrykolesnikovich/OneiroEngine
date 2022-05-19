@@ -51,7 +51,12 @@ namespace oe::Lua
                                                             ptr->Init(path, keepAspectRatio);
                                                             return ptr;
                                                         }), "show", &VisualNovel::ShowSprite2D,
-                                                        "hide", &VisualNovel::HideSprite2D);
+                                                        "hide", &VisualNovel::HideSprite2D, "move",
+                                                        [](Renderer::GL::Sprite2D* sprite2D,
+                                                           float x, float y, float z) {
+                                                            VisualNovel::MoveSprite2D(sprite2D,
+                                                                                      {x, y, z});
+                                                        });
 
             mState.new_usertype<Hazel::Audio::Source>("Audio", sol::call_constructor,
                                                       sol::factories([](const std::string& path) {

@@ -19,8 +19,8 @@ namespace oe::Renderer::GL
         bool Load();
         bool UnLoad();
         void Draw() const;
-        void Move(glm::vec2 pos);
-        void Scale(glm::vec2 scale);
+        void Move(const glm::vec3& pos);
+        void Scale(const glm::vec3& scale);
         const Texture* GetTexture() { return mTexture; }
     private:
         glm::mat4 mModel{1.0f};

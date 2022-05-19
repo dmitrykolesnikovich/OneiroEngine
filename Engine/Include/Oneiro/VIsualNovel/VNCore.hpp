@@ -30,6 +30,7 @@ namespace oe::VisualNovel
         PLAY_MUSIC,
         STOP_MUSIC,
         JUMP_TO_LABEL,
+        MOVE_SPRITE,
         SAY_TEXT
     };
 
@@ -50,6 +51,7 @@ namespace oe::VisualNovel
         TextData Text;
         Hazel::Audio::Source* AudioSource{};
         LabelData Label;
+        glm::vec3 Vector3{};
     };
 
     void PushInstruction(Instruction& instruction);
@@ -59,6 +61,7 @@ namespace oe::VisualNovel
     void JumpToLabel(const Lua::File* file, const std::string& labelName);
 
     void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D);
+    void MoveSprite2D(Renderer::GL::Sprite2D* sprite2D, const glm::vec3& pos);
     void HideSprite2D(Renderer::GL::Sprite2D* sprite2D);
     void PlayAudioSource(Hazel::Audio::Source* audioSource);
     void StopAudioSource(Hazel::Audio::Source* audioSource);

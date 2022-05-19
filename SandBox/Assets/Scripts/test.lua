@@ -15,6 +15,8 @@ start = Label("start")
 function start:main()
     background:show()
     sprite:show()
+    -- you can move sprite (x, y, z)
+    sprite:move(0.25, 0.0, 0.0);
     music:play()
     me "Hello World!"
     music:stop()

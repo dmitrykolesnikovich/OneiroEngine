@@ -52,7 +52,6 @@ namespace oe::Renderer::GL
         mShader.SetUniform("uTextureAlpha", mAlpha);
         mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
         mShader.SetUniform("uView", glm::mat4(1.0f));
-        mShader.SetUniform("uModel", mModel);
 
         constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
@@ -91,20 +90,19 @@ namespace oe::Renderer::GL
         mShader.Use();
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
+        mShader.SetUniform("uModel", mModel);
         mVAO.Bind();
         mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);
     }
 
-    void Sprite2D::Move(glm::vec2 pos)
+    void Sprite2D::Move(const glm::vec3& pos)
     {
-        mModel = translate(mModel, glm::vec3(pos, 0.0f));
-        mShader.SetUniform("uModel", mModel);
+        mModel = translate(mModel, pos);
     }
 
-    void Sprite2D::Scale(glm::vec2 scale)
+    void Sprite2D::Scale(const glm::vec3& scale)
     {
-        mModel = glm::scale(mModel, glm::vec3(scale, 1.0f));
-        mShader.SetUniform("uModel", mModel);
+        mModel = glm::scale(mModel, scale);
     }
 }
