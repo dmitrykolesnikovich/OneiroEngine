@@ -6,9 +6,9 @@
 #pragma once
 
 #include <fstream>
-#include <Oneiro/VIsualNovel/VNCore.hpp>
-#include "LuaSprite2D.hpp"
-#include "LuaAudioSource.hpp"
+
+#include "Oneiro/VIsualNovel/VNCore.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 #include "sol/state.hpp"
 
@@ -42,16 +42,25 @@ namespace oe::Lua
                         {VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
             });
 
-            mState.new_usertype<Sprite2D>("Sprite2D", sol::call_constructor, sol::factories(
-                    [](const std::string& path, bool keepAspectRatio) {
-                        return std::make_shared<Sprite2D>(path, keepAspectRatio);
-                    }), "show", &Sprite2D::Show, "hide", &Sprite2D::Hide);
+            mState.new_usertype<Renderer::GL::Sprite2D>("Sprite2D", sol::call_constructor,
+                                                        sol::factories([](const std::string& path,
+                                                                          bool keepAspectRatio) {
+                                                            std::shared_ptr<Renderer::GL::Sprite2D>
+                                                                    ptr =
+                                                                    std::make_shared<Renderer::GL::Sprite2D>();
+                                                            ptr->Init(path, keepAspectRatio);
+                                                            return ptr;
+                                                        }), "show", &VisualNovel::ShowSprite2D,
+                                                        "hide", &VisualNovel::HideSprite2D);
 
-            mState.new_usertype<AudioSource>("Audio", sol::call_constructor,
-                                             sol::factories([](const std::string& path) {
-                                                 return std::make_shared<AudioSource>(path);
-                                             }), "play", &AudioSource::PrePlay, "stop",
-                                             &AudioSource::PreStop);
+            mState.new_usertype<Hazel::Audio::Source>("Audio", sol::call_constructor,
+                                                      sol::factories([](const std::string& path) {
+                                                          auto audioSource =
+                                                                  std::make_shared<Hazel::Audio::Source>();
+                                                          audioSource->LoadFromFile(path);
+                                                          return audioSource;
+                                                      }), "play", &VisualNovel::PlayAudioSource,
+                                                      "stop", &VisualNovel::StopAudioSource);
 
             const char* characterScript = R"(
                 function Class()

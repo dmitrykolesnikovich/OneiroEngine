@@ -5,8 +5,6 @@
 
 #include <Oneiro/Lua/LuaFile.hpp>
 #include "Oneiro/VisualNovel/VNCore.hpp"
-#include "Oneiro/Lua/LuaSprite2D.hpp"
-#include "Oneiro/Lua/LuaAudioSource.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Text.hpp"
 #include <filesystem>
@@ -40,30 +38,29 @@ namespace oe::VisualNovel
         {
         case SHOW_BACKGROUND:
         {
-            auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
-            sprite2D.Load();
-            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
+            auto& sprite2D = instruction.Sprite2D;
+            sprite2D->Load();
+            std::filesystem::path path = sprite2D->GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .AddComponent<Sprite2DComponent>(&sprite2D);
+                    .AddComponent<Sprite2DComponent>(sprite2D);
             currentIt++;
             NextStep();
             break;
         }
         case SHOW_SPRITE:
         {
-            auto& sprite2D = instruction.Sprite2D->GetRendererSprite2D();
-            sprite2D.Load();
-            std::filesystem::path path = sprite2D.GetTexture()->GetPath();
+            auto& sprite2D = instruction.Sprite2D;
+            sprite2D->Load();
+            std::filesystem::path path = sprite2D->GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .AddComponent<Sprite2DComponent>(&sprite2D);
+                    .AddComponent<Sprite2DComponent>(sprite2D);
             currentIt++;
             NextStep();
             break;
         }
         case HIDE_BACKGROUND:
         {
-            std::filesystem::path
-                    path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath();
+            std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
@@ -72,8 +69,7 @@ namespace oe::VisualNovel
         }
         case HIDE_SPRITE:
         {
-            std::filesystem::path
-                    path = instruction.Sprite2D->GetRendererSprite2D().GetTexture()->GetPath();
+            std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
             sceneManager.GetScene()->GetEntity(path.filename().string())
                     .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
             currentIt++;
@@ -143,5 +139,25 @@ namespace oe::VisualNovel
                 return;
             }
         }
+    }
+
+    void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D)
+    {
+        instructions.push_back({SHOW_SPRITE, sprite2D});
+    }
+
+    void HideSprite2D(Renderer::GL::Sprite2D* sprite2D)
+    {
+        instructions.push_back({HIDE_SPRITE, sprite2D});
+    }
+
+    void PlayAudioSource(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({PLAY_MUSIC, {}, {}, audioSource});
+    }
+
+    void StopAudioSource(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({STOP_MUSIC, {}, {}, audioSource});
     }
 }

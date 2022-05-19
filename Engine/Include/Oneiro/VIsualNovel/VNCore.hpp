@@ -36,7 +36,7 @@ namespace oe::VisualNovel
     struct Instruction
     {
         InstructionType Type{};
-        Lua::Sprite2D* Sprite2D{};
+        oe::Renderer::GL::Sprite2D* Sprite2D;
         struct TextData
         {
             std::string Who{};
@@ -48,13 +48,18 @@ namespace oe::VisualNovel
             std::string Name{};
         };
         TextData Text;
-        Lua::AudioSource* AudioSource{};
+        Hazel::Audio::Source* AudioSource{};
         LabelData Label;
     };
 
     std::vector<Instruction>& GetInstructions();
     std::vector<std::string>& GetLabels();
     void JumpToLabel(const Lua::File* file, const std::string& labelName);
+
+    void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D);
+    void HideSprite2D(Renderer::GL::Sprite2D* sprite2D);
+    void PlayAudioSource(Hazel::Audio::Source* audioSource);
+    void StopAudioSource(Hazel::Audio::Source* audioSource);
 
     void Init(const Lua::File* file);
     void NextStep();
