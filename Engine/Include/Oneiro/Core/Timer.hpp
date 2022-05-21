@@ -20,7 +20,9 @@ namespace oe::Core
          */
         [[nodiscard]] float End() const
         {
-            return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f * 0.001f * 1000.0f;
+            return std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f *
+                    0.001f * 1000.0f;
         }
     private:
         std::chrono::time_point<std::chrono::high_resolution_clock> mStart;

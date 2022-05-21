@@ -30,7 +30,9 @@ namespace oe::Scene
         template<class T>
         T& GetComponent() const
         {
-            if (!HasComponent<T>()) OE_THROW_ERROR("Scene", "Entity \"" + GetComponent<TagComponent>().Tag + "\" does not have component!");
+            if (!HasComponent<T>()) OE_THROW_ERROR("Scene",
+                                                   "Entity \"" + GetComponent<TagComponent>().Tag +
+                                                           "\" does not have component!");
             return mScene->mRegistry.get<T>(mHandle);
         }
 

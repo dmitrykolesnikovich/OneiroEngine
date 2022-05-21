@@ -37,13 +37,15 @@ namespace oe::Core
 
     void Root::SetApplication(Runtime::Application* app)
     {
-        if (mApplicationInstance) OE_THROW_ERROR("Root", "Failed to set application instance, because it's already set!")
+        if (mApplicationInstance) OE_THROW_ERROR("Root",
+                                                 "Failed to set application instance, because it's already set!")
         mApplicationInstance = app;
     }
 
     void Root::SetWindow(Window* window)
     {
-        if (mWindowInstance) OE_THROW_ERROR("Root", "Failed to set window instance, because it's already set!")
+        if (mWindowInstance) OE_THROW_ERROR("Root",
+                                            "Failed to set window instance, because it's already set!")
         mWindowInstance = window;
     }
     Window* Root::mWindowInstance{};

@@ -22,7 +22,8 @@ namespace oe::Renderer::Vulkan
         void EndLayouts(bool is3d);
 
         void BeginBindings(VkDeviceSize size, uint32_t bindingsCount);
-        void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture = nullptr);
+        void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage,
+                        const Texture* texture = nullptr);
         void EndBindings();
 
         template<class T>

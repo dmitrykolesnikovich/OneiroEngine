@@ -9,7 +9,8 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void ImageViews::CreateImageView(VkImage swapChainImage, VkImageViewCreateInfo& createInfo) const
+    void ImageViews::CreateImageView(VkImage swapChainImage,
+                                     VkImageViewCreateInfo& createInfo) const
     {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -36,13 +37,15 @@ namespace oe::Renderer::Vulkan
         {
             VkImageViewCreateInfo createInfo;
             CreateImageView(swapChainImages[i], createInfo);
-            VK_CHECK_RESULT(vkCreateImageView(GetLogicalDevice()->Get(), &createInfo, nullptr, &mSwapChainImageViews[i]), "Failed to create image views!")
+            VK_CHECK_RESULT(vkCreateImageView(GetLogicalDevice()->Get(), &createInfo, nullptr,
+                                              &mSwapChainImageViews[i]),
+                            "Failed to create image views!")
         }
     }
 
     void ImageViews::Destroy()
     {
-        for (const auto imageView: mSwapChainImageViews)
+        for (const auto imageView : mSwapChainImageViews)
             vkDestroyImageView(GetLogicalDevice()->Get(), imageView, nullptr);
     }
 

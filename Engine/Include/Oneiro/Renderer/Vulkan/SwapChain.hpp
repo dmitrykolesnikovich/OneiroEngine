@@ -23,11 +23,14 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] VkSwapchainKHR Get() const;
         const VkSwapchainKHR* GetPtr() const { return &mSwapchain; }
     private:
-        static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+        static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
+                const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
-        static VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        static VkPresentModeKHR ChooseSwapPresentMode(
+                const std::vector<VkPresentModeKHR>& availablePresentModes);
 
-        [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+        [[nodiscard]] VkExtent2D ChooseSwapExtent(
+                const VkSurfaceCapabilitiesKHR& capabilities) const;
         VkSwapchainKHR mSwapchain{};
         std::vector<VkImage> mSwapChainImages{};
         VkFormat mSwapChainImageFormat{};

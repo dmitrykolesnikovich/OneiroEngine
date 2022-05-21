@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include "Oneiro/Renderer/OpenGL/Shader.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Root.hpp"
@@ -19,8 +20,7 @@ namespace
 
     enum ShaderType
     {
-        VERTEX,
-        FRAGMENT
+        VERTEX, FRAGMENT
     };
 }
 
@@ -71,7 +71,8 @@ namespace oe::Renderer::GL
         }
         catch (const std::exception& ex)
         {
-            log::get("log")->warn("Failed to load shader at" + path + " path! Exception: " + ex.what());
+            log::get("log")
+                    ->warn("Failed to load shader at" + path + " path! Exception: " + ex.what());
         }
 
         const uint32_t vertexShader = createVertexShader(vertexShaderSrc.c_str());

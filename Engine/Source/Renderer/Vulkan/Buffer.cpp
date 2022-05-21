@@ -14,7 +14,9 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void Buffer::Create(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+    void Buffer::Create(VkDeviceSize size, VkBufferUsageFlags usage,
+                        VkMemoryPropertyFlags properties, VkBuffer& buffer,
+                        VkDeviceMemory& bufferMemory)
     {
         const auto device = GetLogicalDevice()->Get();
         VkBufferCreateInfo bufferInfo{};
@@ -23,7 +25,8 @@ namespace oe::Renderer::Vulkan
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        VK_CHECK_RESULT(vkCreateBuffer(device, &bufferInfo, nullptr, &buffer), "Failed to create buffer!")
+        VK_CHECK_RESULT(vkCreateBuffer(device, &bufferInfo, nullptr, &buffer),
+                        "Failed to create buffer!")
 
         VkMemoryRequirements memRequirements;
         vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
@@ -33,7 +36,8 @@ namespace oe::Renderer::Vulkan
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-        VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory), "Failed to allocate buffer memory!")
+        VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory),
+                        "Failed to allocate buffer memory!")
 
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
@@ -55,7 +59,8 @@ namespace oe::Renderer::Vulkan
         vkGetPhysicalDeviceMemoryProperties(GetPhysDevice()->Get(), &memProperties);
 
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+            if ((typeFilter & (1 << i)) &&
+                    (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
                 return i;
 
         OE_THROW_ERROR("Renderer::Vulkan", "Failed to find suitable memory type!")
@@ -65,9 +70,11 @@ namespace oe::Renderer::Vulkan
     {
         const auto commandBuffer = CommandBuffer::BeginSingleTimeCommands();
 
-        const VkBufferImageCopy region{0, 0, 0, {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}, {0}, {width, height, 1}};
+        const VkBufferImageCopy
+                region{0, 0, 0, {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}, {0}, {width, height, 1}};
 
-        vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               1, &region);
 
         CommandBuffer::EndSingleTimeCommands(commandBuffer);
     }

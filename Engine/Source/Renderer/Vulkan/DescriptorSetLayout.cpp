@@ -11,7 +11,8 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void DescriptorSetLayout::AddBinding(int binding, VkDescriptorType type, VkShaderStageFlagBits stage)
+    void DescriptorSetLayout::AddBinding(int binding, VkDescriptorType type,
+                                         VkShaderStageFlagBits stage)
     {
         VkDescriptorSetLayoutBinding layout{};
         layout.binding = binding;
@@ -29,7 +30,9 @@ namespace oe::Renderer::Vulkan
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = mBindings.size();
         layoutInfo.pBindings = mBindings.data();
-        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, nullptr, &mDescriptorSetLayout), "Failed to create descriptor set layout!")
+        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, nullptr,
+                                                    &mDescriptorSetLayout),
+                        "Failed to create descriptor set layout!")
     }
 
     VkDescriptorSetLayout DescriptorSetLayout::Get() const

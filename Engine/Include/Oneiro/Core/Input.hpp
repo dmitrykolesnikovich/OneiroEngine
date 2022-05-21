@@ -44,14 +44,12 @@ namespace oe::Input
 
     enum class Action : uint8_t
     {
-        PRESS = GLFW_PRESS,
-        RELEASE = GLFW_RELEASE
+        PRESS = GLFW_PRESS, RELEASE = GLFW_RELEASE
     };
 
     enum class Button : uint8_t
     {
-        LEFT = GLFW_MOUSE_BUTTON_LEFT,
-        RIGHT = GLFW_MOUSE_BUTTON_RIGHT
+        LEFT = GLFW_MOUSE_BUTTON_LEFT, RIGHT = GLFW_MOUSE_BUTTON_RIGHT
     };
 
     class Command

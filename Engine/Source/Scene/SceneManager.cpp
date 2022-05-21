@@ -182,7 +182,7 @@ namespace oe::Scene
         mScene->mName = data["Scene"].as<std::string>();
         const auto& entities = data["Entities"];
 
-        for (auto entity: entities)
+        for (auto entity : entities)
         {
             // Entities always have Tag and Transform components
             const auto& name = entity["TagComponent"]["Tag"].as<std::string>();

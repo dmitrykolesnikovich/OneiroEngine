@@ -30,7 +30,8 @@ namespace oe::Core
         sinks.push_back(std::make_shared<log::sinks::stdout_color_sink_mt>());
 
         const auto firstLogger = std::make_shared<log::logger>("log", begin(sinks), end(sinks));
-        const auto secondLogger = std::make_shared<log::logger>("dbg", std::make_shared<log::sinks::stdout_color_sink_mt>());
+        const auto secondLogger = std::make_shared<log::logger>("dbg",
+                                                                std::make_shared<log::sinks::stdout_color_sink_mt>());
 
         firstLogger->set_pattern("[%H:%M:%S] [%t] [%^%l%$] %v");
         secondLogger->set_pattern("[%H:%M:%S] [%t] [%^%l in %s:%#%$] %v");
