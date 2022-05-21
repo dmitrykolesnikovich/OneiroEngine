@@ -25,13 +25,12 @@ namespace oe::VisualNovel
     {
         SHOW_SPRITE,
         HIDE_SPRITE,
-        SHOW_BACKGROUND,
-        HIDE_BACKGROUND,
         PLAY_MUSIC,
         STOP_MUSIC,
         JUMP_TO_LABEL,
         MOVE_SPRITE,
-        SAY_TEXT
+        SAY_TEXT,
+        SET_TEXT_SPEED
     };
 
     struct Instruction
@@ -65,6 +64,8 @@ namespace oe::VisualNovel
     void HideSprite2D(Renderer::GL::Sprite2D* sprite2D);
     void PlayAudioSource(Hazel::Audio::Source* audioSource);
     void StopAudioSource(Hazel::Audio::Source* audioSource);
+
+    void SetTextSpeed(float speed);
 
     void Init(const Lua::File* file);
     void NextStep();

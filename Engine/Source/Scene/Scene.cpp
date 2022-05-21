@@ -36,9 +36,9 @@ namespace oe::Scene
 
     Entity Scene::GetEntity(const std::string& name)
     {
-        for (auto [fst, snd]: mRegistry.storage())
+        for (auto [fst, snd] : mRegistry.storage())
         {
-            for (const auto f: snd)
+            for (const auto f : snd)
             {
                 auto& comp = mRegistry.get<TagComponent>(f);
                 if (comp.Tag == name)

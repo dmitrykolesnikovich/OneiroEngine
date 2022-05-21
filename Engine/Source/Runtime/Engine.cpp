@@ -33,7 +33,7 @@ namespace oe::Runtime
     void Engine::Run(const std::shared_ptr<Application>& app)
     {
         using namespace Core;
-        
+
         if (mRoot == nullptr || mWindow == nullptr)
             return;
 
@@ -42,7 +42,8 @@ namespace oe::Runtime
 
         Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e) {
             const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
-            log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " + errorEvent.Description);
+            log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
+                                           errorEvent.Description);
         });
 
         if (!mWindow->Create())
@@ -57,8 +58,15 @@ namespace oe::Runtime
 
         LoadResources();
 
+        float lastFrame{};
+        float last{};
+        float currentFrame{};
         while (!mWindow->IsClosed())
         {
+            currentFrame = glfwGetTime();
+            mDeltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
             if (!UpdateGame(app)) break;
         }
 
@@ -71,6 +79,8 @@ namespace oe::Runtime
             return false;
 
         Core::Window::PollEvents();
+        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::BeginScene();
@@ -112,12 +122,15 @@ namespace oe::Runtime
 
         Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e) {
             const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
-            Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key), static_cast<Input::Action>(keyInputEvent.Action));
+            Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
+                                              static_cast<Input::Action>(keyInputEvent.Action));
         });
 
         Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e) {
             const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
-            Root::GetApplication()->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button), static_cast<Input::Action>(mouseButtonEvent.Action));
+            Root::GetApplication()
+                    ->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
+                                   static_cast<Input::Action>(mouseButtonEvent.Action));
         });
     }
 

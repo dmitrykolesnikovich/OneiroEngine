@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#include "Oneiro/VIsualNovel/VNCore.hpp"
+#include "Oneiro/VisualNovel/VNCore.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 #include "sol/state.hpp"
@@ -32,6 +32,8 @@ namespace oe::Lua
                 VisualNovel::PushInstruction(
                         {VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
             });
+
+            mState.set_function("setTextSpeed", VisualNovel::SetTextSpeed);
 
             mState.set_function("registerLabel", [](const std::string& name) {
                 VisualNovel::PushLabel(name);

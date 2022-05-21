@@ -4,10 +4,12 @@
 //
 
 #include <Oneiro/Core/ResourceManager.hpp>
+#include <iostream>
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -42,16 +44,11 @@ namespace oe::Renderer::GL
                     vec4 Texture = texture2D(uTexture, TexCoords);
                     if(Texture.a < 0.35)
                             discard;
-                    FragColor = pow(Texture, vec4(1.0/2.2));
+                    FragColor = pow(vec4(Texture.rgb, uTextureAlpha), vec4(1.0/2.2));
                 }
             )";
 
         mShader.LoadFromSource(vertexShaderSrc, fragmentShaderSrc);
-        mShader.Use();
-        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
-        mShader.SetUniform("uTextureAlpha", mAlpha);
-        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
-        mShader.SetUniform("uView", glm::mat4(1.0f));
 
         constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
@@ -85,12 +82,16 @@ namespace oe::Renderer::GL
         return false;
     }
 
-    void Sprite2D::Draw() const
+    void Sprite2D::Draw()
     {
         mShader.Use();
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
         mShader.SetUniform("uModel", mModel);
+        mShader.SetUniform("uTextureAlpha", mAlpha);
+        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
+        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
+        mShader.SetUniform("uView", glm::mat4(1.0f));
         mVAO.Bind();
         mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);

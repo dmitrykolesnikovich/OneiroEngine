@@ -5,23 +5,26 @@
 
 #include "Oneiro/Renderer/Renderer.hpp"
 
+#ifndef OE_RENDERER_VULKAN
+
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb/stb_image.h"
 
-#ifndef OE_RENDERER_VULKAN
 namespace oe::Renderer
 {
-    void Renderer::PreInit()
+    void PreInit()
     {
         stbi_set_flip_vertically_on_load(1);
     }
 
-    void Renderer::Init()
+    void Init()
     {
+        gl::Enable(gl::BLEND);
+        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
     }
 
-    void Renderer::Shutdown()
+    void Shutdown()
     {
     }
 
@@ -40,7 +43,8 @@ namespace oe::Renderer
         gl::DrawArrays(mode, 0, count);
     }
 
-    [[maybe_unused]] void GL::DrawArraysInstanced(GL::DrawMode mode, GLsizei arraysCount, GLsizei instanceCount)
+    [[maybe_unused]] void GL::DrawArraysInstanced(GL::DrawMode mode, GLsizei arraysCount,
+                                                  GLsizei instanceCount)
     {
         gl::DrawArraysInstanced(mode, 0, arraysCount, instanceCount);
     }

@@ -7,26 +7,35 @@
 #include "Oneiro/VisualNovel/VNCore.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Text.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 #include <filesystem>
+#include <algorithm>
+#include "Oneiro/Animation/DissolveAnimation.hpp"
 
 namespace
 {
-    oe::Renderer::GL::Text text{};
-    size_t currentIt{};
+    std::vector<oe::VisualNovel::Instruction> instructions{};
     oe::Scene::SceneManager sceneManager{};
     std::vector<std::string> labels{};
-    std::vector<oe::VisualNovel::Instruction> instructions{};
+    oe::Renderer::GL::Text text{};
+    std::string textToRenderer{};
+    std::string textToIterate{};
+    size_t currentIt{};
+    uint32_t charItToPush{};
+    float textSpeed = 0.05f;
+    bool need2Reverse{};
 }
 
 namespace oe::VisualNovel
 {
     void Init(const Lua::File* file)
     {
-        gl::Enable(gl::BLEND);
-        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
         text.Init();
         if (!labels.empty())
+        {
             JumpToLabel(file, labels[0]);
+            NextStep();
+        }
     }
 
     void NextStep()
@@ -36,34 +45,17 @@ namespace oe::VisualNovel
         auto instruction = instructions[currentIt];
         switch (instruction.Type)
         {
-        case SHOW_BACKGROUND:
-        {
-            auto& sprite2D = instruction.Sprite2D;
-            sprite2D->Load();
-            std::filesystem::path path = sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .AddComponent<Sprite2DComponent>(sprite2D);
-            currentIt++;
-            NextStep();
-            break;
-        }
         case SHOW_SPRITE:
         {
             auto& sprite2D = instruction.Sprite2D;
             sprite2D->Load();
             sprite2D->Move({});
+            sprite2D->SetAlpha(0.0f);
             std::filesystem::path path = sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .AddComponent<Sprite2DComponent>(sprite2D);
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case HIDE_BACKGROUND:
-        {
-            std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
+            auto entity = sceneManager.GetScene()->GetEntity(path.filename().string());
+            entity.AddComponent<Sprite2DComponent>(sprite2D);
+            entity.AddComponent<AnimationComponent>(new Animation::DissolveAnimation());
+            need2Reverse = true;
             currentIt++;
             NextStep();
             break;
@@ -71,8 +63,8 @@ namespace oe::VisualNovel
         case HIDE_SPRITE:
         {
             std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()->GetEntity(path.filename().string())
-                    .GetComponent<Sprite2DComponent>().Sprite2D->UnLoad();
+            sceneManager.GetScene()
+                    ->DestroyEntity(sceneManager.GetScene()->GetEntity(path.filename().string()));
             currentIt++;
             NextStep();
             break;
@@ -106,23 +98,63 @@ namespace oe::VisualNovel
         }
         case SAY_TEXT:
         {
-            text.SetString(instruction.Text.Who + ": " + instruction.Text.What);
+            textToRenderer.clear();
+            charItToPush = 0;
+            textToIterate = instruction.Text.Who + ": " + instruction.Text.What;
             currentIt++;
             return;
+        }
+        case SET_TEXT_SPEED:
+        {
+            textSpeed = instruction.Vector3[0];
+            currentIt++;
+            NextStep();
         }
         }
     }
 
     void Update()
     {
-        auto view = sceneManager.GetScene()->GetEntities().view<Sprite2DComponent>();
-
-        for (size_t i{view.storage().size()}; i > 0; --i)
+        auto view = sceneManager.GetScene()->GetEntities()
+                .view<Sprite2DComponent, AnimationComponent>();
+        if (need2Reverse)
         {
-            auto entity = *(view.begin() + i - 1);
-            view.get<Sprite2DComponent>(entity).Sprite2D->Draw();
+            std::reverse(view.storage<Sprite2DComponent>().begin(),
+                         view.storage<Sprite2DComponent>().end());
+            std::reverse(view.storage<AnimationComponent>().begin(),
+                         view.storage<AnimationComponent>().end());
+            need2Reverse = false;
         }
-        text.Draw();
+
+        bool drawText{};
+        Renderer::GL::Sprite2D* prevSprite2D{};
+        for (auto entity : view)
+        {
+            auto* sprite2D = view.get<Sprite2DComponent>(entity).Sprite2D;
+            if (!prevSprite2D || prevSprite2D->GetAlpha() >= 1.0f)
+            {
+                if (sprite2D->GetAlpha() <= 1.0f)
+                    view.get<AnimationComponent>(entity).Animation
+                            ->Update(sprite2D, Runtime::Engine::GetDeltaTime());
+                sprite2D->Draw();
+            }
+            prevSprite2D = sprite2D;
+            drawText = sprite2D->GetAlpha() >= 1.0f;
+        }
+
+        if (drawText || view.handle().empty())
+        {
+            static float time{};
+            time += Runtime::Engine::GetDeltaTime();
+            if (time >= textSpeed && charItToPush < textToIterate.size())
+            {
+                textToRenderer.push_back(textToIterate[charItToPush]);
+                charItToPush++;
+                time = 0.0f;
+                text.SetString(textToRenderer);
+            }
+            text.Draw();
+        }
     }
     std::vector<Instruction>& GetInstructions()
     {
@@ -179,7 +211,7 @@ namespace oe::VisualNovel
         instructions.push_back({MOVE_SPRITE, sprite2D, {}, {}, {}, pos});
     }
 
-    void VisualNovel::PushInstruction(Instruction&& instruction)
+    void PushInstruction(Instruction&& instruction)
     {
         instructions.push_back(instruction);
     }
@@ -187,5 +219,10 @@ namespace oe::VisualNovel
     void PushLabel(const std::string& labelName)
     {
         labels.push_back(labelName);
+    }
+
+    void SetTextSpeed(float speed)
+    {
+        instructions.push_back({SET_TEXT_SPEED, {}, {}, {}, {}, {speed, {}, {}},});
     }
 }

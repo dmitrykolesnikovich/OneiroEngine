@@ -8,12 +8,17 @@
 #include <cassert>
 #include <string>
 #include <stdexcept>
+#include <source_location>
 
 #define OE_THROW_ERROR(who, error) \
 { \
-    throw std::runtime_error(std::string("[") + (who) + "] " + ((error) + \
-          std::string(" ") + std::string(__FILE__) + ":" + std::to_string(__LINE__))); \
+    auto location = std::source_location::current(); \
+    throw std::runtime_error(std::string("[") + (who) \
+                             + "] " + location.file_name() + "(" + \
+                             std::to_string(location.line()) + ":" + std::to_string(location.column()) + \
+                             ") '" + location.function_name() + "': " + ((error) + std::string(" "))); \
 }
+
 #define VK_CHECK_RESULT(val, error) \
 { \
     VkResult res = (val); \
