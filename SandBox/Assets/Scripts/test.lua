@@ -32,5 +32,7 @@ end
 
 goodbye = Label("goodbye")
 function goodbye:main()
+    -- you can change text speed (0.05 is default speed)
+    setTextSpeed(0.2)
     me "Goodbye World!"
 end
