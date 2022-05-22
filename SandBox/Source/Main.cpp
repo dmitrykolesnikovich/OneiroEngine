@@ -16,6 +16,7 @@ namespace SandBox
         {
             mFile.LoadFile("Assets/Scripts/test.lua", false);
             oe::VisualNovel::Init(&mFile);
+            oe::VisualNovel::LoadTextBox("Assets/Images/textbox.png");
             return true;
         }
 

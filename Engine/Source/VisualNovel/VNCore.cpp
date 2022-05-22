@@ -16,6 +16,7 @@ namespace
 {
     std::vector<oe::VisualNovel::Instruction> instructions{};
     oe::Scene::SceneManager sceneManager{};
+    oe::Renderer::GL::Sprite2D textBox{};
     std::vector<std::string> labels{};
     oe::Renderer::GL::Text text{};
     std::string textToRenderer{};
@@ -63,8 +64,8 @@ namespace oe::VisualNovel
         case HIDE_SPRITE:
         {
             std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()
-                    ->DestroyEntity(sceneManager.GetScene()->GetEntity(path.filename().string()));
+            sceneManager.GetScene()->DestroyEntity(
+                    sceneManager.GetScene()->GetEntity(path.filename().string()));
             currentIt++;
             NextStep();
             break;
@@ -116,7 +117,7 @@ namespace oe::VisualNovel
     void Update()
     {
         auto view = sceneManager.GetScene()->GetEntities()
-                .view<Sprite2DComponent, AnimationComponent>();
+                                .view<Sprite2DComponent, AnimationComponent>();
         if (need2Reverse)
         {
             std::reverse(view.storage<Sprite2DComponent>().begin(),
@@ -135,7 +136,7 @@ namespace oe::VisualNovel
             {
                 if (sprite2D->GetAlpha() <= 1.0f)
                     view.get<AnimationComponent>(entity).Animation
-                            ->Update(sprite2D, Runtime::Engine::GetDeltaTime());
+                        ->Update(sprite2D, Runtime::Engine::GetDeltaTime());
                 sprite2D->Draw();
             }
             prevSprite2D = sprite2D;
@@ -153,7 +154,9 @@ namespace oe::VisualNovel
                 time = 0.0f;
                 text.SetString(textToRenderer);
             }
-            text.Draw();
+            if (textBox.IsLoaded())
+                textBox.Draw();
+            text.Draw({125.0f, 145.0f});
         }
     }
     std::vector<Instruction>& GetInstructions()
@@ -224,5 +227,12 @@ namespace oe::VisualNovel
     void SetTextSpeed(float speed)
     {
         instructions.push_back({SET_TEXT_SPEED, {}, {}, {}, {}, {speed, {}, {}},});
+    }
+
+    void LoadTextBox(const std::string& path)
+    {
+        textBox.Init(path);
+        textBox.Load();
+        textBox.SetUsingTextureAlpha(true);
     }
 }

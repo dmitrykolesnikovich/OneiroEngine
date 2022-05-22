@@ -25,6 +25,8 @@ namespace oe::Renderer::GL
         const Texture* GetTexture() const { return mTexture; }
         float GetAlpha() const { return mAlpha; }
         void SetAlpha(float alpha) { mAlpha = alpha; }
+        void SetUsingTextureAlpha(bool useTextureAlpha) { mUseTextureAlpha = useTextureAlpha; }
+        bool IsLoaded() { return mTexture; }
     private:
         glm::mat4 mModel{1.0f};
         Texture* mTexture{};
@@ -33,5 +35,6 @@ namespace oe::Renderer::GL
         VertexArray mVAO;
         float mAlpha{1.0f};
         bool mKeepAR{};
+        bool mUseTextureAlpha{};
     };
 }

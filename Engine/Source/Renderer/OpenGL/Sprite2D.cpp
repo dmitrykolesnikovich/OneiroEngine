@@ -37,14 +37,18 @@ namespace oe::Renderer::GL
                 #version 330 core
                 out vec4 FragColor;
                 uniform sampler2D uTexture;
+                uniform bool uUseTextureAlpha;
                 uniform float uTextureAlpha;
                 in vec2 TexCoords;
                 void main()
                 {
                     vec4 Texture = texture2D(uTexture, TexCoords);
-                    if(Texture.a < 0.35)
+                    if (Texture.a < 0.35)
                             discard;
-                    FragColor = pow(vec4(Texture.rgb, uTextureAlpha), vec4(1.0/2.2));
+                    if (uUseTextureAlpha)
+                        FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
+                    else
+                        FragColor = pow(vec4(Texture.rgb, uTextureAlpha), vec4(1.0/2.2));
                 }
             )";
 
@@ -85,13 +89,18 @@ namespace oe::Renderer::GL
     void Sprite2D::Draw()
     {
         mShader.Use();
+
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
+        if (!mUseTextureAlpha)
+            mShader.SetUniform("uTextureAlpha", mAlpha);
+
         mShader.SetUniform("uModel", mModel);
-        mShader.SetUniform("uTextureAlpha", mAlpha);
+        mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
         mShader.SetUniform("uKeepAspectRatio", mKeepAR);
         mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
         mShader.SetUniform("uView", glm::mat4(1.0f));
+
         mVAO.Bind();
         mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);

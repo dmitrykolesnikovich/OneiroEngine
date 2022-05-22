@@ -66,6 +66,7 @@ namespace oe::VisualNovel
     void StopAudioSource(Hazel::Audio::Source* audioSource);
 
     void SetTextSpeed(float speed);
+    void LoadTextBox(const std::string& path);
 
     void Init(const Lua::File* file);
     void NextStep();
