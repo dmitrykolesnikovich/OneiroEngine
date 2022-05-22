@@ -1,14 +1,12 @@
 .git
 .idea
 .vs
+.vscode
 .PVS-Studio
-.github
 
 bin/
 build/
-SandBox/cmake-build-debug/
-SandBox/cmake-build-release/
-
+SandBox/cmake-build-*/
 SandBox/out/
 SandBox/CMakeSettings.json
 
