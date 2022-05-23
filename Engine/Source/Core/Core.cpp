@@ -21,9 +21,10 @@ namespace oe::Core
 {
     void Init()
     {
-        glfwSetErrorCallback([](int error, const char* description) {
-            Event::Dispatcher::Post(Event::ErrorEvent(error, description));
-        });
+        glfwSetErrorCallback([](int error, const char* description)
+                             {
+                                 Event::Dispatcher::Post(Event::ErrorEvent(error, description));
+                             });
 
         std::vector<log::sink_ptr> sinks;
         sinks.push_back(std::make_shared<log::sinks::basic_file_sink_mt>("log.txt", true));

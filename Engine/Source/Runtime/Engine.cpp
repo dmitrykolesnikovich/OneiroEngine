@@ -40,11 +40,18 @@ namespace oe::Runtime
         mRoot->SetApplication(app.get());
         mRoot->SetWindow(mWindow);
 
-        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e) {
-            const auto& errorEvent = dynamic_cast<const Event::ErrorEvent&>(e);
-            log::get("log")->error("GLFW ERROR[" + std::to_string(errorEvent.Error) + "]: " +
-                                           errorEvent.Description);
-        });
+        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
+                                                        {
+                                                            const auto& errorEvent =
+                                                                    dynamic_cast<const Event::ErrorEvent&>(e);
+                                                            log::get("log")->error("GLFW ERROR[" +
+                                                                                           std::to_string(
+                                                                                                   errorEvent
+                                                                                                           .Error) +
+                                                                                           "]: " +
+                                                                                           errorEvent
+                                                                                                   .Description);
+                                                        });
 
         if (!mWindow->Create())
             throw std::runtime_error("Failed to create window!");
@@ -111,27 +118,49 @@ namespace oe::Runtime
     void Engine::SetupEvents()
     {
         using namespace Core;
-        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e) {
-            const auto& resizeEvent = dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-            if (resizeEvent.Width > 0 || resizeEvent.Height > 0)
-            {
-                Root::GetWindow()->UpdateSize(resizeEvent.Width, resizeEvent.Height);
-                Renderer::GL::Viewport(resizeEvent.Width, resizeEvent.Height);
-            }
-        });
+        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
+                                                                  {
+                                                                      const auto& resizeEvent =
+                                                                              dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+                                                                      if (resizeEvent.Width > 0 ||
+                                                                              resizeEvent.Height >
+                                                                                      0)
+                                                                      {
+                                                                          Root::GetWindow()
+                                                                                  ->UpdateSize(
+                                                                                          resizeEvent
+                                                                                                  .Width,
+                                                                                          resizeEvent
+                                                                                                  .Height);
+                                                                          Renderer::GL::Viewport(
+                                                                                  resizeEvent.Width,
+                                                                                  resizeEvent
+                                                                                          .Height);
+                                                                      }
+                                                                  });
 
-        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e) {
-            const auto& keyInputEvent = dynamic_cast<const Event::KeyInputEvent&>(e);
-            Root::GetApplication()->HandleKey(static_cast<Input::Key>(keyInputEvent.Key),
-                                              static_cast<Input::Action>(keyInputEvent.Action));
-        });
+        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
+                                                           {
+                                                               const auto& keyInputEvent =
+                                                                       dynamic_cast<const Event::KeyInputEvent&>(e);
+                                                               Root::GetApplication()->HandleKey(
+                                                                       static_cast<Input::Key>(keyInputEvent
+                                                                               .Key),
+                                                                       static_cast<Input::Action>(keyInputEvent
+                                                                               .Action));
+                                                           });
 
-        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e) {
-            const auto& mouseButtonEvent = dynamic_cast<const Event::MouseButtonEvent&>(e);
-            Root::GetApplication()
-                    ->HandleButton(static_cast<Input::Button>(mouseButtonEvent.Button),
-                                   static_cast<Input::Action>(mouseButtonEvent.Action));
-        });
+        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
+                                                              {
+                                                                  const auto& mouseButtonEvent =
+                                                                          dynamic_cast<const Event::MouseButtonEvent&>(e);
+                                                                  Root::GetApplication()
+                                                                          ->HandleButton(
+                                                                                  static_cast<Input::Button>(mouseButtonEvent
+                                                                                          .Button),
+                                                                                  static_cast<Input::Action>(mouseButtonEvent
+                                                                                          .Action));
+                                                              });
     }
 
     Core::Root* Engine::mRoot{};

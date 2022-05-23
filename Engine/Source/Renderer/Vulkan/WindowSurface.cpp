@@ -14,8 +14,10 @@
 
 #elif __linux__
 #define GLFW_EXPOSE_NATIVE_WAYLAND
+
 #include "vulkan/vulkan_wayland.h"
 #include "GLFW/glfw3native.h"
+
 #elif __APPLE__
 #include "vulkan/vulkan_macos.h"
 #else
@@ -61,8 +63,9 @@ namespace oe::Renderer::Vulkan
         VkWaylandSurfaceCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
         createInfo.display = glfwGetWaylandDisplay();
-        VK_CHECK_RESULT(vkCreateWaylandSurfaceKHR(GetInstance()->Get(), &createInfo, nullptr,
-            &mSurface), "Failed to create window surface!")
+        VK_CHECK_RESULT(
+                vkCreateWaylandSurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface),
+                "Failed to create window surface!")
     }
 #elif __APPLE__
     void WindowSurface::Setup(GLFWwindow* window)

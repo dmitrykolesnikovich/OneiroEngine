@@ -27,7 +27,8 @@ namespace oe::Core
                 for (size_t i{}; i < texturesSize; ++i)
                 {
                     futures.emplace_back(
-                            std::async(std::launch::async, [](Renderer::GL::Texture* texture) {
+                            std::async(std::launch::async, [](Renderer::GL::Texture* texture)
+                            {
                                 texture->PreLoad();
                             }, textures[i].get()));
                 }

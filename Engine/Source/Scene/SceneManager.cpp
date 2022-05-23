@@ -155,13 +155,14 @@ namespace oe::Scene
         out << YAML::Key << "Scene" << YAML::Value << sceneName;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-        mScene->mRegistry.each([&](const auto entityID) {
-            const Entity entity = {entityID, mScene.get()};
-            if (!entity)
-                return;
+        mScene->mRegistry.each([&](const auto entityID)
+                               {
+                                   const Entity entity = {entityID, mScene.get()};
+                                   if (!entity)
+                                       return;
 
-            SaveEntity(out, entity);
-        });
+                                   SaveEntity(out, entity);
+                               });
 
         out << YAML::EndSeq;
         out << YAML::EndMap;

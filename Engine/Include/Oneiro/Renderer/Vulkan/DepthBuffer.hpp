@@ -23,7 +23,7 @@ namespace oe::Renderer::Vulkan
         void Destroy();
 
     private:
-        static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates,
+        static VkFormat FindSupportedFormat(const std::vector <VkFormat>& candidates,
                                             VkImageTiling tiling, VkFormatFeatureFlags features);
 
         VkImage mImage{};
