@@ -45,10 +45,9 @@ namespace oe::Renderer::GL
                     vec4 Texture = texture2D(uTexture, TexCoords);
                     if (Texture.a < 0.35)
                             discard;
-                    if (uUseTextureAlpha)
+                    if (uTextureAlpha <= Texture.a)
+                            Texture.a = uTextureAlpha;
                         FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
-                    else
-                        FragColor = pow(vec4(Texture.rgb, uTextureAlpha), vec4(1.0/2.2));
                 }
             )";
 
@@ -92,9 +91,8 @@ namespace oe::Renderer::GL
 
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
-        if (!mUseTextureAlpha)
-            mShader.SetUniform("uTextureAlpha", mAlpha);
 
+        mShader.SetUniform("uTextureAlpha", mAlpha);
         mShader.SetUniform("uModel", mModel);
         mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
         mShader.SetUniform("uKeepAspectRatio", mKeepAR);

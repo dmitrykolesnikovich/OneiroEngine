@@ -17,14 +17,18 @@ namespace
     std::vector<oe::VisualNovel::Instruction> instructions{};
     oe::Scene::SceneManager sceneManager{};
     oe::Renderer::GL::Sprite2D textBox{};
+    oe::Animation::DissolveAnimation textBoxAnim{};
     std::vector<std::string> labels{};
     oe::Renderer::GL::Text text{};
     std::string textToRenderer{};
     std::string textToIterate{};
     size_t currentIt{};
     uint32_t charItToPush{};
+    std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>>
+            sprite2Ds;
     float textSpeed = 0.05f;
     bool need2Reverse{};
+    bool textBoxNeed2Update{false};
 }
 
 namespace oe::VisualNovel
@@ -35,6 +39,8 @@ namespace oe::VisualNovel
         if (!labels.empty())
         {
             JumpToLabel(file, labels[0]);
+            textBox.SetAlpha(0.0f);
+            textBoxAnim.SetReversed(false);
             NextStep();
         }
     }
@@ -43,7 +49,8 @@ namespace oe::VisualNovel
     {
         if (currentIt >= instructions.size())
             return;
-        auto instruction = instructions[currentIt];
+        auto& instruction = instructions[currentIt];
+        static Renderer::GL::Sprite2D* prevSprite2D{};
         switch (instruction.Type)
         {
         case SHOW_SPRITE:
@@ -52,20 +59,27 @@ namespace oe::VisualNovel
             sprite2D->Load();
             sprite2D->Move({});
             sprite2D->SetAlpha(0.0f);
-            std::filesystem::path path = sprite2D->GetTexture()->GetPath();
-            auto entity = sceneManager.GetScene()->GetEntity(path.filename().string());
-            entity.AddComponent<Sprite2DComponent>(sprite2D);
-            entity.AddComponent<AnimationComponent>(new Animation::DissolveAnimation());
-            need2Reverse = true;
+            sprite2Ds.push_back(std::make_pair(sprite2D, new Animation::DissolveAnimation));
+            if (textBox.GetAlpha() >= 1.0f)
+                textBoxAnim.SetReversed(true);
+            else
+                textBoxAnim.SetReversed(false);
             currentIt++;
             NextStep();
             break;
         }
         case HIDE_SPRITE:
         {
-            std::filesystem::path path = instruction.Sprite2D->GetTexture()->GetPath();
-            sceneManager.GetScene()->DestroyEntity(
-                    sceneManager.GetScene()->GetEntity(path.filename().string()));
+            auto it = sprite2Ds.begin();
+            for (; !(it == sprite2Ds.end()); ++it)
+            {
+                if (it.base()->first == instruction.Sprite2D)
+                {
+                    it.base()->second->SetReversed(true);
+                    textBoxAnim.SetReversed(true);
+                    break;
+                }
+            }
             currentIt++;
             NextStep();
             break;
@@ -116,47 +130,110 @@ namespace oe::VisualNovel
 
     void Update()
     {
-        auto view = sceneManager.GetScene()->GetEntities()
-                                .view<Sprite2DComponent, AnimationComponent>();
-        if (need2Reverse)
-        {
-            std::reverse(view.storage<Sprite2DComponent>().begin(),
-                         view.storage<Sprite2DComponent>().end());
-            std::reverse(view.storage<AnimationComponent>().begin(),
-                         view.storage<AnimationComponent>().end());
-            need2Reverse = false;
-        }
-
-        bool drawText{};
+        static bool drawText{};
         Renderer::GL::Sprite2D* prevSprite2D{};
-        for (auto entity : view)
+        for (uint32_t i = 0; i < sprite2Ds.size(); ++i)
         {
-            auto* sprite2D = view.get<Sprite2DComponent>(entity).Sprite2D;
-            if (!prevSprite2D || prevSprite2D->GetAlpha() >= 1.0f)
+            auto* sprite2D = sprite2Ds[i].first;
+            auto* animation = sprite2Ds[i].second;
+            if (animation->IsReversed())
             {
-                if (sprite2D->GetAlpha() <= 1.0f)
-                    view.get<AnimationComponent>(entity).Animation
-                        ->Update(sprite2D, Runtime::Engine::GetDeltaTime());
-                sprite2D->Draw();
+                if (!textBoxAnim.IsReversed())
+                {
+                    static bool reverseBg{};
+                    drawText =
+                            sprite2Ds[0].first->GetAlpha() <= 0.0f && sprite2D->GetAlpha() <= 0.0f;
+                    if (sprite2D->GetAlpha() <= 0.0f)
+                    {
+                        auto it = sprite2Ds.begin();
+                        for (; !(it == sprite2Ds.end()); ++it)
+                        {
+                            if (it.base()->first == sprite2D)
+                            {
+                                reverseBg = true;
+                                sprite2Ds.erase(it);
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                    if (prevSprite2D && sprite2D->GetAlpha() >= 0.0f && !reverseBg)
+                    {
+                        animation->Update(sprite2D, Runtime::Engine::GetDeltaTime());
+                    }
+                    else if (prevSprite2D && prevSprite2D->GetAlpha() >= 0.0f && !reverseBg)
+                    {
+                        animation->Update(prevSprite2D, Runtime::Engine::GetDeltaTime());
+                    }
+                    if (sprite2Ds[0].first->GetAlpha() >= 0.0f && reverseBg)
+                        sprite2Ds[0].second
+                                    ->Update(sprite2Ds[0].first, Runtime::Engine::GetDeltaTime());
+                }
             }
+            else
+            {
+                if (!textBoxAnim.IsReversed() && textBox.GetAlpha() <= 0.0f)
+                {
+                    if (!prevSprite2D ||
+                            sprite2D->GetAlpha() <= 1.0f && prevSprite2D->GetAlpha() >= 1.0f)
+                        animation->Update(sprite2D, Runtime::Engine::GetDeltaTime());
+                    drawText = sprite2D->GetAlpha() >= 1.0f;
+                }
+            }
+            sprite2D->Draw();
             prevSprite2D = sprite2D;
-            drawText = sprite2D->GetAlpha() >= 1.0f;
         }
 
-        if (drawText || view.handle().empty())
+        static bool canUpdateTextLogic{};
+        if (drawText)
         {
-            static float time{};
-            time += Runtime::Engine::GetDeltaTime();
-            if (time >= textSpeed && charItToPush < textToIterate.size())
+            if (textBoxAnim.IsReversed())
             {
-                textToRenderer.push_back(textToIterate[charItToPush]);
-                charItToPush++;
-                time = 0.0f;
-                text.SetString(textToRenderer);
+                if (textBox.GetAlpha() >= 0.0f)
+                {
+                    textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
+                    canUpdateTextLogic = false;
+                }
+
+                if (textBox.GetAlpha() <= 0.0f)
+                {
+                    textBoxAnim.SetReversed(false);
+                    canUpdateTextLogic = true;
+                }
             }
+            else
+            {
+                if (textBox.GetAlpha() <= 1.0f)
+                {
+                    textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
+                    canUpdateTextLogic = false;
+                }
+
+                if (textBox.GetAlpha() >= 1.0f)
+                    canUpdateTextLogic = true;
+            }
+
+            if (canUpdateTextLogic)
+            {
+                static float time{};
+                time += Runtime::Engine::GetDeltaTime();
+                if (time >= textSpeed && charItToPush < textToIterate.size())
+                {
+                    textToRenderer.push_back(textToIterate[charItToPush]);
+                    charItToPush++;
+                    time = 0.0f;
+                    text.SetString(textToRenderer);
+                }
+            }
+
             if (textBox.IsLoaded())
                 textBox.Draw();
-            text.Draw({125.0f, 145.0f});
+            if (textBox.GetAlpha() >= 1.0f)
+                text.Draw({125.0f, 145.0f});
+        }
+        else
+        {
+            canUpdateTextLogic = false;
         }
     }
     std::vector<Instruction>& GetInstructions()
@@ -234,5 +311,6 @@ namespace oe::VisualNovel
         textBox.Init(path);
         textBox.Load();
         textBox.SetUsingTextureAlpha(true);
+        textBox.SetAlpha(0.0f);
     }
 }
