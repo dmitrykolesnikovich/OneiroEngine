@@ -4,10 +4,12 @@
 //
 
 #include <Oneiro/Core/ResourceManager.hpp>
+#include <iostream>
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -35,24 +37,21 @@ namespace oe::Renderer::GL
                 #version 330 core
                 out vec4 FragColor;
                 uniform sampler2D uTexture;
+                uniform bool uUseTextureAlpha;
                 uniform float uTextureAlpha;
                 in vec2 TexCoords;
                 void main()
                 {
                     vec4 Texture = texture2D(uTexture, TexCoords);
-                    if(Texture.a < 0.35)
+                    if (Texture.a < 0.35)
                             discard;
-                    FragColor = pow(Texture, vec4(1.0/2.2));
+                    if (uTextureAlpha <= Texture.a)
+                            Texture.a = uTextureAlpha;
+                        FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
                 }
             )";
 
         mShader.LoadFromSource(vertexShaderSrc, fragmentShaderSrc);
-        mShader.Use();
-        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
-        mShader.SetUniform("uTextureAlpha", mAlpha);
-        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
-        mShader.SetUniform("uView", glm::mat4(1.0f));
-        mShader.SetUniform("uModel", mModel);
 
         constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
@@ -86,25 +85,32 @@ namespace oe::Renderer::GL
         return false;
     }
 
-    void Sprite2D::Draw() const
+    void Sprite2D::Draw()
     {
         mShader.Use();
+
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
+
+        mShader.SetUniform("uTextureAlpha", mAlpha);
+        mShader.SetUniform("uModel", mModel);
+        mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
+        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
+        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
+        mShader.SetUniform("uView", glm::mat4(1.0f));
+
         mVAO.Bind();
         mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);
     }
 
-    void Sprite2D::Move(glm::vec2 pos)
+    void Sprite2D::Move(const glm::vec3& pos)
     {
-        mModel = translate(mModel, glm::vec3(pos, 0.0f));
-        mShader.SetUniform("uModel", mModel);
+        mModel = translate(mModel, pos);
     }
 
-    void Sprite2D::Scale(glm::vec2 scale)
+    void Sprite2D::Scale(const glm::vec3& scale)
     {
-        mModel = glm::scale(mModel, glm::vec3(scale, 1.0f));
-        mShader.SetUniform("uModel", mModel);
+        mModel = glm::scale(mModel, scale);
     }
 }

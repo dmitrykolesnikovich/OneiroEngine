@@ -14,7 +14,10 @@ namespace oe::Renderer::Vulkan
     class Pipeline
     {
     public:
-        bool IsCreated() { return mGraphicsPipeline != VK_NULL_HANDLE && mPipelineLayout != VK_NULL_HANDLE; }
+        bool IsCreated()
+        {
+            return mGraphicsPipeline != VK_NULL_HANDLE && mPipelineLayout != VK_NULL_HANDLE;
+        }
         void Create(VkFrontFace frontFace, bool reCreate = false);
 
         void Bind() const;

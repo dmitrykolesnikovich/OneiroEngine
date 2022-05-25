@@ -13,11 +13,12 @@ namespace oe::Renderer::GL
         gl::DeleteBuffers(1, &mID);
     }
 
-    void VertexBuffer::Create(uint32_t size, const float* pVertices)
+    void VertexBuffer::Create(uint32_t size, const float* pVertices, bool dynamicDraw)
     {
         gl::GenBuffers(1, &mID);
         Bind();
-        gl::BufferData(gl::ARRAY_BUFFER, size, pVertices, gl::STATIC_DRAW);
+        gl::BufferData(gl::ARRAY_BUFFER, size, pVertices,
+                       dynamicDraw ? gl::DYNAMIC_DRAW : gl::STATIC_DRAW);
     }
 
     void VertexBuffer::Bind() const
@@ -33,6 +34,12 @@ namespace oe::Renderer::GL
     void VertexBuffer::PushLayout(uint32_t id, int size, uint32_t stride, uint32_t p)
     {
         gl::EnableVertexAttribArray(id);
-        gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*) (p == 0 ? 0 : (p * sizeof(float))));
+        gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float),
+                                (void*) (p == 0 ? 0 : (p * sizeof(float))));
+    }
+
+    void VertexBuffer::SubData(size_t size, const void* data)
+    {
+        gl::BufferSubData(gl::ARRAY_BUFFER, 0, size, data);
     }
 }

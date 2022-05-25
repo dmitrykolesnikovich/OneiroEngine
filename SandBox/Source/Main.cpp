@@ -3,65 +3,48 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
-#include "HazelAudio/HazelAudio.h"
-#include "Oneiro/Renderer/OpenGL/ErrorHandler.hpp"
+#include "Oneiro/VisualNovel/VNCore.hpp"
+#include "Oneiro/Lua/LuaFile.hpp"
 
-class SandBoxApp final : public oe::Runtime::Application
+namespace SandBox
 {
-public:
-    bool Init() override
+    class Application : public oe::Runtime::Application
     {
-        using namespace oe;
-        oe::log::get("log")->info("Initializing...");
-        mSprite2D.Init("Assets/Textures/sprite.png");
-        mSource.LoadFromFile("Assets/Audio/music.mp3");
-        mSource.SetVolume(0.45f);
-        mSource.Play();
-        return true;
-    }
-
-    bool Update() override
-    {
-        oe::Renderer::GL::ErrorHandler::GLClearError();
-        mSprite2D.Draw();
-        oe::Renderer::GL::ErrorHandler::GLLogCall();
-        return true;
-    }
-
-    void Shutdown() override
-    {
-        oe::log::get("log")->info("Closing...");
-    }
-
-    void HandleKey(oe::Input::Key key, oe::Input::Action action) override
-    {
-        using namespace oe;
-        if (action == Input::Action::PRESS)
+    public:
+        bool Init() override
         {
-            switch (key)
-            {
-            case Input::Key::ESC:
-                Stop();
-                break;
-            default:
-                break;
-            }
+            mFile.LoadFile("Assets/Scripts/test.lua", false);
+            oe::VisualNovel::Init(&mFile);
+            oe::VisualNovel::LoadTextBox("Assets/Images/textbox.png");
+            return true;
         }
-    }
 
+        bool Update() override
+        {
+            oe::VisualNovel::Update();
+            return true;
+        }
 
-private:
-    Hazel::Audio::Source mSource;
-    oe::Renderer::GL::Sprite2D mSprite2D;
-};
+        void HandleButton(oe::Input::Button button, oe::Input::Action action) override
+        {
+            if (button == oe::Input::Button::LEFT && action == oe::Input::Action::PRESS)
+                oe::VisualNovel::NextStep();
+        }
+
+        void Shutdown() override
+        {
+
+        }
+    private:
+        oe::Lua::File mFile;
+    };
+}
 
 namespace oe::Runtime
 {
     std::shared_ptr<Application> CreateApplication(int, char* [])
     {
-        return std::make_shared<SandBoxApp>();
+        return std::make_shared<SandBox::Application>();
     }
 }

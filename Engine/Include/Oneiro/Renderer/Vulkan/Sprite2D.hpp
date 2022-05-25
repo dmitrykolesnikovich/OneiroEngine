@@ -29,8 +29,10 @@ namespace oe::Renderer::Vulkan
             mTexture.Load(pathFile); // texture loading before uniform buffer creation
 
             mUniformBuffer.BeginLayouts();
-            mUniformBuffer.AddLayout(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
-            mUniformBuffer.AddLayout(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+            mUniformBuffer
+                    .AddLayout(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT);
+            mUniformBuffer.AddLayout(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                     VK_SHADER_STAGE_FRAGMENT_BIT);
             mUniformBuffer.EndLayouts(false);
 
             mUniformBuffer.BeginBindings(sizeof(Uniforms), 2);
@@ -44,10 +46,16 @@ namespace oe::Renderer::Vulkan
 
             if (!mPipeline.IsCreated())
             {
-                mPipeline.SetVertexShaderModule(mVertShader.Create("Shaders/2D/Compiled/sprite2d.vert.spv"));
-                mPipeline.SetFragmentShaderModule(mFragShader.Create("Shaders/2D/Compiled/sprite2d.frag.spv"));
-                mPipeline.SetVertexInputDescription(mVertShader.AddVertexInputBindingDescription(0, sizeof(glm::vec2)));
-                mPipeline.SetVertexInputDescription(mVertShader.AddVertexInputDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, sizeof(glm::vec2), 0));
+                mPipeline.SetVertexShaderModule(
+                        mVertShader.Create("Shaders/2D/Compiled/sprite2d.vert.spv"));
+                mPipeline.SetFragmentShaderModule(
+                        mFragShader.Create("Shaders/2D/Compiled/sprite2d.frag.spv"));
+                mPipeline.SetVertexInputDescription(
+                        mVertShader.AddVertexInputBindingDescription(0, sizeof(glm::vec2)));
+                mPipeline.SetVertexInputDescription(mVertShader.AddVertexInputDescription(0, 0,
+                                                                                          VK_FORMAT_R32G32_SFLOAT,
+                                                                                          sizeof(glm::vec2),
+                                                                                          0));
 
                 mPipeline.Create(VK_FRONT_FACE_CLOCKWISE);
             }
@@ -101,7 +109,8 @@ namespace oe::Renderer::Vulkan
             glm::vec2 Position{};
         };
 
-        const std::vector<Vertex> mVertices = {{{-1.0f, -1.0f}}, {{1.0f, -1.0f}}, {{1.0f, 1.0f}}, {{-1.0f, 1.0f}}};
+        const std::vector<Vertex>
+                mVertices = {{{-1.0f, -1.0f}}, {{1.0f, -1.0f}}, {{1.0f, 1.0f}}, {{-1.0f, 1.0f}}};
         Shader mVertShader{};
         Shader mFragShader{};
         Texture mTexture{};

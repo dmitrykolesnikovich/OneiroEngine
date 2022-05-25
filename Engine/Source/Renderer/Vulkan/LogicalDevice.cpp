@@ -17,7 +17,8 @@ namespace oe::Renderer::Vulkan
 
     void LogicalDevice::WaitIdle() const { vkDeviceWaitIdle(mDevice); }
 
-    void LogicalDevice::CreateDeviceInfo(bool enableValidationLayers, VkDeviceCreateInfo& createInfo) const
+    void LogicalDevice::CreateDeviceInfo(bool enableValidationLayers,
+                                         VkDeviceCreateInfo& createInfo) const
     {
         const auto physicalDevice = GetPhysDevice();
         auto& queueCreateInfos = physicalDevice->GetQueueInfos();
@@ -26,7 +27,8 @@ namespace oe::Renderer::Vulkan
         createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
         createInfo.pEnabledFeatures = GetPhysDevice()->GetFeaturesPtr();
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(physicalDevice->GetExtensions().size());
+        createInfo.enabledExtensionCount =
+                static_cast<uint32_t>(physicalDevice->GetExtensions().size());
         createInfo.ppEnabledExtensionNames = physicalDevice->GetExtensions().data();
 
         if (enableValidationLayers)
@@ -47,9 +49,12 @@ namespace oe::Renderer::Vulkan
         VkDeviceCreateInfo createInfo{};
         CreateDeviceInfo(enableValidationLayers, createInfo);
 
-        VK_CHECK_RESULT(vkCreateDevice(physicalDevice->Get(), &createInfo, nullptr, &mDevice), "Failed to create logical device!")
+        VK_CHECK_RESULT(vkCreateDevice(physicalDevice->Get(), &createInfo, nullptr, &mDevice),
+                        "Failed to create logical device!")
 
-        vkGetDeviceQueue(mDevice, physicalDevice->GetQueueFamilyIndices().GraphicsFamily.value(), 0, GetGraphicsQueuePtr());
-        vkGetDeviceQueue(mDevice, physicalDevice->GetQueueFamilyIndices().PresentFamily.value(), 0, GetPresentQueuePtr());
+        vkGetDeviceQueue(mDevice, physicalDevice->GetQueueFamilyIndices().GraphicsFamily.value(), 0,
+                         GetGraphicsQueuePtr());
+        vkGetDeviceQueue(mDevice, physicalDevice->GetQueueFamilyIndices().PresentFamily.value(), 0,
+                         GetPresentQueuePtr());
     }
 }

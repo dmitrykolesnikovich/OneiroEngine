@@ -33,12 +33,15 @@ namespace oe::Renderer::Vulkan
         createInfo.pCode = reinterpret_cast<const uint32_t*>(buffer.data());
         VkShaderModule shaderModule;
 
-        VK_CHECK_RESULT(vkCreateShaderModule(GetLogicalDevice()->Get(), &createInfo, nullptr, &shaderModule), "Failed to create shader module: " + pathToShader)
+        VK_CHECK_RESULT(vkCreateShaderModule(GetLogicalDevice()->Get(), &createInfo, nullptr,
+                                             &shaderModule),
+                        "Failed to create shader module: " + pathToShader)
 
         return shaderModule;
     }
 
-    VkVertexInputBindingDescription Shader::AddVertexInputBindingDescription(uint32_t binding, uint32_t stride)
+    VkVertexInputBindingDescription Shader::AddVertexInputBindingDescription(uint32_t binding,
+                                                                             uint32_t stride)
     {
         VkVertexInputBindingDescription bindingDescription{};
         bindingDescription.binding = binding;
@@ -47,7 +50,10 @@ namespace oe::Renderer::Vulkan
         return bindingDescription;
     }
 
-    VkVertexInputAttributeDescription Shader::AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset)
+    VkVertexInputAttributeDescription Shader::AddVertexInputDescription(int binding, int location,
+                                                                        VkFormat format,
+                                                                        size_t stride,
+                                                                        uint32_t offset)
     {
         VkVertexInputAttributeDescription attributeDescriptions{};
         attributeDescriptions.binding = binding;

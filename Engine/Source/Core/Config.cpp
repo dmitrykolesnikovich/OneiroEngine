@@ -24,7 +24,8 @@ namespace oe::Core
                 std::filesystem::create_directory("Configs");
 
             mFileState.OpenLibraries(sol::lib::base);
-            if (!mFileState.LoadFile("Configs/" + file + ".cfg").valid() || !mFileState.GetFile().is_open())
+            if (!mFileState.LoadFile("Configs/" + file + ".cfg").valid() ||
+                    !mFileState.GetFile().is_open())
                 log::get("log")->warn("Failed to open config " + file + ".cfg" + " file!");
         }
         catch (const std::exception& ex)

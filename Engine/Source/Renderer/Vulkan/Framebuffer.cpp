@@ -24,7 +24,8 @@ namespace oe::Renderer::Vulkan
         framebufferInfo.height = GetSwapChain()->GetExtent2D().height;
         framebufferInfo.layers = 1;
 
-        VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(), &framebufferInfo, nullptr, &mFramebuffer), "Failed to create framebuffer!")
+        VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(), &framebufferInfo, nullptr,
+                                            &mFramebuffer), "Failed to create framebuffer!")
     }
 
     VkFramebuffer Framebuffer::Get() const

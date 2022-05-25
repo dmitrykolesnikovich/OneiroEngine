@@ -9,6 +9,7 @@
 
 #include "Oneiro/Renderer/OpenGL/Base.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Oneiro/Animation/Animation.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -18,9 +19,14 @@ namespace oe::Renderer::GL
         void Init(const std::string& path, bool keepAspectRatio = true);
         bool Load();
         bool UnLoad();
-        void Draw() const;
-        void Move(glm::vec2 pos);
-        void Scale(glm::vec2 scale);
+        void Draw();
+        void Move(const glm::vec3& pos);
+        void Scale(const glm::vec3& scale);
+        const Texture* GetTexture() const { return mTexture; }
+        float GetAlpha() const { return mAlpha; }
+        void SetAlpha(float alpha) { mAlpha = alpha; }
+        void SetUsingTextureAlpha(bool useTextureAlpha) { mUseTextureAlpha = useTextureAlpha; }
+        bool IsLoaded() { return mTexture; }
     private:
         glm::mat4 mModel{1.0f};
         Texture* mTexture{};
@@ -29,5 +35,6 @@ namespace oe::Renderer::GL
         VertexArray mVAO;
         float mAlpha{1.0f};
         bool mKeepAR{};
+        bool mUseTextureAlpha{};
     };
 }

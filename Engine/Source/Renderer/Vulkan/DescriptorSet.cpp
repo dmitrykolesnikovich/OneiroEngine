@@ -18,10 +18,13 @@ namespace oe::Renderer::Vulkan
         allocInfo.descriptorPool = pool;
         allocInfo.descriptorSetCount = 1;
         allocInfo.pSetLayouts = layout;
-        VK_CHECK_RESULT(vkAllocateDescriptorSets(GetLogicalDevice()->Get(), &allocInfo, &mDescriptorSet), "Failed to allocate descriptor sets!")
+        VK_CHECK_RESULT(
+                vkAllocateDescriptorSets(GetLogicalDevice()->Get(), &allocInfo, &mDescriptorSet),
+                "Failed to allocate descriptor sets!")
     }
 
-    void DescriptorSet::AddBufferWriteDescriptor(int binding, VkBuffer buffer, VkDeviceSize bufferSize)
+    void DescriptorSet::AddBufferWriteDescriptor(int binding, VkBuffer buffer,
+                                                 VkDeviceSize bufferSize)
     {
         static VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = buffer;
@@ -37,10 +40,12 @@ namespace oe::Renderer::Vulkan
         descriptor.descriptorCount = 1;
         descriptor.pBufferInfo = &bufferInfo;
         mDescriptorWrites.push_back(descriptor);
-        vkUpdateDescriptorSets(GetLogicalDevice()->Get(), mDescriptorWrites.size(), mDescriptorWrites.data(), 0, nullptr);
+        vkUpdateDescriptorSets(GetLogicalDevice()->Get(), mDescriptorWrites.size(),
+                               mDescriptorWrites.data(), 0, nullptr);
     }
 
-    void DescriptorSet::AddImageWriteDescriptor(int binding, VkImageView imageView, VkSampler imageSampler)
+    void DescriptorSet::AddImageWriteDescriptor(int binding, VkImageView imageView,
+                                                VkSampler imageSampler)
     {
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -56,7 +61,8 @@ namespace oe::Renderer::Vulkan
         descriptor.descriptorCount = 1;
         descriptor.pImageInfo = &imageInfo;
         mDescriptorWrites.push_back(descriptor);
-        vkUpdateDescriptorSets(GetLogicalDevice()->Get(), mDescriptorWrites.size(), mDescriptorWrites.data(), 0, nullptr);
+        vkUpdateDescriptorSets(GetLogicalDevice()->Get(), mDescriptorWrites.size(),
+                               mDescriptorWrites.data(), 0, nullptr);
     }
 
     void DescriptorSet::End()
@@ -65,6 +71,8 @@ namespace oe::Renderer::Vulkan
 
     void DescriptorSet::Bind() const
     {
-        vkCmdBindDescriptorSets(GetCommandBuffer()->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, GetCurrentPipeline()->GetLayout(), 0, 1, &mDescriptorSet, 0, nullptr);
+        vkCmdBindDescriptorSets(GetCommandBuffer()->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                GetCurrentPipeline()->GetLayout(), 0, 1, &mDescriptorSet, 0,
+                                nullptr);
     }
 }

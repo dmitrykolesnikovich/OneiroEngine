@@ -13,16 +13,20 @@ namespace oe::Renderer::Vulkan
 {
     void UniformBuffer::BeginBindings(VkDeviceSize size, uint32_t bindingsCount)
     {
-        Buffer::Create(size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, mBuffer, mBufferMemory);
+        Buffer::Create(size, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                       mBuffer, mBufferMemory);
         mDescriptorPool.Create(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, bindingsCount);
         mDescriptorSet.Begin(mDescriptorPool.Get(), mSetLayout.GetPtr());
     }
 
-    void UniformBuffer::AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture)
+    void UniformBuffer::AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage,
+                                   const Texture* texture)
     {
         if (texture)
         {
-            mDescriptorSet.AddImageWriteDescriptor(binding, texture->GetView(), texture->GetSampler());
+            mDescriptorSet
+                    .AddImageWriteDescriptor(binding, texture->GetView(), texture->GetSampler());
             return;
         }
         mDescriptorSet.AddBufferWriteDescriptor(binding, mBuffer, size);

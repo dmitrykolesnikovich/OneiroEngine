@@ -15,7 +15,10 @@ namespace oe::Renderer::Vulkan
     {
     public:
         VkShaderModule Create(const std::string& pathToShader);
-        VkVertexInputBindingDescription AddVertexInputBindingDescription(uint32_t binding, uint32_t stride);
-        VkVertexInputAttributeDescription AddVertexInputDescription(int binding, int location, VkFormat format, size_t stride, uint32_t offset);
+        VkVertexInputBindingDescription AddVertexInputBindingDescription(uint32_t binding,
+                                                                         uint32_t stride);
+        VkVertexInputAttributeDescription AddVertexInputDescription(int binding, int location,
+                                                                    VkFormat format, size_t stride,
+                                                                    uint32_t offset);
     };
 }

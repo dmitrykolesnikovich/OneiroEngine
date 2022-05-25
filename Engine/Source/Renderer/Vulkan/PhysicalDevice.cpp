@@ -14,7 +14,8 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void PhysicalDevice::CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily, VkDeviceQueueCreateInfo& queueCreateInfo)
+    void PhysicalDevice::CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily,
+                                               VkDeviceQueueCreateInfo& queueCreateInfo)
     {
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -33,9 +34,10 @@ namespace oe::Renderer::Vulkan
                         !formats.empty() && !presentModes.empty())
                 {
                     static constexpr float queuePriority = 1.0f;
-                    const std::set uniqueQueueFamilies = {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
+                    const std::set uniqueQueueFamilies =
+                            {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
 
-                    for (const uint32_t queueFamily: uniqueQueueFamilies)
+                    for (const uint32_t queueFamily : uniqueQueueFamilies)
                     {
                         VkDeviceQueueCreateInfo queueCreateInfo{};
                         CreateDeviceQueueInfo(&queuePriority, queueFamily, queueCreateInfo);
@@ -55,11 +57,13 @@ namespace oe::Renderer::Vulkan
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
+                                             availableExtensions.data());
 
-        std::set<std::string> requiredExtensions(mDeviceExtensions.cbegin(), mDeviceExtensions.cend());
+        std::set<std::string>
+                requiredExtensions(mDeviceExtensions.cbegin(), mDeviceExtensions.cend());
 
-        for (const auto& extension: availableExtensions)
+        for (const auto& extension : availableExtensions)
             requiredExtensions.erase(extension.extensionName);
 
         return requiredExtensions.empty();
@@ -100,7 +104,7 @@ namespace oe::Renderer::Vulkan
 
         std::multimap<size_t, VkPhysicalDevice> candidates;
 
-        for (const auto& device: devices)
+        for (const auto& device : devices)
         {
             size_t score = RateDeviceSuitability(device);
             candidates.insert(std::make_pair(score, device));
@@ -132,10 +136,12 @@ namespace oe::Renderer::Vulkan
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
         int i{};
-        for (const auto& [queueFlags, queueCount, timestampValidBits, minImageTransferGranularity]: queueFamilies)
+        for (const auto& [queueFlags, queueCount, timestampValidBits,
+                    minImageTransferGranularity] : queueFamilies)
         {
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface()->Get(), &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface()->Get(),
+                                                 &presentSupport);
 
             if (queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 indices.GraphicsFamily = i;
@@ -225,7 +231,8 @@ namespace oe::Renderer::Vulkan
         if (presentModeCount != 0)
         {
             presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount,
+                                                      presentModes.data());
         }
 
         return presentModes;

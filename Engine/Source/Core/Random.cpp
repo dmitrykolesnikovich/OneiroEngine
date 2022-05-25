@@ -12,19 +12,19 @@ namespace oe::Core
     int Random::DiceInt(int min, int max)
     {
         const std::uniform_int_distribution uid(min, max);
-        return uid(mGenerator);
+        //return uid(mGenerator);
     }
 
     float Random::DiceFloat(float min, float max)
     {
         const std::uniform_real_distribution uid(min, max);
-        return uid(mGenerator);
+        //return uid(mGenerator);
     }
 
     double Random::DiceDouble(double min, double max)
     {
         const std::uniform_real_distribution uid(min, max);
-        return uid(mGenerator);
+        //return uid(mGenerator);
     }
 
     std::string Random::DiceUuid()

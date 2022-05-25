@@ -25,7 +25,11 @@ namespace oe::Renderer::GL
 
         [[nodiscard]] int GetWidth() const;
         [[nodiscard]] int GetHeight() const;
-        float GetAR() const;
+        [[nodiscard]] float GetAR() const;
+        std::string GetPath() const { return mTexturePath; }
+
+        static void GenerateTexture(uint32_t* textureID, uint32_t nrChannels, int width, int height,
+                                    uint8_t* data, int clamp = 0x812D);
     private:
         struct TextureData
         {
@@ -36,7 +40,6 @@ namespace oe::Renderer::GL
             uint8_t* Data{};
         };
         std::string mTexturePath;
-        void GenerateTexture();
         TextureData mData;
         uint32_t mID{};
         bool mIsLoaded{};

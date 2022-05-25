@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 project(Oneiro)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+
+if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.12.25835)
+    set(CMAKE_CXX20_STANDARD_COMPILE_OPTION "-std:c++latest")
+    set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "-std:c++latest")
+endif ()
+
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -35,6 +41,7 @@ file(GLOB ONEIRO_SOURCE
         "Source/Renderer/Gui/*.cpp"
         "Source/Runtime/*.cpp"
         "Source/Scene/*.cpp"
+        "Source/VisualNovel/*.cpp"
         )
 
 add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE} ${IMGUI_SOURCE} ${OPENGL_SOURCE} ${ONEIRO_RENDERER_SOURCE})
@@ -46,10 +53,12 @@ add_subdirectory(../ThirdParty/yaml-cpp ThirdParty/yaml-cpp)
 add_subdirectory(../ThirdParty/sol2 ThirdParty/sol2)
 add_subdirectory(../ThirdParty/lua ThirdParty/lua)
 add_subdirectory(../ThirdParty/HazelAudio ThirdParty/HazelAudio)
+add_subdirectory(../ThirdParty/freetype ThirdParty/freetype)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ../ThirdParty/stb/include ../ThirdParty/imgui/ Include/ ../ThirdParty/OpenGL/include)
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ../ThirdParty/imgui)
-target_link_libraries(${PROJECT_NAME} glfw glm spdlog EnTT yaml-cpp::yaml-cpp lua_static sol2::sol2 Hazel.Audio)
+target_link_libraries(${PROJECT_NAME} glfw glm spdlog EnTT yaml-cpp::yaml-cpp lua_static
+        sol2::sol2 Hazel.Audio freetype)
 if (OE_API_VULKAN)
     # Link Vulkan...
 else ()

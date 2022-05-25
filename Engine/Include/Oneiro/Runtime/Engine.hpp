@@ -16,10 +16,12 @@ namespace oe::Runtime
         static void Init();
         static void Run(const std::shared_ptr<Application>& app);
         static void Shutdown();
+        static float GetDeltaTime() { return mDeltaTime; }
     private:
         static bool UpdateGame(const std::shared_ptr<Application>& app);
         static void SetupEvents();
         static Core::Window* mWindow;
         static Core::Root* mRoot;
+        inline static float mDeltaTime{};
     };
 }

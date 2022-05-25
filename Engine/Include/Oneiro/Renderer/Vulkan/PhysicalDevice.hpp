@@ -19,7 +19,8 @@ namespace oe::Renderer::Vulkan
 
         static std::vector<VkPresentModeKHR> GetPresentModes(VkPhysicalDevice device);
 
-        void CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily, VkDeviceQueueCreateInfo& queueCreateInfo);
+        void CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily,
+                                   VkDeviceQueueCreateInfo& queueCreateInfo);
         bool IsDeviceSuitable(VkPhysicalDevice device);
 
         bool CheckDeviceExtensionsSupport(VkPhysicalDevice device) const;

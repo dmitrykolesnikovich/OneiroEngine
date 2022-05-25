@@ -12,7 +12,9 @@ namespace oe::Renderer::Vulkan
     class Buffer
     {
     public:
-        static void Create(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+        static void Create(VkDeviceSize size, VkBufferUsageFlags usage,
+                           VkMemoryPropertyFlags properties, VkBuffer& buffer,
+                           VkDeviceMemory& bufferMemory);
 
         static void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 

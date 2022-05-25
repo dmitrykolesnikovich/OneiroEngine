@@ -21,6 +21,8 @@ namespace oe::Scene
         Entity CreateEntity(const std::string& name = {});
         void DestroyEntity(Entity entity);
         Entity GetEntity(const std::string& name = {});
+        entt::registry& GetEntities() { return mRegistry; }
+        void DestroyAllEntities();
     private:
         entt::registry mRegistry{};
         std::string mName{};

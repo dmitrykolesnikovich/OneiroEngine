@@ -87,7 +87,6 @@ namespace oe::Core
     {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         mWindow = glfwCreateWindow(mData.Width, mData.Height, mData.Title, nullptr, nullptr);
@@ -97,17 +96,21 @@ namespace oe::Core
 
         glfwMakeContextCurrent(mWindow);
 
-        glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height) {
+        glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
+        {
             Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
         });
-        glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int) {
+        glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int)
+        {
             Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
         });
-        glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int) {
+        glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int)
+        {
             Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
         });
 
-        glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused) {
+        glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused)
+        {
             Event::Dispatcher::Post(Event::FocusEvent(isFocused));
         });
 

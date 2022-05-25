@@ -14,6 +14,7 @@
 
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 namespace oe
 {
@@ -34,7 +35,9 @@ namespace oe
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = default;
 
-        TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale) : Translation(translation), Rotation(rotation), Scale(scale)
+        TransformComponent(const glm::vec3& translation, const glm::vec3& rotation,
+                           const glm::vec3& scale) : Translation(translation), Rotation(rotation),
+                                                     Scale(scale)
         {
         }
 
@@ -45,8 +48,33 @@ namespace oe
         [[nodiscard]] glm::mat4 GetTransform() const
         {
             const glm::mat4 rotation = toMat4(glm::quat(Rotation));
-            return translate(glm::mat4(1.0f), Translation) * rotation * scale(glm::mat4(1.0f), Scale);
+            return translate(glm::mat4(1.0f), Translation) * rotation *
+                    scale(glm::mat4(1.0f), Scale);
         }
+    };
+
+    struct Sprite2DComponent
+    {
+        Sprite2DComponent() = default;
+        Sprite2DComponent(const Sprite2DComponent&) = default;
+
+        Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D) : Sprite2D(sprite2D)
+        {
+        }
+
+        Renderer::GL::Sprite2D* Sprite2D{};
+    };
+
+    struct AnimationComponent
+    {
+        AnimationComponent() = default;
+        AnimationComponent(const AnimationComponent&) = default;
+
+        AnimationComponent(Animation::Animation* animation) : Animation(animation)
+        {
+        }
+
+        Animation::Animation* Animation{};
     };
 
     struct CameraComponent
@@ -68,8 +96,11 @@ namespace oe
 
         [[nodiscard]] glm::mat4 GetPerspectiveProjection() const
         {
-            return glm::perspective(glm::radians(Fov), static_cast<float>(Core::Root::GetWindow()->GetWidth()) / static_cast<float>(
-                    Core::Root::GetWindow()->GetHeight()), Near, Far);
+            return glm::perspective(glm::radians(Fov),
+                                    static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
+                                            static_cast<float>(
+                                                    Core::Root::GetWindow()->GetHeight()), Near,
+                                    Far);
         }
 
         [[nodiscard]] glm::mat4 GetOrthoProjection() const
