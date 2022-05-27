@@ -3,6 +3,11 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
+//
+// Copyright (c) Oneiro Games. All rights reserved.
+// Licensed under the GNU General Public License, Version 3.0.
+//
+
 #include <Oneiro/Lua/LuaFile.hpp>
 #include "Oneiro/VisualNovel/VNCore.hpp"
 #include "Oneiro/Core/Logger.hpp"
@@ -15,7 +20,6 @@
 namespace
 {
     std::vector<oe::VisualNovel::Instruction> instructions{};
-    oe::Scene::SceneManager sceneManager{};
     oe::Renderer::GL::Sprite2D textBox{};
     oe::Animation::DissolveAnimation textBoxAnim{};
     std::vector<std::string> labels{};
@@ -27,8 +31,6 @@ namespace
     std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>>
             sprite2Ds;
     float textSpeed = 0.05f;
-    bool need2Reverse{};
-    bool textBoxNeed2Update{false};
 }
 
 namespace oe::VisualNovel
@@ -73,9 +75,9 @@ namespace oe::VisualNovel
             auto it = sprite2Ds.begin();
             for (; !(it == sprite2Ds.end()); ++it)
             {
-                if (it.base()->first == instruction.Sprite2D)
+                if (it->first == instruction.Sprite2D)
                 {
-                    it.base()->second->SetReversed(true);
+                    it->second->SetReversed(true);
                     textBoxAnim.SetReversed(true);
                     break;
                 }
@@ -148,7 +150,7 @@ namespace oe::VisualNovel
                         auto it = sprite2Ds.begin();
                         for (; !(it == sprite2Ds.end()); ++it)
                         {
-                            if (it.base()->first == sprite2D)
+                            if (it->first == sprite2D)
                             {
                                 reverseBg = true;
                                 sprite2Ds.erase(it);
@@ -213,7 +215,7 @@ namespace oe::VisualNovel
                     canUpdateTextLogic = true;
             }
 
-            if (canUpdateTextLogic)
+            if (canUpdateTextLogic && textBox.GetAlpha() >= 1.0f)
             {
                 static float time{};
                 time += Runtime::Engine::GetDeltaTime();
@@ -254,7 +256,7 @@ namespace oe::VisualNovel
             {
                 currentIt = 0;
                 instructions.clear();
-                if (!file->CallFunction("main", labelName))
+                if (!file->CallFunction("main", label))
                     log::get("log")->warn("Failed to jump to " + labelName + " label!");
                 return;
             }
