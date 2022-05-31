@@ -256,8 +256,9 @@ namespace oe::VisualNovel
                 }
             }
 
-            if (textBox.IsLoaded())
-                textBox.Draw();
+//            if (textBox.IsLoaded())
+//                textBox.Draw();
+            textBox.Draw();
             if (textBox.GetAlpha() >= 1.0f)
                 text.Draw({125.0f, 145.0f});
         }

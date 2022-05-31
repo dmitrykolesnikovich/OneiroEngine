@@ -51,37 +51,41 @@ namespace oe::Renderer::GL
                 }
             )";
 
-        mShader.LoadFromSource(vertexShaderSrc, fragmentShaderSrc);
+        mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
+        mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
+        mShader.CreateProgram();
 
         constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
-        mVAO.Init();
+        mVAO.Generate();
+        mVBO.Generate();
         mVAO.Bind();
-        mVBO.Create(sizeof(vertices), vertices);
-        VertexBuffer::PushLayout(0, 3, 3, 0);
+        mVBO.Bind();
+        mVBO.BufferData(sizeof(vertices), vertices);
+        VertexAttribPointer<float>(0, 3, 3);
         mVAO.UnBind();
         mVBO.UnBind();
-        mTexture = Core::GetTextureManager().Add(std::make_shared<Texture>());
-        mTexture->Init(path);
+        //mTexture = Core::GetTextureManager().Add(std::make_shared<Texture>());
+        Load2DTexture(path, &mTexture, &mTextureData);
     }
 
     bool Sprite2D::Load()
     {
-        if (!mTexture->IsLoaded())
-        {
-            mTexture->Load();
-            return true;
-        }
+//        if (!mTexture->IsLoaded())
+//        {
+//            mTexture->Load();
+//            return true;
+//        }
         return false;
     }
 
     bool Sprite2D::UnLoad()
     {
-        if (mTexture->IsLoaded())
-        {
-            mTexture->UnLoad();
-            return true;
-        }
+//        if (mTexture->IsLoaded())
+//        {
+//            mTexture->UnLoad();
+//            return true;
+//        }
         return false;
     }
 
@@ -90,7 +94,8 @@ namespace oe::Renderer::GL
         mShader.Use();
 
         if (mKeepAR)
-            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / mTexture->GetAR());
+            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() /
+                    ((float) mTextureData.Width / mTextureData.Height));
 
         mShader.SetUniform("uTextureAlpha", mAlpha);
         mShader.SetUniform("uModel", mModel);
@@ -100,7 +105,7 @@ namespace oe::Renderer::GL
         mShader.SetUniform("uView", glm::mat4(1.0f));
 
         mVAO.Bind();
-        mTexture->Bind();
+        mTexture.Bind();
         DrawArrays(GL::TRIANGLES, 6);
     }
 
@@ -113,4 +118,15 @@ namespace oe::Renderer::GL
     {
         mModel = glm::scale(mModel, scale);
     }
+
+    void Sprite2D::SetAlpha(float alpha) { mAlpha = alpha; }
+
+    void Sprite2D::SetUsingTextureAlpha(bool useTextureAlpha)
+    {
+        mUseTextureAlpha = useTextureAlpha;
+    }
+
+    const Texture<gl::TEXTURE_2D>* Sprite2D::GetTexture() const { return &mTexture; }
+
+    float Sprite2D::GetAlpha() const { return mAlpha; }
 }

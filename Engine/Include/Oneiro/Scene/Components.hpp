@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Oneiro/Animation/Animation.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

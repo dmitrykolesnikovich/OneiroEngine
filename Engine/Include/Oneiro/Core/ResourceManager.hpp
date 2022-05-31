@@ -8,39 +8,39 @@
 #include <vector>
 #include <memory>
 
-namespace oe::Audio
-{
-    class Source;
-}
-
-namespace oe::Renderer::GL
-{
-    class Texture;
-}
-
-namespace oe::Core
-{
-    template<class T>
-    class ResourceManager
-    {
-    public:
-        T* Add(const std::shared_ptr<T>& resourcePtr)
-        {
-            mResources.emplace_back(resourcePtr);
-            return resourcePtr.get();
-        }
-
-        void Remove(const T& resource) { mResources.erase(resource); }
-        void Remove(size_t id) { mResources.erase(id); }
-
-        [[nodiscard]] constexpr T* Get(size_t index) const { return mResources[index].get(); }
-        [[nodiscard]] constexpr size_t Size() const { return mResources.size(); }
-        constexpr std::vector<std::shared_ptr<T>>& GetResources() { return mResources; }
-    private:
-        std::vector<std::shared_ptr<T>> mResources{};
-    };
-
-    void LoadResources();
-
-    ResourceManager<Renderer::GL::Texture>& GetTextureManager();
-}
+//namespace oe::Audio
+//{
+//    class Source;
+//}
+//
+//namespace oe::Renderer::GL
+//{
+//    class Texture;
+//}
+//
+//namespace oe::Core
+//{
+//    template<class T>
+//    class ResourceManager
+//    {
+//    public:
+//        T* Add(const std::shared_ptr<T>& resourcePtr)
+//        {
+//            mResources.emplace_back(resourcePtr);
+//            return resourcePtr.get();
+//        }
+//
+//        void Remove(const T& resource) { mResources.erase(resource); }
+//        void Remove(size_t id) { mResources.erase(id); }
+//
+//        [[nodiscard]] constexpr T* Get(size_t index) const { return mResources[index].get(); }
+//        [[nodiscard]] constexpr size_t Size() const { return mResources.size(); }
+//        constexpr std::vector<std::shared_ptr<T>>& GetResources() { return mResources; }
+//    private:
+//        std::vector<std::shared_ptr<T>> mResources{};
+//    };
+//
+//    void LoadResources();
+//
+//    ResourceManager<Renderer::GL::Texture>& GetTextureManager();
+//}

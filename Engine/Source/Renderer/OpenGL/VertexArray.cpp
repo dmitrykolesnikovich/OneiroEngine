@@ -4,7 +4,6 @@
 //
 
 #include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
-#include "OpenGL/gl_core_4_5.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -13,7 +12,7 @@ namespace oe::Renderer::GL
         gl::DeleteVertexArrays(1, &mID);
     }
 
-    void VertexArray::Init()
+    void VertexArray::Generate()
     {
         gl::GenVertexArrays(1, &mID);
     }
@@ -23,8 +22,10 @@ namespace oe::Renderer::GL
         gl::BindVertexArray(mID);
     }
 
-    void VertexArray::UnBind() const
+    void VertexArray::UnBind()
     {
         gl::BindVertexArray(0);
     }
+
+    uint32_t VertexArray::Get() { return mID; }
 }

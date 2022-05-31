@@ -7,9 +7,11 @@
 
 #include <memory>
 
-#include "Oneiro/Renderer/OpenGL/Base.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "Oneiro/Animation/Animation.hpp"
+#include "Buffer.hpp"
+#include "VertexArray.hpp"
+#include "Shader.hpp"
+#include "Texture.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -22,16 +24,16 @@ namespace oe::Renderer::GL
         void Draw();
         void Move(const glm::vec3& pos);
         void Scale(const glm::vec3& scale);
-        const Texture* GetTexture() const { return mTexture; }
-        float GetAlpha() const { return mAlpha; }
-        void SetAlpha(float alpha) { mAlpha = alpha; }
-        void SetUsingTextureAlpha(bool useTextureAlpha) { mUseTextureAlpha = useTextureAlpha; }
-        bool IsLoaded() { return mTexture; }
+        const Texture<gl::TEXTURE_2D>* GetTexture() const;
+        float GetAlpha() const;
+        void SetAlpha(float alpha);
+        void SetUsingTextureAlpha(bool useTextureAlpha);
     private:
+        TextureData mTextureData{};
         glm::mat4 mModel{1.0f};
-        Texture* mTexture{};
+        Texture<gl::TEXTURE_2D> mTexture{};
         Shader mShader{};
-        VertexBuffer mVBO;
+        Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
         VertexArray mVAO;
         float mAlpha{1.0f};
         bool mKeepAR{};

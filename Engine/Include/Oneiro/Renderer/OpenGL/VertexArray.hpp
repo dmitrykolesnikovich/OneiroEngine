@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include "Base.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -13,9 +13,14 @@ namespace oe::Renderer::GL
     {
     public:
         ~VertexArray();
-        void Init();
+
+        void Generate();
+
         void Bind() const;
-        void UnBind() const;
+
+        static void UnBind();
+
+        uint32_t Get();
     private:
         uint32_t mID{};
     };

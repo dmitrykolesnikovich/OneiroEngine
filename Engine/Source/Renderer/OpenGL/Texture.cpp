@@ -5,113 +5,66 @@
 
 #include "Oneiro/Renderer/OpenGL/Texture.hpp"
 
-#include "OpenGL/gl_core_4_5.hpp"
-#include "stb/stb_image.h"
-#include "Oneiro/Core/Logger.hpp"
-
 namespace oe::Renderer::GL
 {
-    Texture::~Texture()
+    bool oe::Renderer::GL::Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
+                                         TextureData* textureData)
     {
-        stbi_image_free(mData.Data);
-        UnLoad();
-    }
-
-    void Texture::Init(const std::string& path)
-    {
-        mTexturePath = path;
-    }
-
-    bool Texture::PreLoad()
-    {
-        mData.Data =
-                stbi_load(mTexturePath.c_str(), &mData.Width, &mData.Height, &mData.NrChannels, 0);
-        if (mData.Data)
+        uint8_t* data{};
+        int width{}, height{}, nrChannels{};
+        if (textureData)
         {
-            mData.AR = static_cast<float>(mData.Width) / static_cast<float>(mData.Height);
-            mIsLoaded = true;
+            data = stbi_load(path, &textureData->Width, &textureData->Height,
+                             &textureData->Channels, 0);
+            width = textureData->Width;
+            height = textureData->Height;
+            nrChannels = textureData->Channels;
+        }
+        else
+        {
+            data = stbi_load(path, &width, &height, &nrChannels, 0);
+        }
+        if (data)
+        {
+            int internalFormat{};
+            int format{};
+            switch (nrChannels)
+            {
+            case 4:
+                internalFormat = gl::SRGB_ALPHA;
+                format = gl::RGBA;
+                break;
+            case 3:
+                internalFormat = gl::SRGB;
+                format = gl::RGB;
+                break;
+            default:
+                internalFormat = gl::RED;
+                format = gl::RED;
+                break;
+            }
+
+            texture->Generate();
+            texture->Bind();
+            texture->TexImage2D(internalFormat, width, height, 0, format, gl::UNSIGNED_BYTE, data);
+            texture->TexParameter(gl::TEXTURE_WRAP_S, gl::CLAMP_TO_BORDER);
+            texture->TexParameter(gl::TEXTURE_WRAP_T, gl::CLAMP_TO_BORDER);
+            texture->TexParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
+            texture->TexParameter(gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_LINEAR);
+            texture->GenerateMipmap();
+            stbi_image_free(data);
             return true;
         }
-        log::get("log")
-                ->warn(std::string("Failed to load texture from ") + mTexturePath + " path!");
-        stbi_image_free(mData.Data);
-        return false;
-    }
-
-    void Texture::Load()
-    {
-        GenerateTexture(&mID, mData.NrChannels, mData.Width, mData.Height, mData.Data);
-        mIsLoaded = true;
-    }
-
-    void Texture::Bind() const
-    {
-        gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, mID);
-    }
-
-    void Texture::Bind(uint8_t id) const
-    {
-        gl::ActiveTexture(gl::TEXTURE0 + id);
-        gl::BindTexture(gl::TEXTURE_2D, mID);
-    }
-
-    void Texture::UnBind() const
-    {
-        gl::ActiveTexture(gl::TEXTURE0);
-        gl::BindTexture(gl::TEXTURE_2D, 0);
-    }
-
-    bool Texture::IsLoaded() const { return mIsLoaded; }
-
-    int Texture::GetWidth() const
-    {
-        return mData.Width;
-    }
-
-    int Texture::GetHeight() const
-    {
-        return mData.Height;
-    }
-
-    float Texture::GetAR() const
-    {
-        return mData.AR;
-    }
-
-    void Texture::UnLoad()
-    {
-        mIsLoaded = false;
-        gl::DeleteTextures(1, &mID);
-    }
-
-    void Texture::GenerateTexture(uint32_t* textureID, uint32_t nrChannels, int width, int height,
-                                  uint8_t* data, int clamp)
-    {
-        gl::GenTextures(1, textureID);
-        gl::BindTexture(gl::TEXTURE_2D, *textureID);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_BORDER);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_BORDER);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_LINEAR);
-        int level{};
-        int format{};
-        switch (nrChannels)
+        else
         {
-        case 4:
-            level = gl::SRGB_ALPHA;
-            format = gl::RGBA;
-            break;
-        case 3:
-            level = gl::SRGB;
-            format = gl::RGB;
-            break;
-        default:
-            level = gl::RED;
-            format = gl::RED;
-            break;
+            stbi_image_free(data);
+            return false;
         }
-        gl::TexImage2D(gl::TEXTURE_2D, 0, level, width, height, 0, format, gl::UNSIGNED_BYTE, data);
-        gl::GenerateMipmap(gl::TEXTURE_2D);
+    }
+
+    bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture,
+                       TextureData* textureData)
+    {
+        return Load2DTexture(path.c_str(), texture, textureData);
     }
 }

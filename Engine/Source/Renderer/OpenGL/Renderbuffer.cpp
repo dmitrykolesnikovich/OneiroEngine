@@ -3,10 +3,7 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#pragma once
-
-namespace oe::Renderer::GL::ErrorHandler
+namespace oe::Renderer::GL
 {
-    void GLClearError();
-    bool GLLogCall();
+
 }

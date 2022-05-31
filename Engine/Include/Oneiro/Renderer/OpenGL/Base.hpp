@@ -5,8 +5,12 @@
 
 #pragma once
 
-#include "Oneiro/Renderer/OpenGL/VertexArray.hpp"
-#include "Oneiro/Renderer/OpenGL/VertexBuffer.hpp"
-#include "Oneiro/Renderer/OpenGL/IndexBuffer.hpp"
-#include "Oneiro/Renderer/OpenGL/Shader.hpp"
-#include "Oneiro/Renderer/OpenGL/Texture.hpp"
+#include <cstdint>
+#include "OpenGL/gl_core_4_5.hpp"
+
+#define IS_SAME(auto) \
+requires (std::is_same<T, auto>::value)
+
+#define IS_SAME_TEMPLATE(auto) \
+template<class T> \
+IS_SAME(auto)

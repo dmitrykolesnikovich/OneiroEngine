@@ -37,17 +37,6 @@ namespace oe::Renderer
     {
         Viewport(0, 0, width, height);
     }
-
-    void GL::DrawArrays(GL::DrawMode mode, GLint count)
-    {
-        gl::DrawArrays(mode, 0, count);
-    }
-
-    [[maybe_unused]] void GL::DrawArraysInstanced(GL::DrawMode mode, GLsizei arraysCount,
-                                                  GLsizei instanceCount)
-    {
-        gl::DrawArraysInstanced(mode, 0, arraysCount, instanceCount);
-    }
 }
 #else
 
