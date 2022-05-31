@@ -5,7 +5,7 @@ me = Character("Me")
 local sprite = Sprite2D("Assets/Images/sprite.png", true)
 -- but in background you don't need to enabling aspect ratio
 local background = Sprite2D("Assets/Images/background.jpg", false)
-local music = Audio("Assets/Audio/music.mp3")
+local music = Music("Assets/Audio/music.mp3")
 
 -- you must to set the var name that was passed to the label ctor
 -- because for call to label function engine need know name of variable

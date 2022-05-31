@@ -100,6 +100,34 @@ namespace oe::VisualNovel
             NextStep();
             break;
         }
+        case PLAY_SOUND:
+        {
+            instruction.AudioSource->Play();
+            currentIt++;
+            NextStep();
+            break;
+        }
+        case STOP_SOUND:
+        {
+            instruction.AudioSource->Stop();
+            currentIt++;
+            NextStep();
+            break;
+        }
+        case PLAY_AMBIENT:
+        {
+            instruction.AudioSource->Play();
+            currentIt++;
+            NextStep();
+            break;
+        }
+        case STOP_AMBIENT:
+        {
+            instruction.AudioSource->Stop();
+            currentIt++;
+            NextStep();
+            break;
+        }
         case JUMP_TO_LABEL:
         {
             JumpToLabel(instruction.Label.File, instruction.Label.Name);
@@ -273,16 +301,6 @@ namespace oe::VisualNovel
         instructions.push_back({HIDE_SPRITE, sprite2D});
     }
 
-    void PlayAudioSource(Hazel::Audio::Source* audioSource)
-    {
-        instructions.push_back({PLAY_MUSIC, {}, {}, audioSource});
-    }
-
-    void StopAudioSource(Hazel::Audio::Source* audioSource)
-    {
-        instructions.push_back({STOP_MUSIC, {}, {}, audioSource});
-    }
-
     void PushInstruction(Instruction& instruction)
     {
         instructions.push_back(instruction);
@@ -314,5 +332,35 @@ namespace oe::VisualNovel
         textBox.Load();
         textBox.SetUsingTextureAlpha(true);
         textBox.SetAlpha(0.0f);
+    }
+
+    void PlayMusic(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({PLAY_MUSIC, {}, {}, audioSource});
+    }
+
+    void StopMusic(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({STOP_MUSIC, {}, {}, audioSource});
+    }
+
+    void PlaySound(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({PLAY_SOUND, {}, {}, audioSource});
+    }
+
+    void StopSound(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({STOP_SOUND, {}, {}, audioSource});
+    }
+
+    void PlayAmbient(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({PLAY_AMBIENT, {}, {}, audioSource});
+    }
+
+    void StopAmbient(Hazel::Audio::Source* audioSource)
+    {
+        instructions.push_back({STOP_AMBIENT, {}, {}, audioSource});
     }
 }

@@ -27,6 +27,10 @@ namespace oe::VisualNovel
         HIDE_SPRITE,
         PLAY_MUSIC,
         STOP_MUSIC,
+        PLAY_SOUND,
+        STOP_SOUND,
+        PLAY_AMBIENT,
+        STOP_AMBIENT,
         JUMP_TO_LABEL,
         MOVE_SPRITE,
         SAY_TEXT,
@@ -62,8 +66,13 @@ namespace oe::VisualNovel
     void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D);
     void MoveSprite2D(Renderer::GL::Sprite2D* sprite2D, const glm::vec3& pos);
     void HideSprite2D(Renderer::GL::Sprite2D* sprite2D);
-    void PlayAudioSource(Hazel::Audio::Source* audioSource);
-    void StopAudioSource(Hazel::Audio::Source* audioSource);
+
+    void PlayMusic(Hazel::Audio::Source* audioSource);
+    void StopMusic(Hazel::Audio::Source* audioSource);
+    void PlaySound(Hazel::Audio::Source* audioSource);
+    void StopSound(Hazel::Audio::Source* audioSource);
+    void PlayAmbient(Hazel::Audio::Source* audioSource);
+    void StopAmbient(Hazel::Audio::Source* audioSource);
 
     void SetTextSpeed(float speed);
     void LoadTextBox(const std::string& path);
