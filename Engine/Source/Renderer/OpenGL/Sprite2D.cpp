@@ -10,6 +10,7 @@
 #include "Oneiro/Renderer/Renderer.hpp"
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Runtime/Engine.hpp"
+#include "Oneiro/Core/Logger.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -66,7 +67,8 @@ namespace oe::Renderer::GL
         mVAO.UnBind();
         mVBO.UnBind();
         //mTexture = Core::GetTextureManager().Add(std::make_shared<Texture>());
-        Load2DTexture(path, &mTexture, &mTextureData);
+        if (!Load2DTexture(path, &mTexture, &mTextureData))
+            log::get("log")->warn("Failed to load texture from " + path + " path!");
     }
 
     bool Sprite2D::Load()
