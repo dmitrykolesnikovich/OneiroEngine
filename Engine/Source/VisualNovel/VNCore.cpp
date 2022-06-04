@@ -3,18 +3,13 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-//
-// Copyright (c) Oneiro Games. All rights reserved.
-// Licensed under the GNU General Public License, Version 3.0.
-//
+#include <filesystem>
 
-#include <Oneiro/Lua/LuaFile.hpp>
+#include "Oneiro/Lua/LuaFile.hpp"
 #include "Oneiro/VisualNovel/VNCore.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Text.hpp"
 #include "Oneiro/Runtime/Engine.hpp"
-#include <filesystem>
-#include <algorithm>
 #include "Oneiro/Animation/DissolveAnimation.hpp"
 
 namespace
@@ -31,6 +26,69 @@ namespace
     std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>>
             sprite2Ds;
     float textSpeed = 0.05f;
+
+    class FadeMusic
+    {
+    public:
+        FadeMusic(Hazel::Audio::Source* audioSource, bool isReversed = false)
+        {
+            mAudioSource = audioSource;
+            mIsReversed = isReversed;
+            mIsStart = true;
+        }
+
+        void Update(float dt)
+        {
+            if (!mIsReversed)
+            {
+                if (mIsStart)
+                    mTime = 0.0f;
+
+                if (mTime >= 1.0f)
+                {
+                    mIsEnded = true;
+                    mTime = 1.0f;
+                    return;
+                }
+                mIsEnded = false;
+                mTime += dt / 5;
+                mAudioSource->SetVolume(mTime >= 1.0f ? 1.0f : mTime);
+            }
+            else
+            {
+                if (mIsStart)
+                    mTime = 1.0f;
+
+                if (mTime <= 0.0f)
+                {
+                    mAudioSource->Stop();
+                    mIsEnded = true;
+                    mTime = 0.0f;
+                    return;
+                }
+
+                mIsEnded = false;
+                mTime -= dt / 5;
+                mTime = mTime < 0.0f ? 0.0f : mTime;
+                mAudioSource->SetVolume(mTime);
+            }
+
+            if (mIsStart)
+                mIsStart = false;
+        }
+
+        float GetTime() { return mTime; }
+        bool IsReversed() { return mIsReversed; }
+        bool IsEnded() { return mIsEnded; }
+    private:
+        Hazel::Audio::Source* mAudioSource{};
+        float mTime{};
+        bool mIsReversed{};
+        bool mIsStart{};
+        bool mIsEnded{};
+    };
+
+    std::vector<FadeMusic*> fadeMusicContainer{};
 }
 
 namespace oe::VisualNovel
@@ -89,13 +147,15 @@ namespace oe::VisualNovel
         case PLAY_MUSIC:
         {
             instruction.AudioSource->Play();
+            instruction.AudioSource->SetVolume(0.0f);
+            fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, false});
             currentIt++;
             NextStep();
             break;
         }
         case STOP_MUSIC:
         {
-            instruction.AudioSource->Stop();
+            fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, true});
             currentIt++;
             NextStep();
             break;
@@ -162,6 +222,15 @@ namespace oe::VisualNovel
     {
         static bool drawText{};
         Renderer::GL::Sprite2D* prevSprite2D{};
+
+        for (auto& fadeMusic : fadeMusicContainer)
+        {
+            fadeMusic->Update(Runtime::Engine::GetDeltaTime());
+
+            if (fadeMusic->IsEnded())
+                std::remove(fadeMusicContainer.begin(), fadeMusicContainer.end(), fadeMusic);
+        }
+
         for (uint32_t i = 0; i < sprite2Ds.size(); ++i)
         {
             auto* sprite2D = sprite2Ds[i].first;
@@ -256,8 +325,6 @@ namespace oe::VisualNovel
                 }
             }
 
-//            if (textBox.IsLoaded())
-//                textBox.Draw();
             textBox.Draw();
             if (textBox.GetAlpha() >= 1.0f)
                 text.Draw({125.0f, 145.0f});
