@@ -63,7 +63,7 @@ namespace oe::Runtime
 
         Renderer::Init();
 
-        //LoadResources();
+        LoadResources();
 
         float lastFrame{};
         float last{};

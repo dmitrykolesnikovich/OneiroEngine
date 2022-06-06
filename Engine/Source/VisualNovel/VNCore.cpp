@@ -23,8 +23,7 @@ namespace
     std::string textToIterate{};
     size_t currentIt{};
     uint32_t charItToPush{};
-    std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>>
-            sprite2Ds;
+    std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>> sprite2Ds;
     float textSpeed = 0.05f;
 
     class FadeMusic
@@ -240,20 +239,11 @@ namespace oe::VisualNovel
                 if (!textBoxAnim.IsReversed())
                 {
                     static bool reverseBg{};
-                    drawText =
-                            sprite2Ds[0].first->GetAlpha() <= 0.0f && sprite2D->GetAlpha() <= 0.0f;
+                    drawText = sprite2Ds[0].first->GetAlpha() <= 0.0f && sprite2D->GetAlpha() <= 0.0f;
                     if (sprite2D->GetAlpha() <= 0.0f)
                     {
-                        auto it = sprite2Ds.begin();
-                        for (; !(it == sprite2Ds.end()); ++it)
-                        {
-                            if (it->first == sprite2D)
-                            {
-                                reverseBg = true;
-                                sprite2Ds.erase(it);
-                                break;
-                            }
-                        }
+                        sprite2Ds.erase(sprite2Ds.begin() + i);
+                        reverseBg = true;
                         continue;
                     }
                     if (prevSprite2D && sprite2D->GetAlpha() >= 0.0f && !reverseBg)
@@ -265,16 +255,14 @@ namespace oe::VisualNovel
                         animation->Update(prevSprite2D, Runtime::Engine::GetDeltaTime());
                     }
                     if (sprite2Ds[0].first->GetAlpha() >= 0.0f && reverseBg)
-                        sprite2Ds[0].second
-                                    ->Update(sprite2Ds[0].first, Runtime::Engine::GetDeltaTime());
+                        sprite2Ds[0].second->Update(sprite2Ds[0].first, Runtime::Engine::GetDeltaTime());
                 }
             }
             else
             {
                 if (!textBoxAnim.IsReversed() && textBox.GetAlpha() <= 0.0f)
                 {
-                    if (!prevSprite2D ||
-                            sprite2D->GetAlpha() <= 1.0f && prevSprite2D->GetAlpha() >= 1.0f)
+                    if (!prevSprite2D || sprite2D->GetAlpha() <= 1.0f && prevSprite2D->GetAlpha() >= 1.0f)
                         animation->Update(sprite2D, Runtime::Engine::GetDeltaTime());
                     drawText = sprite2D->GetAlpha() >= 1.0f;
                 }

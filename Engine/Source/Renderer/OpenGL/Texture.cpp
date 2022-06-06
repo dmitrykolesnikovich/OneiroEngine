@@ -7,6 +7,14 @@
 
 namespace oe::Renderer::GL
 {
+    bool PreLoad2DTexture(TextureData* data)
+    {
+        data->Data = stbi_load(data->Path.c_str(), &data->Width, &data->Height, &data->Channels, 0);
+        if (data->Data)
+            return true;
+        return false;
+    }
+
     bool oe::Renderer::GL::Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
                                          TextureData* textureData)
     {
@@ -61,10 +69,42 @@ namespace oe::Renderer::GL
             return false;
         }
     }
-
     bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture,
                        TextureData* textureData)
     {
         return Load2DTexture(path.c_str(), texture, textureData);
+    }
+
+    bool GL::Load2DTexture(Texture<gl::TEXTURE_2D>* texture)
+    {
+        int internalFormat{};
+        int format{};
+        const auto* data = texture->GetData();
+        switch (data->Channels)
+        {
+        case 4:
+            internalFormat = gl::SRGB_ALPHA;
+            format = gl::RGBA;
+            break;
+        case 3:
+            internalFormat = gl::SRGB;
+            format = gl::RGB;
+            break;
+        default:
+            internalFormat = gl::RED;
+            format = gl::RED;
+            break;
+        }
+
+        texture->Generate();
+        texture->Bind();
+        texture->TexImage2D(internalFormat, data->Width, data->Height, 0, format, gl::UNSIGNED_BYTE,
+                            data->Data);
+        texture->TexParameter(gl::TEXTURE_WRAP_S, gl::CLAMP_TO_BORDER);
+        texture->TexParameter(gl::TEXTURE_WRAP_T, gl::CLAMP_TO_BORDER);
+        texture->TexParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
+        texture->TexParameter(gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_LINEAR);
+        texture->GenerateMipmap();
+        return true;
     }
 }

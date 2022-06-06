@@ -29,9 +29,9 @@ namespace oe::Renderer::GL
         void SetAlpha(float alpha);
         void SetUsingTextureAlpha(bool useTextureAlpha);
     private:
-        TextureData mTextureData{};
+        TextureData* mTextureData{};
         glm::mat4 mModel{1.0f};
-        Texture<gl::TEXTURE_2D> mTexture{};
+        Texture<gl::TEXTURE_2D>* mTexture{};
         Shader mShader{};
         Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
         VertexArray mVAO;

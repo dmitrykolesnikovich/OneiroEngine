@@ -66,9 +66,10 @@ namespace oe::Renderer::GL
         VertexAttribPointer<float>(0, 3, 3);
         mVAO.UnBind();
         mVBO.UnBind();
-        //mTexture = Core::GetTextureManager().Add(std::make_shared<Texture>());
-        if (!Load2DTexture(path, &mTexture, &mTextureData))
-            log::get("log")->warn("Failed to load texture from " + path + " path!");
+        mTexture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
+        mTextureData = mTexture->GetData();
+//        if (!Load2DTexture(path, &mTexture, &mTextureData))
+//            log::get("log")->warn("Failed to load texture from " + path + " path!");
     }
 
     bool Sprite2D::Load()
@@ -97,7 +98,7 @@ namespace oe::Renderer::GL
 
         if (mKeepAR)
             mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() /
-                    ((float) mTextureData.Width / mTextureData.Height));
+                    ((float) mTextureData->Width / mTextureData->Height));
 
         mShader.SetUniform("uTextureAlpha", mAlpha);
         mShader.SetUniform("uModel", mModel);
@@ -107,7 +108,7 @@ namespace oe::Renderer::GL
         mShader.SetUniform("uView", glm::mat4(1.0f));
 
         mVAO.Bind();
-        mTexture.Bind();
+        mTexture->Bind();
         DrawArrays(GL::TRIANGLES, 6);
     }
 
@@ -128,7 +129,7 @@ namespace oe::Renderer::GL
         mUseTextureAlpha = useTextureAlpha;
     }
 
-    const Texture<gl::TEXTURE_2D>* Sprite2D::GetTexture() const { return &mTexture; }
+    const Texture<gl::TEXTURE_2D>* Sprite2D::GetTexture() const { return mTexture; }
 
     float Sprite2D::GetAlpha() const { return mAlpha; }
 }

@@ -11,10 +11,19 @@
 
 namespace oe::Renderer::GL
 {
+    struct TextureData
+    {
+        int Width{}, Height{}, Channels{};
+        uint8_t* Data{};
+        std::string Path;
+    };
+
     template<int TextureType, bool Mipmaps = true>
     class Texture
     {
     public:
+        Texture() = default;
+        Texture(const std::string& path) { mData.Path = path; }
         ~Texture()
         {
             gl::DeleteTextures(1, &mID);
@@ -30,6 +39,8 @@ namespace oe::Renderer::GL
         {
             gl::TexImage2D(TextureType, 0, internalFormat, width, height, 0, format, type, data);
         }
+
+        constexpr TextureData* GetData() { return &mData; }
 
         void TexImage2D(int textureType, int internalFormat, int width, int height, int border,
                         int format, int type, const void* data)
@@ -60,17 +71,17 @@ namespace oe::Renderer::GL
 
         uint32_t Get() const { return mID; }
     private:
+        TextureData mData{};
         uint32_t mID{};
     };
 
-    struct TextureData
-    {
-        int Width{}, Height{}, Channels{};
-    };
+    bool PreLoad2DTexture(TextureData* data);
 
     bool Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
                        TextureData* textureData = nullptr);
 
     bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture,
                        TextureData* textureData = nullptr);
+
+    bool Load2DTexture(Texture<gl::TEXTURE_2D>* texture);
 }
