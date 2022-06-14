@@ -5,18 +5,18 @@
 
 #pragma once
 
-#include "Scene.hpp"
+#include "World.hpp"
 #include "Components.hpp"
 
 #include "Oneiro/Core/Oneiro.hpp"
 
-namespace oe::Scene
+namespace oe::World
 {
     class Entity
     {
     public:
         Entity();
-        Entity(entt::entity handle, Scene* scene);
+        Entity(entt::entity handle, World* scene);
 
         template<typename T, typename... Args>
         T& AddComponent(Args&& ... args)
@@ -75,6 +75,6 @@ namespace oe::Scene
 
     private:
         entt::entity mHandle{};
-        Scene* mScene{};
+        World* mScene{};
     };
 }

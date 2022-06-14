@@ -39,7 +39,11 @@ namespace oe::Input
         B = GLFW_KEY_B,
         N = GLFW_KEY_N,
         M = GLFW_KEY_M,
-        ESC = GLFW_KEY_ESCAPE
+        ESC = GLFW_KEY_ESCAPE,
+        SPACE = GLFW_KEY_SPACE,
+        ENTER = GLFW_KEY_ENTER,
+        LEFT_CTRL = GLFW_KEY_LEFT_CONTROL,
+        RIGHT_CTRL = GLFW_KEY_RIGHT_CONTROL,
     };
 
     enum class Action : uint8_t

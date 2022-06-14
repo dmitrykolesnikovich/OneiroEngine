@@ -7,16 +7,16 @@
 
 #include "entt/entt.hpp"
 
-namespace oe::Scene
+namespace oe::World
 {
     class Entity;
-    class SceneManager;
+    class WorldManager;
 
-    class Scene
+    class World
     {
     public:
-        Scene();
-        ~Scene();
+        World();
+        ~World();
 
         Entity CreateEntity(const std::string& name = {});
         void DestroyEntity(Entity entity);
@@ -27,6 +27,6 @@ namespace oe::Scene
         entt::registry mRegistry{};
         std::string mName{};
         friend class Entity;
-        friend class SceneManager;
+        friend class WorldManager;
     };
 }

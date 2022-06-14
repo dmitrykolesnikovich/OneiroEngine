@@ -3,6 +3,7 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
+#include <spdlog/spdlog.h>
 #include "glm/ext/matrix_clip_space.hpp"
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Renderer/OpenGL/Text.hpp"
@@ -67,57 +68,57 @@ namespace oe::Renderer::GL
         }
         else
         {
-            FT_Set_Pixel_Sizes(face, 0, 48);
+            FT_Set_Pixel_Sizes(face, 0, 26);
 
             gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
 
-            for (uint32_t c = 0; c < 128; c++)
+            for (uint32_t c = 0; c < 256; c++)
             {
                 if ((c >= 0xC0) && (c <= 0xDF))
                 {
-                    if (FT_Load_Char(face, 0x0410 + (c - 0xC0), FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, 0x0410 + (c - 0xC0), FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
                 else if ((c >= 0xE0) && (c <= 0xFF))
                 {
-                    if (FT_Load_Char(face, 0x0430 + (c - 0xE0), FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, 0x0430 + (c - 0xE0), FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
                 else if (c == 0xA8)
                 {
-                    if (FT_Load_Char(face, 0x0401, FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, 0x0401, FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
                 else if (c == 0xB8)
                 {
-                    if (FT_Load_Char(face, 0x0451, FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, 0x0451, FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
                 else if (c == 0x85)
                 {
-                    if (FT_Load_Char(face, 0x2026, FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, 0x2026, FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
                 else
                 {
-                    if (FT_Load_Char(face, c, FT_LOAD_RENDER) != 0)
+                    if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                     {
-                        std::cout << "FreeType: failed to load glyph!" << std::endl;
+                        spdlog::get("log")->warn("FreeType: failed to load glyph!");
                         continue;
                     }
                 }
@@ -129,9 +130,8 @@ namespace oe::Renderer::GL
                 character1.Advance = static_cast<uint32_t>(face->glyph->advance.x);
                 character1.Texture->Generate();
                 character1.Texture->Bind();
-                character1.Texture
-                          ->TexImage2D(gl::RED, face->glyph->bitmap.width, face->glyph->bitmap.rows,
-                                       0, gl::RED, gl::UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+                character1.Texture->TexImage2D(gl::RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, gl::RED,
+                                               gl::UNSIGNED_BYTE, face->glyph->bitmap.buffer);
                 character1.Texture->TexParameter(gl::TEXTURE_WRAP_S, gl::CLAMP_TO_BORDER);
                 character1.Texture->TexParameter(gl::TEXTURE_WRAP_T, gl::CLAMP_TO_BORDER);
                 character1.Texture->TexParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
@@ -153,9 +153,8 @@ namespace oe::Renderer::GL
         float x = pos.x;
         float y = pos.y;
         mShader.Use();
-        mShader.SetUniform("projection",
-                           glm::ortho(0.0F, (float) Core::Root::GetWindow()->GetWidth(), 0.0F,
-                                      (float) Core::Root::GetWindow()->GetHeight()));
+        mShader.SetUniform("projection", glm::ortho(0.0F, (float) Core::Root::GetWindow()->GetWidth(), 0.0F,
+                                                    (float) Core::Root::GetWindow()->GetHeight()));
         mShader.SetUniform("textColor", glm::vec3(1.0, 0.0F, 0.0F));
 
         mVAO.Bind();
@@ -165,14 +164,22 @@ namespace oe::Renderer::GL
         {
             auto character = mCharacters[*stringIt];
 
-            const float xpos = x + character.Bearing.x * 1.0F;
-            const float ypos = y - (character.Size.y - character.Bearing.y) * 1.0F;
+            if ((*(stringIt)) == '\n')
+            {
+                x = pos.x;
+                y -= 25.0f;
+                continue;
+            }
+
+            float xpos = x + character.Bearing.x * 1.0F;
+            float ypos = y - (character.Size.y - character.Bearing.y) * 1.0F;
 
             const float width = character.Size.x * 1.0F;
             const float height = character.Size.y * 1.0F;
-            const float vertices[6][4] = {{xpos, ypos + height, 0.0, 0.0}, {xpos, ypos, 0.0, 1.0},
-                    {xpos + width, ypos, 1.0, 1.0}, {xpos, ypos + height, 0.0, 0.0},
-                    {xpos + width, ypos, 1.0, 1.0}, {xpos + width, ypos + height, 1.0, 0.0}};
+            const float vertices[6][4] =
+                    {{xpos, ypos + height, 0.0, 0.0}, {xpos, ypos, 0.0, 1.0}, {xpos + width, ypos, 1.0, 1.0},
+                            {xpos, ypos + height, 0.0, 0.0}, {xpos + width, ypos, 1.0, 1.0},
+                            {xpos + width, ypos + height, 1.0, 0.0}};
             character.Texture->Bind();
             mVBO.Bind();
             mVBO.BufferSubData(sizeof(vertices), 0, vertices);

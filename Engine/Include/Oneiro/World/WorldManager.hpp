@@ -5,20 +5,20 @@
 
 #pragma once
 
-#include "Scene.hpp"
+#include "World.hpp"
 
-namespace oe::Scene
+namespace oe::World
 {
-    class SceneManager
+    class WorldManager
     {
     public:
-        SceneManager();
+        WorldManager();
 
-        Scene* GetScene();
+        World* GetWorld();
         void Save(const std::string& filepath, const std::string& sceneName);
         bool Load(const std::string& filePath) const;
     private:
-        inline static SceneManager* mInstance{};
-        std::unique_ptr<Scene> mScene{};
+        inline static WorldManager* mInstance{};
+        std::unique_ptr<World> mWorld{};
     };
 }

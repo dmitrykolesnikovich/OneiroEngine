@@ -36,7 +36,7 @@ file(GLOB ONEIRO_SOURCE
         "Source/Renderer/*.cpp"
         "Source/Renderer/Gui/*.cpp"
         "Source/Runtime/*.cpp"
-        "Source/Scene/*.cpp"
+        "Source/World/*.cpp"
         "Source/VisualNovel/*.cpp"
         )
 

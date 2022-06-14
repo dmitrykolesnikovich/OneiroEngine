@@ -23,7 +23,9 @@ namespace oe::Renderer::GL
     {
     public:
         Texture() = default;
+
         Texture(const std::string& path) { mData.Path = path; }
+
         ~Texture()
         {
             gl::DeleteTextures(1, &mID);
@@ -34,16 +36,17 @@ namespace oe::Renderer::GL
             gl::GenTextures(1, &mID);
         }
 
-        void TexImage2D(int internalFormat, int width, int height, int border, int format, int type,
-                        const void* data)
+        void TexImage2D(int internalFormat, int width, int height, int border, int format, int type, const void* data)
         {
             gl::TexImage2D(TextureType, 0, internalFormat, width, height, 0, format, type, data);
         }
 
-        constexpr TextureData* GetData() { return &mData; }
+        TextureData* GetData() { return &mData; }
 
-        void TexImage2D(int textureType, int internalFormat, int width, int height, int border,
-                        int format, int type, const void* data)
+        const TextureData* GetData() const { return &mData; }
+
+        void TexImage2D(int textureType, int internalFormat, int width, int height, int border, int format, int type,
+                        const void* data)
         {
             gl::TexImage2D(textureType, 0, internalFormat, width, height, 0, format, type, data);
         }
@@ -70,6 +73,7 @@ namespace oe::Renderer::GL
         }
 
         uint32_t Get() const { return mID; }
+
     private:
         TextureData mData{};
         uint32_t mID{};
@@ -77,11 +81,9 @@ namespace oe::Renderer::GL
 
     bool PreLoad2DTexture(TextureData* data);
 
-    bool Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
-                       TextureData* textureData = nullptr);
+    bool Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture, TextureData* textureData = nullptr);
 
-    bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture,
-                       TextureData* textureData = nullptr);
+    bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture, TextureData* textureData = nullptr);
 
     bool Load2DTexture(Texture<gl::TEXTURE_2D>* texture);
 }

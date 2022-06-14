@@ -30,40 +30,37 @@ namespace oe::Lua
             OpenLibraries(sol::lib::base);
             mState.set_function("showText", [](const std::string& who, const std::string& what)
             {
-            VisualNovel::PushInstruction({VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
+                VisualNovel::PushInstruction({VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
             });
 
             mState.set_function("setTextSpeed", VisualNovel::SetTextSpeed);
 
             mState.set_function("registerLabel", [](const std::string& name)
             {
-            VisualNovel::PushLabel(name);
+                VisualNovel::PushLabel(name);
             });
 
             mState.set_function("jumpToLabel", [&](const std::string& name)
             {
-            VisualNovel::PushInstruction(
-                    {VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
+                VisualNovel::PushInstruction(
+                        {VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
             });
 
             mState.new_usertype<Renderer::GL::Sprite2D>("Sprite2D", sol::call_constructor,
                                                         sol::factories([](const std::string& path,
                                                                           bool keepAspectRatio)
                                                                        {
-                                                                       std::shared_ptr<Renderer::GL::Sprite2D>
-                                                                               ptr =
-                                                                               std::make_shared<Renderer::GL::Sprite2D>();
-                                                                       ptr->Init(path,
-                                                                                 keepAspectRatio);
-                                                                       return ptr;
+                                                                           std::shared_ptr<Renderer::GL::Sprite2D>
+                                                                                   ptr = std::make_shared<Renderer::GL::Sprite2D>();
+                                                                           ptr->Init(path, keepAspectRatio);
+                                                                           return ptr;
                                                                        }), "show",
                                                         &VisualNovel::ShowSprite2D, "hide",
                                                         &VisualNovel::HideSprite2D, "move",
                                                         [](Renderer::GL::Sprite2D* sprite2D,
                                                            float x, float y, float z)
                                                         {
-                                                        VisualNovel::MoveSprite2D(sprite2D,
-                                                                                  {x, y, z});
+                                                            VisualNovel::MoveSprite2D(sprite2D, {x, y, z});
                                                         });
 
             mState.set_function("playMusic", VisualNovel::PlayMusic);
@@ -76,11 +73,10 @@ namespace oe::Lua
             mState.new_usertype<Hazel::Audio::Source>("Audio", sol::call_constructor,
                                                       sol::factories([](const std::string& path)
                                                                      {
-                                                                     auto audioSource =
-                                                                             std::make_shared<Hazel::Audio::Source>();
-                                                                     audioSource
-                                                                             ->LoadFromFile(path);
-                                                                     return audioSource;
+                                                                         auto audioSource =
+                                                                                 std::make_shared<Hazel::Audio::Source>();
+                                                                         audioSource->LoadFromFile(path);
+                                                                         return audioSource;
                                                                      }), "volume",
                                                       &Hazel::Audio::Source::SetVolume, "loop",
                                                       &Hazel::Audio::Source::SetLoop);
@@ -194,7 +190,9 @@ namespace oe::Lua
         }
 
         std::fstream& GetFile() { return mFile; }
+
         sol::state* GetState() { return &mState; }
+
     private:
         sol::state mState{};
         std::fstream mFile{};

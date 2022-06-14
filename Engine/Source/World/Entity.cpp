@@ -3,13 +3,13 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Scene/Entity.hpp"
+#include "Oneiro/World/Entity.hpp"
 
-namespace oe::Scene
+namespace oe::World
 {
     Entity::Entity() = default;
 
-    Entity::Entity(entt::entity handle, Scene* scene) : mHandle(handle), mScene(scene)
+    Entity::Entity(entt::entity handle, World* scene) : mHandle(handle), mScene(scene)
     {
     }
 }

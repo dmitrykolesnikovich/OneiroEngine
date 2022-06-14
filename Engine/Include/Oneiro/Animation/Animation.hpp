@@ -14,6 +14,8 @@ namespace oe::Animation
 {
     class Animation
     {
+    protected:
+        ~Animation() = default;
     public:
         virtual void Update(Renderer::GL::Sprite2D* sprite2D, float dt) { };
     };

@@ -8,15 +8,14 @@
 #include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Oneiro.hpp"
-#include "Oneiro/Scene/Scene.hpp"
-#include "Oneiro/Scene/SceneManager.hpp"
+#include "Oneiro/World/WorldManager.hpp"
 
 namespace oe::Core
 {
     Root::Root()
     {
         if (mIsCreated) return;
-        mSceneManager = std::make_unique<Scene::SceneManager>();
+        mWorldManager = std::make_unique<World::WorldManager>();
         mIsCreated = true;
     }
 
@@ -30,9 +29,9 @@ namespace oe::Core
 
     Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
 
-    Scene::SceneManager* Root::GetSceneManager()
+    World::WorldManager* Root::GetWorldManager()
     {
-        return mSceneManager.get();
+        return mWorldManager.get();
     }
 
     void Root::SetApplication(Runtime::Application* app)
@@ -48,7 +47,8 @@ namespace oe::Core
         OE_THROW_ERROR("Root", "Failed to set window instance, because it's already set!")
         mWindowInstance = window;
     }
+
     Window* Root::mWindowInstance{};
     Runtime::Application* Root::mApplicationInstance{};
-    std::unique_ptr<Scene::SceneManager> Root::mSceneManager{};
+    std::unique_ptr<World::WorldManager> Root::mWorldManager{};
 }

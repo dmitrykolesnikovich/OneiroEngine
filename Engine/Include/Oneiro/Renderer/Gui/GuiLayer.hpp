@@ -10,13 +10,10 @@
 namespace oe::Renderer::GuiLayer
 {
     using namespace ImGui;
+
     void PreInit();
-
     void Init();
-
     void NewFrame();
-
     void Draw();
-
     void Shutdown();
 }

@@ -3,20 +3,20 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Scene/Scene.hpp"
-#include "Oneiro/Scene/Entity.hpp"
+#include "Oneiro/World/World.hpp"
+#include "Oneiro/World/Entity.hpp"
 
-namespace oe::Scene
+namespace oe::World
 {
-    Scene::Scene()
+    World::World()
     {
     }
 
-    Scene::~Scene()
+    World::~World()
     {
     }
 
-    Entity Scene::CreateEntity(const std::string& name)
+    Entity World::CreateEntity(const std::string& name)
     {
         Entity entity = {mRegistry.create(), this};
         entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
@@ -24,17 +24,17 @@ namespace oe::Scene
         return entity;
     }
 
-    void Scene::DestroyEntity(Entity entity)
+    void World::DestroyEntity(Entity entity)
     {
         mRegistry.destroy(entity);
     }
 
-    void Scene::DestroyAllEntities()
+    void World::DestroyAllEntities()
     {
         mRegistry.clear();
     }
 
-    Entity Scene::GetEntity(const std::string& name)
+    Entity World::GetEntity(const std::string& name)
     {
         for (auto [fst, snd] : mRegistry.storage())
         {

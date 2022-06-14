@@ -1,8 +1,50 @@
-#ifdef OE_RENDERER_VULKAN
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 
+#include "Oneiro/Core/Window.hpp"
+
+#ifndef OE_RENDERER_VULKAN
+
 #include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_vulkan.h"
+#include "backends/imgui_impl_opengl3.h"
+#include "Oneiro/Core/Root.hpp"
+
+namespace oe::Renderer::GuiLayer
+{
+    void PreInit()
+    {
+        IMGUI_CHECKVERSION();
+        CreateContext();
+        StyleColorsDark();
+    }
+
+    void Init()
+    {
+        ImGui_ImplOpenGL3_Init("#version 330");
+        ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
+    }
+
+    void NewFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void Draw()
+    {
+        Render();
+        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+    }
+
+    void Shutdown()
+    {
+        ImGui_ImplGlfw_Shutdown();
+        DestroyContext();
+    }
+
+}
+
+#else
 #include "Oneiro/Renderer/Vulkan/DescriptorPool.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"

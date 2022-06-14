@@ -3,13 +3,13 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "Oneiro/Scene/SceneManager.hpp"
+#include "Oneiro/World/WorldManager.hpp"
 
 #include <fstream>
 
 #include "yaml-cpp/yaml.h"
 
-#include "Oneiro/Scene/Entity.hpp"
+#include "Oneiro/World/Entity.hpp"
 #include "Oneiro/Core/Random.hpp"
 
 namespace YAML
@@ -83,7 +83,7 @@ namespace
         return out;
     }
 
-    void SaveEntity(YAML::Emitter& out, oe::Scene::Entity entity)
+    void SaveEntity(YAML::Emitter& out, oe::World::Entity entity)
     {
         out << YAML::BeginMap; // Begin Entity
 
@@ -137,27 +137,27 @@ namespace
     }
 }
 
-namespace oe::Scene
+namespace oe::World
 {
-    SceneManager::SceneManager()
+    WorldManager::WorldManager()
     {
-        if (mInstance || mScene)
+        if (mInstance || mWorld)
             return;
         mInstance = this;
-        mScene = std::make_unique<Scene>();
+        mWorld = std::make_unique<World>();
     }
 
-    void SceneManager::Save(const std::string& filepath, const std::string& sceneName)
+    void WorldManager::Save(const std::string& filepath, const std::string& sceneName)
     {
         YAML::Emitter out;
         out << YAML::BeginMap;
 
-        out << YAML::Key << "Scene" << YAML::Value << sceneName;
+        out << YAML::Key << "World" << YAML::Value << sceneName;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-        mScene->mRegistry.each([&](const auto entityID)
+        mWorld->mRegistry.each([&](const auto entityID)
                                {
-                                   const Entity entity = {entityID, mScene.get()};
+                                   const Entity entity = {entityID, mWorld.get()};
                                    if (!entity)
                                        return;
 
@@ -171,7 +171,7 @@ namespace oe::Scene
         fout << out.c_str();
     }
 
-    bool SceneManager::Load(const std::string& filePath) const
+    bool WorldManager::Load(const std::string& filePath) const
     {
         // TODO: Add load new scene and clear old
 
@@ -180,7 +180,7 @@ namespace oe::Scene
         if (!data["Scene"])
             return false;
 
-        mScene->mName = data["Scene"].as<std::string>();
+        mWorld->mName = data["Scene"].as<std::string>();
         const auto& entities = data["Entities"];
 
         for (auto entity : entities)
@@ -190,7 +190,7 @@ namespace oe::Scene
             auto transformComponent = entity["TransformComponent"];
             auto cameraComponent = entity["CameraComponent"];
 
-            Entity loaddedEntity = mScene->CreateEntity(name);
+            Entity loaddedEntity = mWorld->CreateEntity(name);
 
             auto& tc = loaddedEntity.GetComponent<TransformComponent>();
 
@@ -215,8 +215,8 @@ namespace oe::Scene
         return true;
     }
 
-    Scene* SceneManager::GetScene()
+    World* WorldManager::GetWorld()
     {
-        return mScene.get();
+        return mWorld.get();
     }
 }

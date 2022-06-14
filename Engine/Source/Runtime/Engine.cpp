@@ -14,8 +14,8 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/Scene/SceneManager.hpp"
-//#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
+#include "Oneiro/World/WorldManager.hpp"
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include "HazelAudio/HazelAudio.h"
 #include "Oneiro/Core/ResourceManager.hpp"
 
@@ -25,6 +25,7 @@ namespace oe::Runtime
     {
         Core::Init();
         Renderer::PreInit();
+        Renderer::GuiLayer::PreInit();
         Hazel::Audio::Init();
         mRoot = new Core::Root;
         mWindow = new Core::Window;
@@ -41,17 +42,17 @@ namespace oe::Runtime
         mRoot->SetWindow(mWindow);
 
         Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
-                                                        {
-                                                        const auto& errorEvent =
-                                                                dynamic_cast<const Event::ErrorEvent&>(e);
-                                                        log::get("log")->error("GLFW ERROR[" +
-                                                                                       std::to_string(
-                                                                                               errorEvent
-                                                                                                       .Error) +
-                                                                                       "]: " +
-                                                                                       errorEvent
-                                                                                               .Description);
-                                                        });
+            {
+                const auto& errorEvent =
+                    dynamic_cast<const Event::ErrorEvent&>(e);
+                log::get("log")->error("GLFW ERROR[" +
+                    std::to_string(
+                        errorEvent
+                        .Error) +
+                    "]: " +
+                    errorEvent
+                    .Description);
+            });
 
         if (!mWindow->Create())
             throw std::runtime_error("Failed to create window!");
@@ -62,15 +63,14 @@ namespace oe::Runtime
             throw std::runtime_error("Failed to initialize application!");
 
         Renderer::Init();
+        Renderer::GuiLayer::Init();
 
         LoadResources();
 
         float lastFrame{};
-        float last{};
-        float currentFrame{};
         while (!mWindow->IsClosed())
         {
-            currentFrame = glfwGetTime();
+            const auto currentFrame = static_cast<float>(glfwGetTime());
             mDeltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
@@ -91,13 +91,13 @@ namespace oe::Runtime
 
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::BeginScene();
-        Renderer::GuiLayer::NewFrame();
 #endif
 
+        Renderer::GuiLayer::NewFrame();
         if (!app->Update())
             return false;
-#ifdef OE_RENDERER_VULKAN
         Renderer::GuiLayer::Draw();
+#ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::EndScene();
 #else
         mWindow->SwapBuffers();
@@ -111,6 +111,7 @@ namespace oe::Runtime
         delete mRoot;
 
         Hazel::Audio::Shutdown();
+        Renderer::GuiLayer::Shutdown();
         Renderer::Shutdown();
         Core::Shutdown();
     }
@@ -119,42 +120,42 @@ namespace oe::Runtime
     {
         using namespace Core;
         Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
-                                                                  {
-                                                                  const auto& resizeEvent =
-                                                                          dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-                                                                  if (resizeEvent.Width > 0 ||
-                                                                          resizeEvent.Height > 0)
-                                                                  {
-                                                                      Root::GetWindow()->UpdateSize(
-                                                                              resizeEvent.Width,
-                                                                              resizeEvent.Height);
-                                                                      Renderer::GL::Viewport(
-                                                                              resizeEvent.Width,
-                                                                              resizeEvent.Height);
-                                                                  }
-                                                                  });
+            {
+                const auto& resizeEvent =
+                    dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+                if (resizeEvent.Width > 0 ||
+                    resizeEvent.Height > 0)
+                {
+                    Root::GetWindow()->UpdateSize(
+                        resizeEvent.Width,
+                        resizeEvent.Height);
+                    Renderer::GL::Viewport(
+                        resizeEvent.Width,
+                        resizeEvent.Height);
+                }
+            });
 
         Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
-                                                           {
-                                                           const auto& keyInputEvent =
-                                                                   dynamic_cast<const Event::KeyInputEvent&>(e);
-                                                           Root::GetApplication()->HandleKey(
-                                                                   static_cast<Input::Key>(keyInputEvent
-                                                                           .Key),
-                                                                   static_cast<Input::Action>(keyInputEvent
-                                                                           .Action));
-                                                           });
+            {
+                const auto& keyInputEvent =
+                    dynamic_cast<const Event::KeyInputEvent&>(e);
+                Root::GetApplication()->HandleKey(
+                    static_cast<Input::Key>(keyInputEvent
+                        .Key),
+                    static_cast<Input::Action>(keyInputEvent
+                        .Action));
+            });
 
         Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
-                                                              {
-                                                              const auto& mouseButtonEvent =
-                                                                      dynamic_cast<const Event::MouseButtonEvent&>(e);
-                                                              Root::GetApplication()->HandleButton(
-                                                                      static_cast<Input::Button>(mouseButtonEvent
-                                                                              .Button),
-                                                                      static_cast<Input::Action>(mouseButtonEvent
-                                                                              .Action));
-                                                              });
+            {
+                const auto& mouseButtonEvent =
+                    dynamic_cast<const Event::MouseButtonEvent&>(e);
+                Root::GetApplication()->HandleButton(
+                    static_cast<Input::Button>(mouseButtonEvent
+                        .Button),
+                    static_cast<Input::Action>(mouseButtonEvent
+                        .Action));
+            });
     }
 
     Core::Root* Engine::mRoot{};

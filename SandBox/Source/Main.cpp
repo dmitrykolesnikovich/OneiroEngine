@@ -6,6 +6,7 @@
 #include "Oneiro/Runtime/Application.hpp"
 #include "Oneiro/VisualNovel/VNCore.hpp"
 #include "Oneiro/Lua/LuaFile.hpp"
+#include "Oneiro/Runtime/Engine.hpp"
 
 namespace SandBox
 {
@@ -14,6 +15,7 @@ namespace SandBox
     public:
         bool Init() override
         {
+            Hazel::Audio::SetGlobalVolume(0.01f);
             mFile.LoadFile("Assets/Scripts/test.lua", false);
             oe::VisualNovel::Init(&mFile);
             oe::VisualNovel::LoadTextBox("Assets/Images/textbox.png");
@@ -22,22 +24,57 @@ namespace SandBox
 
         bool Update() override
         {
-            oe::VisualNovel::Update();
+            oe::VisualNovel::Update(mRenderVnGui);
             return true;
         }
 
         void HandleButton(oe::Input::Button button, oe::Input::Action action) override
         {
+            if (!mEnableInput)
+                return;
             if (button == oe::Input::Button::LEFT && action == oe::Input::Action::PRESS)
                 oe::VisualNovel::NextStep();
+        }
+
+        void HandleKey(oe::Input::Key key, oe::Input::Action action) override
+        {
+            if (action == oe::Input::Action::PRESS)
+            {
+                using namespace oe;
+                if (key == Input::Key::I)
+                {
+                    mEnableInput = !mEnableInput;
+                    return;
+                }
+
+                if (mEnableInput)
+                {
+                    switch (key)
+                    {
+                    case Input::Key::G:
+                        mRenderVnGui = !mRenderVnGui;
+                        break;
+                    case Input::Key::SPACE:
+                        VisualNovel::NextStep();
+                        break;
+                    case Input::Key::ENTER:
+                        VisualNovel::NextStep();
+                        break;
+                    default: break;
+                    }
+                }
+            }
         }
 
         void Shutdown() override
         {
 
         }
+
     private:
         oe::Lua::File mFile;
+        bool mRenderVnGui{};
+        bool mEnableInput{true};
     };
 }
 

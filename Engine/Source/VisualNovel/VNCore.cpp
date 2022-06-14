@@ -5,24 +5,33 @@
 
 #include <filesystem>
 
-#include "Oneiro/Lua/LuaFile.hpp"
-#include "Oneiro/VisualNovel/VNCore.hpp"
+#include "Oneiro/Animation/DissolveAnimation.hpp"
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Lua/LuaFile.hpp"
 #include "Oneiro/Renderer/OpenGL/Text.hpp"
 #include "Oneiro/Runtime/Engine.hpp"
-#include "Oneiro/Animation/DissolveAnimation.hpp"
+#include "Oneiro/VisualNovel/VNCore.hpp"
+#include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 
 namespace
 {
+    struct TextStruct
+    {
+        oe::Renderer::GL::Text Text{};
+        oe::Renderer::GL::Text Name{};
+    };
+
+    TextStruct text;
+
     std::vector<oe::VisualNovel::Instruction> instructions{};
     oe::Renderer::GL::Sprite2D textBox{};
     oe::Animation::DissolveAnimation textBoxAnim{};
     std::vector<std::string> labels{};
-    oe::Renderer::GL::Text text{};
+
     std::string textToRenderer{};
     std::string textToIterate{};
     size_t currentIt{};
-    uint32_t charItToPush{};
+    size_t charItToPush{};
     std::vector<std::pair<oe::Renderer::GL::Sprite2D*, oe::Animation::DissolveAnimation*>> sprite2Ds;
     float textSpeed = 0.05f;
 
@@ -76,9 +85,12 @@ namespace
                 mIsStart = false;
         }
 
-        float GetTime() { return mTime; }
-        bool IsReversed() { return mIsReversed; }
-        bool IsEnded() { return mIsEnded; }
+        [[nodiscard]] float GetTime() const { return mTime; }
+
+        [[nodiscard]] bool IsReversed() const { return mIsReversed; }
+
+        [[nodiscard]] bool IsEnded() const { return mIsEnded; }
+
     private:
         Hazel::Audio::Source* mAudioSource{};
         float mTime{};
@@ -88,249 +100,326 @@ namespace
     };
 
     std::vector<FadeMusic*> fadeMusicContainer{};
+    bool updSprites{};
 }
 
 namespace oe::VisualNovel
 {
     void Init(const Lua::File* file)
     {
-        text.Init();
+        text.Text.Init();
         if (!labels.empty())
         {
             JumpToLabel(file, labels[0]);
             textBox.SetAlpha(0.0f);
             textBoxAnim.SetReversed(false);
+            currentIt = 15;
             NextStep();
         }
     }
 
     void NextStep()
     {
+        if (updSprites)
+            return;
+
+        if (textToRenderer.size() < textToIterate.size())
+        {
+            textToRenderer = textToIterate;
+            charItToPush = textToIterate.size();
+            return;
+        }
+
         if (currentIt >= instructions.size())
             return;
         auto& instruction = instructions[currentIt];
-        static Renderer::GL::Sprite2D* prevSprite2D{};
         switch (instruction.Type)
         {
-        case SHOW_SPRITE:
-        {
-            auto& sprite2D = instruction.Sprite2D;
-            sprite2D->Load();
-            sprite2D->Move({});
-            sprite2D->SetAlpha(0.0f);
-            sprite2Ds.push_back(std::make_pair(sprite2D, new Animation::DissolveAnimation));
-            if (textBox.GetAlpha() >= 1.0f)
-                textBoxAnim.SetReversed(true);
-            else
-                textBoxAnim.SetReversed(false);
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case HIDE_SPRITE:
-        {
-            auto it = sprite2Ds.begin();
-            for (; !(it == sprite2Ds.end()); ++it)
+            case SHOW_SPRITE:
             {
-                if (it->first == instruction.Sprite2D)
-                {
-                    it->second->SetReversed(true);
+                auto& sprite2D = instruction.Sprite2D;
+                sprite2D->Load();
+                sprite2D->Move({});
+                sprite2D->SetAlpha(0.0f);
+                sprite2Ds.push_back(std::make_pair(sprite2D, new Animation::DissolveAnimation));
+                if (textBox.GetAlpha() >= 1.0f)
                     textBoxAnim.SetReversed(true);
-                    break;
-                }
+                else
+                    textBoxAnim.SetReversed(false);
+                currentIt++;
+                NextStep();
+                break;
             }
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case PLAY_MUSIC:
-        {
-            instruction.AudioSource->Play();
-            instruction.AudioSource->SetVolume(0.0f);
-            fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, false});
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case STOP_MUSIC:
-        {
-            fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, true});
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case PLAY_SOUND:
-        {
-            instruction.AudioSource->Play();
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case STOP_SOUND:
-        {
-            instruction.AudioSource->Stop();
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case PLAY_AMBIENT:
-        {
-            instruction.AudioSource->Play();
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case STOP_AMBIENT:
-        {
-            instruction.AudioSource->Stop();
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case JUMP_TO_LABEL:
-        {
-            JumpToLabel(instruction.Label.File, instruction.Label.Name);
-            NextStep();
-            break;
-        }
-        case MOVE_SPRITE:
-        {
-            instruction.Sprite2D->Move(instruction.Vector3);
-            currentIt++;
-            NextStep();
-            break;
-        }
-        case SAY_TEXT:
-        {
-            textToRenderer.clear();
-            charItToPush = 0;
-            textToIterate = instruction.Text.Who + ": " + instruction.Text.What;
-            currentIt++;
-            return;
-        }
-        case SET_TEXT_SPEED:
-        {
-            textSpeed = instruction.Vector3[0];
-            currentIt++;
-            NextStep();
-        }
+            case HIDE_SPRITE:
+            {
+                auto it = sprite2Ds.begin();
+                for (; !(it == sprite2Ds.end()); ++it)
+                {
+                    if (it->first == instruction.Sprite2D)
+                    {
+                        it->second->SetReversed(true);
+                        textBoxAnim.SetReversed(true);
+                        break;
+                    }
+                }
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case PLAY_MUSIC:
+            {
+                instruction.AudioSource->Play();
+                instruction.AudioSource->SetVolume(0.0f);
+                fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, false});
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case STOP_MUSIC:
+            {
+                fadeMusicContainer.emplace_back(new FadeMusic{instruction.AudioSource, true});
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case PLAY_SOUND:
+            {
+                instruction.AudioSource->Play();
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case STOP_SOUND:
+            {
+                instruction.AudioSource->Stop();
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case PLAY_AMBIENT:
+            {
+                instruction.AudioSource->Play();
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case STOP_AMBIENT:
+            {
+                instruction.AudioSource->Stop();
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case JUMP_TO_LABEL:
+            {
+                JumpToLabel(instruction.Label.File, instruction.Label.Name);
+                NextStep();
+                break;
+            }
+            case MOVE_SPRITE:
+            {
+                instruction.Sprite2D->Move(instruction.Vector3);
+                currentIt++;
+                NextStep();
+                break;
+            }
+            case SAY_TEXT:
+            {
+                textToRenderer.clear();
+                charItToPush = 0;
+                textToIterate = instruction.Text.Who + ": " + instruction.Text.What;
+                currentIt++;
+                break;
+            }
+            case SET_TEXT_SPEED:
+            {
+                textSpeed = instruction.Vector3[0];
+                currentIt++;
+                NextStep();
+                break;
+            }
         }
     }
 
-    void Update()
+    void Update(bool gui)
     {
-        static bool drawText{};
-        Renderer::GL::Sprite2D* prevSprite2D{};
-
-        for (auto& fadeMusic : fadeMusicContainer)
+        // Music
         {
-            fadeMusic->Update(Runtime::Engine::GetDeltaTime());
+            for (auto& fadeMusic : fadeMusicContainer)
+            {
+                fadeMusic->Update(Runtime::Engine::GetDeltaTime());
 
-            if (fadeMusic->IsEnded())
-                std::remove(fadeMusicContainer.begin(), fadeMusicContainer.end(), fadeMusic);
+                if (fadeMusic->IsEnded())
+                    std::ranges::remove(fadeMusicContainer, fadeMusic);
+            }
         }
 
-        for (uint32_t i = 0; i < sprite2Ds.size(); ++i)
+        // Sprites and text
         {
-            auto* sprite2D = sprite2Ds[i].first;
-            auto* animation = sprite2Ds[i].second;
-            if (animation->IsReversed())
+            static bool drawText{};
+            Renderer::GL::Sprite2D* prevSprite2D{};
+            for (uint32_t i = 0; i < sprite2Ds.size(); ++i)
             {
-                if (!textBoxAnim.IsReversed())
+                auto* sprite2D = sprite2Ds[i].first;
+                auto* animation = sprite2Ds[i].second;
+
+                if (animation->IsReversed() && !textBoxAnim.IsReversed())
                 {
                     static bool reverseBg{};
-                    drawText = sprite2Ds[0].first->GetAlpha() <= 0.0f && sprite2D->GetAlpha() <= 0.0f;
-                    if (sprite2D->GetAlpha() <= 0.0f)
-                    {
-                        sprite2Ds.erase(sprite2Ds.begin() + i);
-                        reverseBg = true;
-                        continue;
-                    }
-                    if (prevSprite2D && sprite2D->GetAlpha() >= 0.0f && !reverseBg)
+                    if (prevSprite2D && sprite2D->GetAlpha() >= 0.0f)
                     {
                         animation->Update(sprite2D, Runtime::Engine::GetDeltaTime());
+                        updSprites = true;
+                        if (sprite2D->GetAlpha() <= 0.0f)
+                        {
+                            sprite2Ds.erase(sprite2Ds.begin() + i);
+                            updSprites = true;
+                        }
                     }
                     else if (prevSprite2D && prevSprite2D->GetAlpha() >= 0.0f && !reverseBg)
                     {
                         animation->Update(prevSprite2D, Runtime::Engine::GetDeltaTime());
+                        if (sprite2D->GetAlpha() <= 0.0f)
+                        {
+                            sprite2Ds.erase(sprite2Ds.begin() + i);
+                            reverseBg = true;
+                        }
+                        updSprites = true;
                     }
+
                     if (sprite2Ds[0].first->GetAlpha() >= 0.0f && reverseBg)
+                    {
                         sprite2Ds[0].second->Update(sprite2Ds[0].first, Runtime::Engine::GetDeltaTime());
+                        updSprites = true;
+                    }
+
+                    if (sprite2Ds[0].first->GetAlpha() >= 1.0f)
+                    {
+                        sprite2Ds[0].second->SetReversed(false);
+                    }
+
+                    if (sprite2Ds[0].first->GetAlpha() >= 1.0f && reverseBg)
+                    {
+                        reverseBg = false;
+                        sprite2Ds.erase(sprite2Ds.begin());
+                    }
+
+                    drawText = sprite2Ds[0].first->GetAlpha() <= 0.0f && sprite2D->GetAlpha() <= 0.0f;
                 }
-            }
-            else
-            {
-                if (!textBoxAnim.IsReversed() && textBox.GetAlpha() <= 0.0f)
+                else if (!textBoxAnim.IsReversed() && textBox.GetAlpha() <= 0.0f)
                 {
                     if (!prevSprite2D || sprite2D->GetAlpha() <= 1.0f && prevSprite2D->GetAlpha() >= 1.0f)
+                    {
                         animation->Update(sprite2D, Runtime::Engine::GetDeltaTime());
-                    drawText = sprite2D->GetAlpha() >= 1.0f;
+                        updSprites = true;
+                    }
+
+                    drawText = sprite2Ds[0].first->GetAlpha() >= 1.0f && sprite2D->GetAlpha() >= 1.0f;
                 }
+                sprite2D->Draw();
+                prevSprite2D = sprite2D;
             }
-            sprite2D->Draw();
-            prevSprite2D = sprite2D;
-        }
 
-        static bool canUpdateTextLogic{};
-        if (drawText)
-        {
-            if (textBoxAnim.IsReversed())
+            static bool canUpdateTextLogic{};
+            if (drawText)
             {
-                if (textBox.GetAlpha() >= 0.0f)
+                if (textBoxAnim.IsReversed())
                 {
-                    textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
-                    canUpdateTextLogic = false;
+                    if (textBox.GetAlpha() >= 0.0f)
+                    {
+                        textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
+                        canUpdateTextLogic = false;
+                        updSprites = true;
+                    }
+
+                    if (textBox.GetAlpha() <= 0.0f)
+                    {
+                        textBoxAnim.SetReversed(false);
+                        canUpdateTextLogic = true;
+                        updSprites = false;
+                    }
+                }
+                else
+                {
+                    if (textBox.GetAlpha() <= 1.0f)
+                    {
+                        textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
+                        canUpdateTextLogic = false;
+                        updSprites = true;
+                    }
+
+                    if (textBox.GetAlpha() >= 1.0f)
+                    {
+                        canUpdateTextLogic = true;
+                        updSprites = false;
+                    }
                 }
 
-                if (textBox.GetAlpha() <= 0.0f)
+                if (canUpdateTextLogic && textBox.GetAlpha() >= 1.0f)
                 {
-                    textBoxAnim.SetReversed(false);
-                    canUpdateTextLogic = true;
+                    static float time{};
+                    time += Runtime::Engine::GetDeltaTime();
+                    if (time >= textSpeed && charItToPush < textToIterate.size() && textToRenderer.size() != textToIterate.size())
+                    {
+                        textToRenderer.push_back(textToIterate[charItToPush]);
+                        charItToPush++;
+                        time = 0.0f;
+                    }
+                    text.Text.SetString(textToRenderer);
                 }
+
+                textBox.Draw();
+                if (textBox.GetAlpha() >= 1.0f)
+                    text.Text.Draw({ 125.0f, 145.0f });
             }
             else
             {
-                if (textBox.GetAlpha() <= 1.0f)
-                {
-                    textBoxAnim.Update(&textBox, Runtime::Engine::GetDeltaTime());
-                    canUpdateTextLogic = false;
-                }
-
-                if (textBox.GetAlpha() >= 1.0f)
-                    canUpdateTextLogic = true;
+                canUpdateTextLogic = false;
             }
-
-            if (canUpdateTextLogic && textBox.GetAlpha() >= 1.0f)
-            {
-                static float time{};
-                time += Runtime::Engine::GetDeltaTime();
-                if (time >= textSpeed && charItToPush < textToIterate.size())
-                {
-                    textToRenderer.push_back(textToIterate[charItToPush]);
-                    charItToPush++;
-                    time = 0.0f;
-                    text.SetString(textToRenderer);
-                }
-            }
-
-            textBox.Draw();
-            if (textBox.GetAlpha() >= 1.0f)
-                text.Draw({125.0f, 145.0f});
         }
-        else
+
+        if (gui)
         {
-            canUpdateTextLogic = false;
+            using namespace Renderer;
+            
+            GuiLayer::Begin("Visual Novel");
+            {
+                if (GuiLayer::CollapsingHeader("Core"))
+                {
+                    GuiLayer::Text("Current iterator: %zu", currentIt);
+                    if (GuiLayer::CollapsingHeader("Sprite2Ds"))
+                    {
+                        static size_t selected{};
+                        const size_t sprite2DsSize{ sprite2Ds.size() };
+                        if (ImGui::TreeNode("List"))
+                        {
+                            for (size_t n = 0; n < sprite2DsSize; n++)
+                            {
+                                char buf[32];
+                                sprintf_s(buf, "Sprite2D %llu", n);
+                                if (ImGui::Selectable(buf, selected == n))
+                                    selected = n;
+                            }
+                            ImGui::TreePop();
+                        }
+
+                        if (selected < sprite2DsSize)
+                        {
+                            const auto& sprite = sprite2Ds[selected].first;
+                            ImGui::Text("Sprite2D");
+                            ImGui::Text("Alpha: %f", sprite->GetAlpha());
+                            ImGui::Text("Texture Path: %s", sprite->GetTexture()->GetData()->Path.c_str());
+                        }
+                    }
+                }
+            }
+            GuiLayer::End();
         }
     }
-    std::vector<Instruction>& GetInstructions()
-    {
-        return instructions;
-    }
 
-    std::vector<std::string>& GetLabels()
-    {
-        return labels;
-    }
+    std::vector<Instruction>& GetInstructions() { return instructions; }
+
+    std::vector<std::string>& GetLabels() { return labels; }
 
     void JumpToLabel(const Lua::File* file, const std::string& labelName)
     {
@@ -357,7 +446,7 @@ namespace oe::VisualNovel
         instructions.push_back({HIDE_SPRITE, sprite2D});
     }
 
-    void PushInstruction(Instruction& instruction)
+    void PushInstruction(const Instruction& instruction)
     {
         instructions.push_back(instruction);
     }
@@ -372,10 +461,7 @@ namespace oe::VisualNovel
         instructions.push_back(instruction);
     }
 
-    void PushLabel(const std::string& labelName)
-    {
-        labels.push_back(labelName);
-    }
+    void PushLabel(const std::string& labelName) { labels.push_back(labelName); }
 
     void SetTextSpeed(float speed)
     {
@@ -418,5 +504,10 @@ namespace oe::VisualNovel
     void StopAmbient(Hazel::Audio::Source* audioSource)
     {
         instructions.push_back({STOP_AMBIENT, {}, {}, audioSource});
+    }
+
+    constexpr Instruction& GetCurrentInstruction()
+    {
+        return instructions[currentIt];
     }
 }

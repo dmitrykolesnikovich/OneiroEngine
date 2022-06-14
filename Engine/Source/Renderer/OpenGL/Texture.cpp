@@ -69,6 +69,7 @@ namespace oe::Renderer::GL
             return false;
         }
     }
+
     bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture,
                        TextureData* textureData)
     {

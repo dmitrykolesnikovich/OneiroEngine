@@ -6,10 +6,11 @@
 #pragma once
 
 #include "Animation.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 namespace oe::Animation
 {
-    class DissolveAnimation : public Animation
+    class DissolveAnimation final : public Animation
     {
     public:
         void Update(oe::Renderer::GL::Sprite2D* sprite2D, float dt) override
@@ -36,9 +37,11 @@ namespace oe::Animation
         }
 
         void SetReversed(bool isReversed) { mIsReversed = isReversed; }
+
         bool IsReversed() { return mIsReversed; }
 
         void Reset() { mTime = 0.0f; }
+
     private:
         float mTime{};
         bool mIsReversed{};

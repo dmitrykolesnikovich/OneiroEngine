@@ -5,11 +5,7 @@
 
 #pragma once
 
-#include <vector>
-
-#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
-#include "Oneiro/Scene/SceneManager.hpp"
-#include "Oneiro/Scene/Entity.hpp"
+#include "Oneiro/World/Entity.hpp"
 #include "HazelAudio/HazelAudio.h"
 
 namespace oe::Lua
@@ -40,7 +36,7 @@ namespace oe::VisualNovel
     struct Instruction
     {
         InstructionType Type{};
-        oe::Renderer::GL::Sprite2D* Sprite2D;
+        Renderer::GL::Sprite2D* Sprite2D;
         struct TextData
         {
             std::string Who{};
@@ -57,10 +53,15 @@ namespace oe::VisualNovel
         glm::vec3 Vector3{};
     };
 
-    void PushInstruction(Instruction& instruction);
-    void PushInstruction(Instruction&& instruction);
-    void PushLabel(const std::string& labelName);
+    void Init(const Lua::File* file);
+    void NextStep();
+    void Update(bool gui = false);
 
+    constexpr Instruction& GetCurrentInstruction();
+    void PushInstruction(const Instruction& instruction);
+    void PushInstruction(Instruction&& instruction);
+
+    void PushLabel(const std::string& labelName);
     void JumpToLabel(const Lua::File* file, const std::string& labelName);
 
     void ShowSprite2D(Renderer::GL::Sprite2D* sprite2D);
@@ -69,15 +70,13 @@ namespace oe::VisualNovel
 
     void PlayMusic(Hazel::Audio::Source* audioSource);
     void StopMusic(Hazel::Audio::Source* audioSource);
+
     void PlaySound(Hazel::Audio::Source* audioSource);
     void StopSound(Hazel::Audio::Source* audioSource);
+
     void PlayAmbient(Hazel::Audio::Source* audioSource);
     void StopAmbient(Hazel::Audio::Source* audioSource);
 
     void SetTextSpeed(float speed);
     void LoadTextBox(const std::string& path);
-
-    void Init(const Lua::File* file);
-    void NextStep();
-    void Update();
 }
