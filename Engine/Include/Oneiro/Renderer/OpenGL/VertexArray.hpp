@@ -9,19 +9,19 @@
 
 namespace oe::Renderer::GL
 {
-    class VertexArray
-    {
-    public:
-        ~VertexArray();
+	class VertexArray
+	{
+	public:
+		~VertexArray();
 
-        void Generate();
+		void Generate();
 
-        void Bind() const;
+		void Bind() const;
 
-        static void UnBind();
+		static void UnBind();
 
-        uint32_t Get();
-    private:
-        uint32_t mID{};
-    };
+		uint32_t Get();
+	private:
+		uint32_t mID{};
+	};
 }

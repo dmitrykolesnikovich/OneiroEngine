@@ -7,9 +7,9 @@
 
 namespace oe::Renderer
 {
-    void PreInit();
-    void Init();
-    void Shutdown();
+	void PreInit();
+	void Init();
+	void Shutdown();
 }
 
 #ifndef OE_VULKAN_API
@@ -19,53 +19,53 @@ namespace oe::Renderer
 
 namespace oe::Renderer::GL
 {
-    enum DrawMode
-    {
-        TRIANGLES = gl::TRIANGLES
-    };
+	enum DrawMode
+	{
+		TRIANGLES = gl::TRIANGLES
+	};
 
-    enum DataType
-    {
-        UNSIGNED_BYTE = gl::UNSIGNED_BYTE,
-        UNSIGNED_INT = gl::UNSIGNED_INT,
-        FLOAT = gl::FLOAT,
-        INT = gl::INT
-    };
+	enum DataType
+	{
+		UNSIGNED_BYTE = gl::UNSIGNED_BYTE,
+		UNSIGNED_INT = gl::UNSIGNED_INT,
+		FLOAT = gl::FLOAT,
+		INT = gl::INT
+	};
 
-    enum ClearType
-    {
-        COLOR_BUFFER = gl::COLOR_BUFFER_BIT,
-        DEPTH_BUFFER = gl::DEPTH_BUFFER_BIT,
-        STENCIL_BUFFER = gl::STENCIL_BUFFER_BIT
-    };
+	enum ClearType
+	{
+		COLOR_BUFFER = gl::COLOR_BUFFER_BIT,
+		DEPTH_BUFFER = gl::DEPTH_BUFFER_BIT,
+		STENCIL_BUFFER = gl::STENCIL_BUFFER_BIT
+	};
 
-    inline void DrawArrays(DrawMode mode, int first, int count)
-    {
-        gl::DrawArrays(mode, first, count);
-    }
+	inline void DrawArrays(DrawMode mode, int first, int count)
+	{
+		gl::DrawArrays(mode, first, count);
+	}
 
-    inline void DrawArrays(DrawMode mode, int count)
-    {
-        gl::DrawArrays(mode, 0, count);
-    }
+	inline void DrawArrays(DrawMode mode, int count)
+	{
+		gl::DrawArrays(mode, 0, count);
+	}
 
-    inline void ClearColor(float r, float g, float b, float a = 1.0f)
-    {
-        gl::ClearColor(r, g, b, a);
-    }
+	inline void ClearColor(float r, float g, float b, float a = 1.0f)
+	{
+		gl::ClearColor(r, g, b, a);
+	}
 
-    inline void DrawElements(DrawMode mode, int count, DataType type, const void* indices = nullptr)
-    {
-        gl::DrawElements(mode, count, type, indices);
-    }
+	inline void DrawElements(DrawMode mode, int count, DataType type, const void* indices = nullptr)
+	{
+		gl::DrawElements(mode, count, type, indices);
+	}
 
-    inline void Clear(uint32_t mask)
-    {
-        gl::Clear(mask);
-    }
+	inline void Clear(uint32_t mask)
+	{
+		gl::Clear(mask);
+	}
 
-    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
-    void Viewport(GLsizei width, GLsizei height);
+	void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+	void Viewport(GLsizei width, GLsizei height);
 }
 #else
 #define GLFW_INCLUDE_NONE

@@ -9,24 +9,24 @@
 
 namespace oe::World
 {
-    class Entity;
-    class WorldManager;
+	class Entity;
+	class WorldManager;
 
-    class World
-    {
-    public:
-        World();
-        ~World();
+	class World
+	{
+	public:
+		World();
+		~World();
 
-        Entity CreateEntity(const std::string& name = {});
-        void DestroyEntity(Entity entity);
-        Entity GetEntity(const std::string& name = {});
-        entt::registry& GetEntities() { return mRegistry; }
-        void DestroyAllEntities();
-    private:
-        entt::registry mRegistry{};
-        std::string mName{};
-        friend class Entity;
-        friend class WorldManager;
-    };
+		Entity CreateEntity(const std::string& name = {});
+		void DestroyEntity(Entity entity);
+		Entity GetEntity(const std::string& name = {});
+		entt::registry& GetEntities() { return mRegistry; }
+		void DestroyAllEntities();
+	private:
+		entt::registry mRegistry{};
+		std::string mName{};
+		friend class Entity;
+		friend class WorldManager;
+	};
 }

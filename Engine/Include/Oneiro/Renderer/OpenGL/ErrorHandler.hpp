@@ -7,6 +7,6 @@
 
 namespace oe::Renderer::GL::ErrorHandler
 {
-    void GLClearError();
-    bool GLLogCall();
+	void GLClearError();
+	bool GLLogCall();
 }

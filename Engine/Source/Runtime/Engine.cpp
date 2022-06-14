@@ -21,143 +21,143 @@
 
 namespace oe::Runtime
 {
-    void Engine::Init()
-    {
-        Core::Init();
-        Renderer::PreInit();
-        Renderer::GuiLayer::PreInit();
-        Hazel::Audio::Init();
-        mRoot = new Core::Root;
-        mWindow = new Core::Window;
-    }
+	void Engine::Init()
+	{
+		Core::Init();
+		Renderer::PreInit();
+		Renderer::GuiLayer::PreInit();
+		Hazel::Audio::Init();
+		mRoot = new Core::Root;
+		mWindow = new Core::Window;
+	}
 
-    void Engine::Run(const std::shared_ptr<Application>& app)
-    {
-        using namespace Core;
+	void Engine::Run(const std::shared_ptr<Application>& app)
+	{
+		using namespace Core;
 
-        if (mRoot == nullptr || mWindow == nullptr)
-            return;
+		if (mRoot == nullptr || mWindow == nullptr)
+			return;
 
-        mRoot->SetApplication(app.get());
-        mRoot->SetWindow(mWindow);
+		mRoot->SetApplication(app.get());
+		mRoot->SetWindow(mWindow);
 
-        Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
-            {
-                const auto& errorEvent =
-                    dynamic_cast<const Event::ErrorEvent&>(e);
-                log::get("log")->error("GLFW ERROR[" +
-                    std::to_string(
-                        errorEvent
-                        .Error) +
-                    "]: " +
-                    errorEvent
-                    .Description);
-            });
+		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
+		{
+			const auto& errorEvent =
+				dynamic_cast<const Event::ErrorEvent&>(e);
+			log::get("log")->error("GLFW ERROR[" +
+				std::to_string(
+					errorEvent
+					.Error) +
+				"]: " +
+				errorEvent
+				.Description);
+		});
 
-        if (!mWindow->Create())
-            throw std::runtime_error("Failed to create window!");
+		if (!mWindow->Create())
+			throw std::runtime_error("Failed to create window!");
 
-        SetupEvents();
+		SetupEvents();
 
-        if (!app->Init())
-            throw std::runtime_error("Failed to initialize application!");
+		if (!app->Init())
+			throw std::runtime_error("Failed to initialize application!");
 
-        Renderer::Init();
-        Renderer::GuiLayer::Init();
+		Renderer::Init();
+		Renderer::GuiLayer::Init();
 
-        LoadResources();
+		LoadResources();
 
-        float lastFrame{};
-        while (!mWindow->IsClosed())
-        {
-            const auto currentFrame = static_cast<float>(glfwGetTime());
-            mDeltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
+		float lastFrame{};
+		while (!mWindow->IsClosed())
+		{
+			const auto currentFrame = static_cast<float>(glfwGetTime());
+			mDeltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
 
-            if (!UpdateGame(app)) break;
-        }
+			if (!UpdateGame(app)) break;
+		}
 
-        app->Shutdown();
-    }
+		app->Shutdown();
+	}
 
-    bool Engine::UpdateGame(const std::shared_ptr<Application>& app)
-    {
-        if (app->IsStopped())
-            return false;
+	bool Engine::UpdateGame(const std::shared_ptr<Application>& app)
+	{
+		if (app->IsStopped())
+			return false;
 
-        Core::Window::PollEvents();
-        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+		Core::Window::PollEvents();
+		gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::BeginScene();
 #endif
 
-        Renderer::GuiLayer::NewFrame();
-        if (!app->Update())
-            return false;
-        Renderer::GuiLayer::Draw();
+		Renderer::GuiLayer::NewFrame();
+		if (!app->Update())
+			return false;
+		Renderer::GuiLayer::Draw();
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::EndScene();
 #else
-        mWindow->SwapBuffers();
+		mWindow->SwapBuffers();
 #endif
-        return true;
-    }
+		return true;
+	}
 
-    void Engine::Shutdown()
-    {
-        delete mWindow;
-        delete mRoot;
+	void Engine::Shutdown()
+	{
+		delete mWindow;
+		delete mRoot;
 
-        Hazel::Audio::Shutdown();
-        Renderer::GuiLayer::Shutdown();
-        Renderer::Shutdown();
-        Core::Shutdown();
-    }
+		Hazel::Audio::Shutdown();
+		Renderer::GuiLayer::Shutdown();
+		Renderer::Shutdown();
+		Core::Shutdown();
+	}
 
-    void Engine::SetupEvents()
-    {
-        using namespace Core;
-        Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
-            {
-                const auto& resizeEvent =
-                    dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
-                if (resizeEvent.Width > 0 ||
-                    resizeEvent.Height > 0)
-                {
-                    Root::GetWindow()->UpdateSize(
-                        resizeEvent.Width,
-                        resizeEvent.Height);
-                    Renderer::GL::Viewport(
-                        resizeEvent.Width,
-                        resizeEvent.Height);
-                }
-            });
+	void Engine::SetupEvents()
+	{
+		using namespace Core;
+		Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)
+		{
+			const auto& resizeEvent =
+				dynamic_cast<const Event::FrameBufferSizeEvent&>(e);
+			if (resizeEvent.Width > 0 ||
+				resizeEvent.Height > 0)
+			{
+				Root::GetWindow()->UpdateSize(
+					resizeEvent.Width,
+					resizeEvent.Height);
+				Renderer::GL::Viewport(
+					resizeEvent.Width,
+					resizeEvent.Height);
+			}
+		});
 
-        Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
-            {
-                const auto& keyInputEvent =
-                    dynamic_cast<const Event::KeyInputEvent&>(e);
-                Root::GetApplication()->HandleKey(
-                    static_cast<Input::Key>(keyInputEvent
-                        .Key),
-                    static_cast<Input::Action>(keyInputEvent
-                        .Action));
-            });
+		Event::Dispatcher::Subscribe<Event::KeyInputEvent>([](const Event::Base& e)
+		{
+			const auto& keyInputEvent =
+				dynamic_cast<const Event::KeyInputEvent&>(e);
+			Root::GetApplication()->HandleKey(
+				static_cast<Input::Key>(keyInputEvent
+					.Key),
+				static_cast<Input::Action>(keyInputEvent
+					.Action));
+		});
 
-        Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
-            {
-                const auto& mouseButtonEvent =
-                    dynamic_cast<const Event::MouseButtonEvent&>(e);
-                Root::GetApplication()->HandleButton(
-                    static_cast<Input::Button>(mouseButtonEvent
-                        .Button),
-                    static_cast<Input::Action>(mouseButtonEvent
-                        .Action));
-            });
-    }
+		Event::Dispatcher::Subscribe<Event::MouseButtonEvent>([](const Event::Base& e)
+		{
+			const auto& mouseButtonEvent =
+				dynamic_cast<const Event::MouseButtonEvent&>(e);
+			Root::GetApplication()->HandleButton(
+				static_cast<Input::Button>(mouseButtonEvent
+					.Button),
+				static_cast<Input::Action>(mouseButtonEvent
+					.Action));
+		});
+	}
 
-    Core::Root* Engine::mRoot{};
-    Core::Window* Engine::mWindow{};
+	Core::Root* Engine::mRoot{};
+	Core::Window* Engine::mWindow{};
 }

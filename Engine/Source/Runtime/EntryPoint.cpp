@@ -10,21 +10,21 @@
 
 int main(const int argc, char* argv[])
 {
-    using namespace oe::Runtime;
-    using namespace oe;
+	using namespace oe::Runtime;
+	using namespace oe;
 
-    const auto app = CreateApplication(argc, argv);
+	const auto app = CreateApplication(argc, argv);
 
-    try
-    {
-        Engine::Init();
-        Engine::Run(app);
-    }
-    catch (const std::exception& ex)
-    {
-        log::get("log")->error(ex.what());
-    }
-    app.~shared_ptr();
-    Engine::Shutdown();
-    return 0;
+	try
+	{
+		Engine::Init();
+		Engine::Run(app);
+	}
+	catch (const std::exception& ex)
+	{
+		log::get("log")->error(ex.what());
+	}
+	app.~shared_ptr();
+	Engine::Shutdown();
+	return 0;
 }

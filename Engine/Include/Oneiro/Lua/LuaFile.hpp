@@ -14,74 +14,74 @@
 
 namespace oe::Lua
 {
-    class File
-    {
-    public:
-        template<class... Args>
-        void OpenLibraries(Args&& ... args)
-        {
-            mState.open_libraries(std::forward<Args>(args)...);
-        }
+	class File
+	{
+	public:
+		template <class... Args>
+		void OpenLibraries(Args&& ... args)
+		{
+			mState.open_libraries(std::forward<Args>(args)...);
+		}
 
-        sol::protected_function_result LoadFile(const std::string& pathToFile, bool out = true)
-        {
-            if (out)
-                mFile.open(pathToFile, std::ios::out);
-            OpenLibraries(sol::lib::base);
-            mState.set_function("showText", [](const std::string& who, const std::string& what)
-            {
-                VisualNovel::PushInstruction({VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
-            });
+		sol::protected_function_result LoadFile(const std::string& pathToFile, bool out = true)
+		{
+			if (out)
+				mFile.open(pathToFile, std::ios::out);
+			OpenLibraries(sol::lib::base);
+			mState.set_function("showText", [](const std::string& who, const std::string& what)
+			{
+				VisualNovel::PushInstruction({VisualNovel::InstructionType::SAY_TEXT, {}, {who, what}});
+			});
 
-            mState.set_function("setTextSpeed", VisualNovel::SetTextSpeed);
+			mState.set_function("setTextSpeed", VisualNovel::SetTextSpeed);
 
-            mState.set_function("registerLabel", [](const std::string& name)
-            {
-                VisualNovel::PushLabel(name);
-            });
+			mState.set_function("registerLabel", [](const std::string& name)
+			{
+				VisualNovel::PushLabel(name);
+			});
 
-            mState.set_function("jumpToLabel", [&](const std::string& name)
-            {
-                VisualNovel::PushInstruction(
-                        {VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
-            });
+			mState.set_function("jumpToLabel", [&](const std::string& name)
+			{
+				VisualNovel::PushInstruction(
+					{VisualNovel::InstructionType::JUMP_TO_LABEL, {}, {}, {}, {this, name}});
+			});
 
-            mState.new_usertype<Renderer::GL::Sprite2D>("Sprite2D", sol::call_constructor,
-                                                        sol::factories([](const std::string& path,
-                                                                          bool keepAspectRatio)
-                                                                       {
-                                                                           std::shared_ptr<Renderer::GL::Sprite2D>
-                                                                                   ptr = std::make_shared<Renderer::GL::Sprite2D>();
-                                                                           ptr->Init(path, keepAspectRatio);
-                                                                           return ptr;
-                                                                       }), "show",
-                                                        &VisualNovel::ShowSprite2D, "hide",
-                                                        &VisualNovel::HideSprite2D, "move",
-                                                        [](Renderer::GL::Sprite2D* sprite2D,
-                                                           float x, float y, float z)
-                                                        {
-                                                            VisualNovel::MoveSprite2D(sprite2D, {x, y, z});
-                                                        });
+			mState.new_usertype<Renderer::GL::Sprite2D>("Sprite2D", sol::call_constructor,
+			                                            sol::factories([](const std::string& path,
+			                                                              bool keepAspectRatio)
+			                                            {
+				                                            auto
+					                                            ptr = std::make_shared<Renderer::GL::Sprite2D>();
+				                                            ptr->Init(path, keepAspectRatio);
+				                                            return ptr;
+			                                            }), "show",
+			                                            &VisualNovel::ShowSprite2D, "hide",
+			                                            &VisualNovel::HideSprite2D, "move",
+			                                            [](Renderer::GL::Sprite2D* sprite2D,
+			                                               float x, float y, float z)
+			                                            {
+				                                            VisualNovel::MoveSprite2D(sprite2D, {x, y, z});
+			                                            });
 
-            mState.set_function("playMusic", VisualNovel::PlayMusic);
-            mState.set_function("stopMusic", VisualNovel::StopMusic);
-            mState.set_function("playSound", VisualNovel::PlaySound);
-            mState.set_function("stopSound", VisualNovel::StopSound);
-            mState.set_function("playAmbient", VisualNovel::PlayAmbient);
-            mState.set_function("stopAmbient", VisualNovel::StopAmbient);
+			mState.set_function("playMusic", VisualNovel::PlayMusic);
+			mState.set_function("stopMusic", VisualNovel::StopMusic);
+			mState.set_function("playSound", VisualNovel::PlaySound);
+			mState.set_function("stopSound", VisualNovel::StopSound);
+			mState.set_function("playAmbient", VisualNovel::PlayAmbient);
+			mState.set_function("stopAmbient", VisualNovel::StopAmbient);
 
-            mState.new_usertype<Hazel::Audio::Source>("Audio", sol::call_constructor,
-                                                      sol::factories([](const std::string& path)
-                                                                     {
-                                                                         auto audioSource =
-                                                                                 std::make_shared<Hazel::Audio::Source>();
-                                                                         audioSource->LoadFromFile(path);
-                                                                         return audioSource;
-                                                                     }), "volume",
-                                                      &Hazel::Audio::Source::SetVolume, "loop",
-                                                      &Hazel::Audio::Source::SetLoop);
+			mState.new_usertype<Hazel::Audio::Source>("Audio", sol::call_constructor,
+			                                          sol::factories([](const std::string& path)
+			                                          {
+				                                          auto audioSource =
+					                                          std::make_shared<Hazel::Audio::Source>();
+				                                          audioSource->LoadFromFile(path);
+				                                          return audioSource;
+			                                          }), "volume",
+			                                          &Hazel::Audio::Source::SetVolume, "loop",
+			                                          &Hazel::Audio::Source::SetLoop);
 
-            const char* script = R"(
+			auto script = R"(
                 function Class()
                 local class = {}
                 local mClass = {}
@@ -162,39 +162,39 @@ namespace oe::Lua
                 end
             )";
 
-            mState.script(script);
-            return mState.script_file(pathToFile);
-        }
+			mState.script(script);
+			return mState.script_file(pathToFile);
+		}
 
-        bool CallFunction(const std::string& name) const
-        {
-            sol::protected_function function = mState[name];
-            if (function.valid())
-            {
-                function();
-                return true;
-            }
-            return false;
-        }
+		bool CallFunction(const std::string& name) const
+		{
+			sol::protected_function function = mState[name];
+			if (function.valid())
+			{
+				function();
+				return true;
+			}
+			return false;
+		}
 
-        bool CallFunction(const std::string& name, const std::string& tableName) const
-        {
-            sol::table table = mState[tableName];
-            sol::protected_function function = table[name];
-            if (function.valid())
-            {
-                function();
-                return true;
-            }
-            return false;
-        }
+		bool CallFunction(const std::string& name, const std::string& tableName) const
+		{
+			sol::table table = mState[tableName];
+			sol::protected_function function = table[name];
+			if (function.valid())
+			{
+				function();
+				return true;
+			}
+			return false;
+		}
 
-        std::fstream& GetFile() { return mFile; }
+		std::fstream& GetFile() { return mFile; }
 
-        sol::state* GetState() { return &mState; }
+		sol::state* GetState() { return &mState; }
 
-    private:
-        sol::state mState{};
-        std::fstream mFile{};
-    };
+	private:
+		sol::state mState{};
+		std::fstream mFile{};
+	};
 }

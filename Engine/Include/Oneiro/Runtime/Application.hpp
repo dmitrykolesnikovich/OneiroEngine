@@ -10,24 +10,24 @@
 
 namespace oe::Runtime
 {
-    class Application
-    {
-    public:
-        virtual ~Application();
-        virtual bool Init();
-        virtual bool Update();
-        virtual void Shutdown();
-        virtual void HandleKey(Input::Key key, Input::Action action);
-        virtual void HandleButton(Input::Button button, Input::Action action);
+	class Application
+	{
+	public:
+		virtual ~Application();
+		virtual bool Init();
+		virtual bool Update();
+		virtual void Shutdown();
+		virtual void HandleKey(Input::Key key, Input::Action action);
+		virtual void HandleButton(Input::Button button, Input::Action action);
 
-        bool IsStopped() const { return mIsStopped; }
-    protected:
-        void Stop() { mIsStopped = true; }
-        static void SetKeyInput(bool isEnabled = true);
-        static void SetButtonInput(bool isEnabled = true);
-    private:
-        bool mIsStopped{};
-    };
+		bool IsStopped() const { return mIsStopped; }
+	protected:
+		void Stop() { mIsStopped = true; }
+		static void SetKeyInput(bool isEnabled = true);
+		static void SetButtonInput(bool isEnabled = true);
+	private:
+		bool mIsStopped{};
+	};
 
-    std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
+	std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
 }

@@ -7,7 +7,7 @@
 
 namespace oe::Core::Event
 {
-    EventMap Dispatcher::mEventMap;
+	EventMap Dispatcher::mEventMap;
 
-    Base::~Base() = default;
+	Base::~Base() = default;
 }

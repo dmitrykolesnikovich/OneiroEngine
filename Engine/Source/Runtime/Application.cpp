@@ -10,37 +10,37 @@
 
 namespace oe::Runtime
 {
-    Application::~Application() = default;
+	Application::~Application() = default;
 
-    bool Application::Init()
-    {
-        return true;
-    }
+	bool Application::Init()
+	{
+		return true;
+	}
 
-    bool Application::Update()
-    {
-        return true;
-    }
+	bool Application::Update()
+	{
+		return true;
+	}
 
-    void Application::Shutdown()
-    {
-    }
+	void Application::Shutdown()
+	{
+	}
 
-    void Application::HandleKey(Input::Key key, Input::Action action)
-    {
-    }
+	void Application::HandleKey(Input::Key key, Input::Action action)
+	{
+	}
 
-    void Application::HandleButton(Input::Button button, Input::Action action)
-    {
-    }
+	void Application::HandleButton(Input::Button button, Input::Action action)
+	{
+	}
 
-    void Application::SetKeyInput(bool isEnabled)
-    {
-        Core::Root::GetWindow()->IsKeyInput = isEnabled;
-    }
+	void Application::SetKeyInput(bool isEnabled)
+	{
+		Core::Root::GetWindow()->IsKeyInput = isEnabled;
+	}
 
-    void Application::SetButtonInput(bool isEnabled)
-    {
-        Core::Root::GetWindow()->IsMouseButtonInput = isEnabled;
-    }
+	void Application::SetButtonInput(bool isEnabled)
+	{
+		Core::Root::GetWindow()->IsMouseButtonInput = isEnabled;
+	}
 }

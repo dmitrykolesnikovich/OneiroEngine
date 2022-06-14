@@ -10,40 +10,45 @@
 
 namespace oe::Animation
 {
-    class DissolveAnimation final : public Animation
-    {
-    public:
-        void Update(oe::Renderer::GL::Sprite2D* sprite2D, float dt) override
-        {
-            if (mIsReversed)
-            {
-                if (mTime <= 0.0f)
-                {
-                    sprite2D->SetAlpha(0.0f);
-                    return;
-                }
-                mTime -= dt / 1.2f;
-            }
-            else
-            {
-                if (mTime >= 1.0f)
-                {
-                    sprite2D->SetAlpha(1.0f);
-                    return;
-                }
-                mTime += dt / 1.2f;
-            }
-            sprite2D->SetAlpha(mTime);
-        }
+	class DissolveAnimation final : public Animation
+	{
+	public:
+		void Update(Renderer::GL::Sprite2D* sprite2D, float dt) override
+		{
+			if (mIsReversed)
+			{
+				if (sprite2D->GetAlpha() <= 0.0f)
+				{
+					sprite2D->SetAlpha(0.0f);
+					mTime = 0.0f;
+					return;
+				}
 
-        void SetReversed(bool isReversed) { mIsReversed = isReversed; }
+				mTime -= dt / 1.2f;
+			}
+			else
+			{
+				if (sprite2D->GetAlpha() >= 1.0f)
+				{
+					sprite2D->SetAlpha(1.0f);
+					mTime = 1.0f;
+					return;
+				}
 
-        bool IsReversed() { return mIsReversed; }
+				mTime += dt / 1.2f;
+			}
+			sprite2D->SetAlpha(mTime);
+		}
 
-        void Reset() { mTime = 0.0f; }
+		void SetReversed(bool isReversed) { mIsReversed = isReversed; }
 
-    private:
-        float mTime{};
-        bool mIsReversed{};
-    };
+		bool IsReversed() { return mIsReversed; }
+
+		void Reset() { mTime = 0.0f; }
+
+		void SetTime(float time) { mTime = time; }
+	private:
+		float mTime{};
+		bool mIsReversed{};
+	};
 }

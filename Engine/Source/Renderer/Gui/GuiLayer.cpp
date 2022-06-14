@@ -10,38 +10,37 @@
 
 namespace oe::Renderer::GuiLayer
 {
-    void PreInit()
-    {
-        IMGUI_CHECKVERSION();
-        CreateContext();
-        StyleColorsDark();
-    }
+	void PreInit()
+	{
+		IMGUI_CHECKVERSION();
+		CreateContext();
+		StyleColorsDark();
+	}
 
-    void Init()
-    {
-        ImGui_ImplOpenGL3_Init("#version 330");
-        ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
-    }
+	void Init()
+	{
+		ImGui_ImplOpenGL3_Init("#version 330");
+		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
+	}
 
-    void NewFrame()
-    {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-    }
+	void NewFrame()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
 
-    void Draw()
-    {
-        Render();
-        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
-    }
+	void Draw()
+	{
+		Render();
+		ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+	}
 
-    void Shutdown()
-    {
-        ImGui_ImplGlfw_Shutdown();
-        DestroyContext();
-    }
-
+	void Shutdown()
+	{
+		ImGui_ImplGlfw_Shutdown();
+		DestroyContext();
+	}
 }
 
 #else

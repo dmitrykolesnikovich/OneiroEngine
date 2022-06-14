@@ -15,28 +15,28 @@
 
 namespace oe::Renderer::GL
 {
-    class Sprite2D
-    {
-    public:
-        void Init(const std::string& path, bool keepAspectRatio = true);
-        bool Load();
-        bool UnLoad();
-        void Draw();
-        void Move(const glm::vec3& pos);
-        void Scale(const glm::vec3& scale);
-        const Texture<gl::TEXTURE_2D>* GetTexture() const;
-        float GetAlpha() const;
-        void SetAlpha(float alpha);
-        void SetUsingTextureAlpha(bool useTextureAlpha);
-    private:
-        TextureData* mTextureData{};
-        glm::mat4 mModel{1.0f};
-        Texture<gl::TEXTURE_2D>* mTexture{};
-        Shader mShader{};
-        Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
-        VertexArray mVAO;
-        float mAlpha{1.0f};
-        bool mKeepAR{};
-        bool mUseTextureAlpha{};
-    };
+	class Sprite2D
+	{
+	public:
+		void Init(const std::string& path, bool keepAspectRatio = true);
+		bool Load();
+		bool UnLoad();
+		void Draw();
+		void Move(const glm::vec3& pos);
+		void Scale(const glm::vec3& scale);
+		const Texture<gl::TEXTURE_2D>* GetTexture() const;
+		float GetAlpha() const;
+		void SetAlpha(float alpha);
+		void SetUsingTextureAlpha(bool useTextureAlpha);
+	private:
+		TextureData* mTextureData{};
+		glm::mat4 mModel{1.0f};
+		Texture<gl::TEXTURE_2D>* mTexture{};
+		Shader mShader{};
+		Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
+		VertexArray mVAO;
+		float mAlpha{1.0f};
+		bool mKeepAR{};
+		bool mUseTextureAlpha{};
+	};
 }

@@ -5,5 +5,4 @@
 
 namespace oe::Renderer::GL
 {
-
 }

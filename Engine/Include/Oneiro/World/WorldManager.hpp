@@ -9,16 +9,16 @@
 
 namespace oe::World
 {
-    class WorldManager
-    {
-    public:
-        WorldManager();
+	class WorldManager
+	{
+	public:
+		WorldManager();
 
-        World* GetWorld();
-        void Save(const std::string& filepath, const std::string& sceneName);
-        bool Load(const std::string& filePath) const;
-    private:
-        inline static WorldManager* mInstance{};
-        std::unique_ptr<World> mWorld{};
-    };
+		World* GetWorld();
+		void Save(const std::string& filepath, const std::string& sceneName);
+		bool Load(const std::string& filePath) const;
+	private:
+		inline static WorldManager* mInstance{};
+		std::unique_ptr<World> mWorld{};
+	};
 }

@@ -9,29 +9,29 @@
 
 namespace oe::Renderer::GL
 {
-    class RenderBuffer;
+	class RenderBuffer;
 
-    class FrameBuffer
-    {
-    public:
-        void Generate();
+	class FrameBuffer
+	{
+	public:
+		void Generate();
 
-        void Bind();
+		void Bind();
 
-        void UnBind();
+		void UnBind();
 
-        template<int T>
-        constexpr void Texture2D(int attachment, const Texture<T>& texture)
-        {
-            gl::FramebufferTexture2D(gl::FRAMEBUFFER, attachment, T, texture.Get(), 0);
-        }
+		template <int T>
+		constexpr void Texture2D(int attachment, const Texture<T>& texture)
+		{
+			gl::FramebufferTexture2D(gl::FRAMEBUFFER, attachment, T, texture.Get(), 0);
+		}
 
-        void RenderBuffer(int attachment, const RenderBuffer& renderBuffer);
+		void RenderBuffer(int attachment, const RenderBuffer& renderBuffer);
 
-        int Status();
+		int Status();
 
-        uint32_t Get();
-    private:
-        uint32_t mID{};
-    };
+		uint32_t Get();
+	private:
+		uint32_t mID{};
+	};
 }

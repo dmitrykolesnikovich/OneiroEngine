@@ -11,46 +11,46 @@
 
 namespace oe::Core
 {
-    class Window
-    {
-        struct WindowData;
-    public:
-        bool Create();
-        ~Window();
+	class Window
+	{
+		struct WindowData;
+	public:
+		bool Create();
+		~Window();
 
-        static void PollEvents();
-        static void WaitEvents();
+		static void PollEvents();
+		static void WaitEvents();
 
-        void SwapBuffers();
+		void SwapBuffers();
 
-        [[nodiscard]] bool IsClosed() const;
+		[[nodiscard]] bool IsClosed() const;
 
-        void SetSize(int width, int height);
+		void SetSize(int width, int height);
 
-        [[nodiscard]] GLFWwindow* GetGLFW() const;
+		[[nodiscard]] GLFWwindow* GetGLFW() const;
 
-        [[nodiscard]] const char* GetTitle() const;
-        [[nodiscard]] float GetAr() const;
-        [[nodiscard]] int GetWidth() const;
-        [[nodiscard]] int GetHeight() const;
+		[[nodiscard]] const char* GetTitle() const;
+		[[nodiscard]] float GetAr() const;
+		[[nodiscard]] int GetWidth() const;
+		[[nodiscard]] int GetHeight() const;
 
-        void UpdateSize(int width, int height);
+		void UpdateSize(int width, int height);
 
-        bool IsMouseButtonInput{true};
-        bool IsKeyInput{true};
-    private:
-        void SetAR(float aspectRatio);
-        void UpdateAR(int width, int height);
+		bool IsMouseButtonInput{true};
+		bool IsKeyInput{true};
+	private:
+		void SetAR(float aspectRatio);
+		void UpdateAR(int width, int height);
 
-        struct WindowData
-        {
-            const char* Title{"Oneiro Engine"};
-            float AR{};
-            int Width{1280};
-            int Height{720};
-        };
+		struct WindowData
+		{
+			const char* Title{"Oneiro Engine"};
+			float AR{};
+			int Width{1280};
+			int Height{720};
+		};
 
-        WindowData mData{};
-        GLFWwindow* mWindow{};
-    };
+		WindowData mData{};
+		GLFWwindow* mWindow{};
+	};
 }

@@ -13,30 +13,30 @@
 
 namespace oe::Renderer
 {
-    void PreInit()
-    {
-        stbi_set_flip_vertically_on_load(1);
-    }
+	void PreInit()
+	{
+		stbi_set_flip_vertically_on_load(1);
+	}
 
-    void Init()
-    {
-        gl::Enable(gl::BLEND);
-        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
-    }
+	void Init()
+	{
+		gl::Enable(gl::BLEND);
+		gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+	}
 
-    void Shutdown()
-    {
-    }
+	void Shutdown()
+	{
+	}
 
-    void GL::Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
-    {
-        gl::Viewport(x, y, width, height);
-    }
+	void GL::Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
+	{
+		gl::Viewport(x, y, width, height);
+	}
 
-    void GL::Viewport(GLsizei width, GLsizei height)
-    {
-        Viewport(0, 0, width, height);
-    }
+	void GL::Viewport(GLsizei width, GLsizei height)
+	{
+		Viewport(0, 0, width, height);
+	}
 }
 #else
 

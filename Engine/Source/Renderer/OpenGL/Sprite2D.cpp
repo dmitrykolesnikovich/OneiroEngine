@@ -14,10 +14,10 @@
 
 namespace oe::Renderer::GL
 {
-    void Sprite2D::Init(const std::string& path, bool keepAspectRatio)
-    {
-        mKeepAR = keepAspectRatio;
-        constexpr auto vertexShaderSrc = R"(
+	void Sprite2D::Init(const std::string& path, bool keepAspectRatio)
+	{
+		mKeepAR = keepAspectRatio;
+		constexpr auto vertexShaderSrc = R"(
                 #version 330 core
                 layout (location = 0) in vec3 aPos;
                 uniform mat4 uView;
@@ -34,7 +34,7 @@ namespace oe::Renderer::GL
                 }
             )";
 
-        constexpr auto fragmentShaderSrc = R"(
+		constexpr auto fragmentShaderSrc = R"(
                 #version 330 core
                 out vec4 FragColor;
                 uniform sampler2D uTexture;
@@ -52,84 +52,84 @@ namespace oe::Renderer::GL
                 }
             )";
 
-        mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
-        mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
-        mShader.CreateProgram();
+		mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
+		mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
+		mShader.CreateProgram();
 
-        constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
+		constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
-        mVAO.Generate();
-        mVBO.Generate();
-        mVAO.Bind();
-        mVBO.Bind();
-        mVBO.BufferData(sizeof(vertices), vertices);
-        VertexAttribPointer<float>(0, 3, 3);
-        mVAO.UnBind();
-        mVBO.UnBind();
-        mTexture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
-        mTextureData = mTexture->GetData();
-//        if (!Load2DTexture(path, &mTexture, &mTextureData))
-//            log::get("log")->warn("Failed to load texture from " + path + " path!");
-    }
+		mVAO.Generate();
+		mVBO.Generate();
+		mVAO.Bind();
+		mVBO.Bind();
+		mVBO.BufferData(sizeof(vertices), vertices);
+		VertexAttribPointer<float>(0, 3, 3);
+		mVAO.UnBind();
+		mVBO.UnBind();
+		mTexture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
+		mTextureData = mTexture->GetData();
+		//        if (!Load2DTexture(path, &mTexture, &mTextureData))
+		//            log::get("log")->warn("Failed to load texture from " + path + " path!");
+	}
 
-    bool Sprite2D::Load()
-    {
-//        if (!mTexture->IsLoaded())
-//        {
-//            mTexture->Load();
-//            return true;
-//        }
-        return false;
-    }
+	bool Sprite2D::Load()
+	{
+		//        if (!mTexture->IsLoaded())
+		//        {
+		//            mTexture->Load();
+		//            return true;
+		//        }
+		return false;
+	}
 
-    bool Sprite2D::UnLoad()
-    {
-//        if (mTexture->IsLoaded())
-//        {
-//            mTexture->UnLoad();
-//            return true;
-//        }
-        return false;
-    }
+	bool Sprite2D::UnLoad()
+	{
+		//        if (mTexture->IsLoaded())
+		//        {
+		//            mTexture->UnLoad();
+		//            return true;
+		//        }
+		return false;
+	}
 
-    void Sprite2D::Draw()
-    {
-        mShader.Use();
+	void Sprite2D::Draw()
+	{
+		mShader.Use();
 
-        if (mKeepAR)
-            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() /
-                    ((float) mTextureData->Width / mTextureData->Height));
+		if (mKeepAR)
+			mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() /
+			                   (static_cast<float>(mTextureData->Width) / mTextureData->Height));
 
-        mShader.SetUniform("uTextureAlpha", mAlpha);
-        mShader.SetUniform("uModel", mModel);
-        mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
-        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
-        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
-        mShader.SetUniform("uView", glm::mat4(1.0f));
+		mShader.SetUniform("uTextureAlpha", mAlpha);
+		mShader.SetUniform("uModel", mModel);
+		mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
+		mShader.SetUniform("uKeepAspectRatio", mKeepAR);
+		mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
+		mShader.SetUniform("uView", glm::mat4(1.0f));
 
-        mVAO.Bind();
-        mTexture->Bind();
-        DrawArrays(GL::TRIANGLES, 6);
-    }
+		mVAO.Bind();
+		mTexture->Bind();
+		DrawArrays(TRIANGLES, 6);
+	}
 
-    void Sprite2D::Move(const glm::vec3& pos)
-    {
-        mModel = translate(mModel, pos);
-    }
+	void Sprite2D::Move(const glm::vec3& pos)
+	{
+		mModel = translate(mModel, pos);
+	}
 
-    void Sprite2D::Scale(const glm::vec3& scale)
-    {
-        mModel = glm::scale(mModel, scale);
-    }
+	void Sprite2D::Scale(const glm::vec3& scale)
+	{
+		mModel = glm::scale(mModel, scale);
+	}
 
-    void Sprite2D::SetAlpha(float alpha) { mAlpha = alpha; }
+	void Sprite2D::SetAlpha(float alpha) { mAlpha = alpha; }
 
-    void Sprite2D::SetUsingTextureAlpha(bool useTextureAlpha)
-    {
-        mUseTextureAlpha = useTextureAlpha;
-    }
+	void Sprite2D::SetUsingTextureAlpha(bool useTextureAlpha)
+	{
+		mUseTextureAlpha = useTextureAlpha;
+	}
 
-    const Texture<gl::TEXTURE_2D>* Sprite2D::GetTexture() const { return mTexture; }
+	const Texture<gl::TEXTURE_2D>* Sprite2D::GetTexture() const { return mTexture; }
 
-    float Sprite2D::GetAlpha() const { return mAlpha; }
+	float Sprite2D::GetAlpha() const { return mAlpha; }
 }

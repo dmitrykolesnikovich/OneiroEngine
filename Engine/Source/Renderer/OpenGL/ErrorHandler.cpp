@@ -9,18 +9,18 @@
 
 namespace oe::Renderer::GL
 {
-    void ErrorHandler::GLClearError()
-    {
-        while (gl::GetError() != gl::NO_ERROR_);
-    }
+	void ErrorHandler::GLClearError()
+	{
+		while (gl::GetError() != gl::NO_ERROR_);
+	}
 
-    bool ErrorHandler::GLLogCall()
-    {
-        while (GLenum error = gl::GetError())
-        {
-            log::get("log")->error("[OpenGL]: " + std::to_string(error));
-            return false;
-        }
-        return true;
-    }
+	bool ErrorHandler::GLLogCall()
+	{
+		while (GLenum error = gl::GetError())
+		{
+			log::get("log")->error("[OpenGL]: " + std::to_string(error));
+			return false;
+		}
+		return true;
+	}
 }

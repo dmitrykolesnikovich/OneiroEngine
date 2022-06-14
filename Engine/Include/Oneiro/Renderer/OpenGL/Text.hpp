@@ -15,29 +15,29 @@
 
 namespace oe::Renderer::GL
 {
-    class Text
-    {
-    private:
-        struct Character
-        {
-            Texture<gl::TEXTURE_2D>* Texture{new GL::Texture<gl::TEXTURE_2D>};
-            glm::ivec2 Size{};
-            glm::ivec2 Bearing{};
-            uint32_t Advance{};
-        };
+	class Text
+	{
+	private:
+		struct Character
+		{
+			Texture<gl::TEXTURE_2D>* Texture{new Texture < gl::TEXTURE_2D >};
+			glm::ivec2 Size{};
+			glm::ivec2 Bearing{};
+			uint32_t Advance{};
+		};
 
-    public:
-        void Init();
+	public:
+		void Init();
 
-        void SetString(const std::string& str);
+		void SetString(const std::string& str);
 
-        void Draw(const glm::vec2& pos = {25.0F, 25.0F},
-                  const glm::vec3& color = {1.0F, 0.0F, 0.0F});
-    private:
-        std::map<char, Character> mCharacters{};
-        std::string mString{};
-        Shader mShader{};
-        VertexArray mVAO{};
-        Buffer<gl::ARRAY_BUFFER, gl::DYNAMIC_DRAW> mVBO{};
-    };
+		void Draw(const glm::vec2& pos = {25.0F, 25.0F},
+		          const glm::vec3& color = {1.0F, 0.0F, 0.0F});
+	private:
+		std::map<char, Character> mCharacters{};
+		std::string mString{};
+		Shader mShader{};
+		VertexArray mVAO{};
+		Buffer<gl::ARRAY_BUFFER, gl::DYNAMIC_DRAW> mVBO{};
+	};
 }

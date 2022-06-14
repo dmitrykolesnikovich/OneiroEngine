@@ -12,43 +12,43 @@
 
 namespace oe::Core
 {
-    Root::Root()
-    {
-        if (mIsCreated) return;
-        mWorldManager = std::make_unique<World::WorldManager>();
-        mIsCreated = true;
-    }
+	Root::Root()
+	{
+		if (mIsCreated) return;
+		mWorldManager = std::make_unique<World::WorldManager>();
+		mIsCreated = true;
+	}
 
-    Root::~Root()
-    {
-        mWindowInstance = nullptr;
-        mApplicationInstance = nullptr;
-    }
+	Root::~Root()
+	{
+		mWindowInstance = nullptr;
+		mApplicationInstance = nullptr;
+	}
 
-    Window* Root::GetWindow() { return mWindowInstance; }
+	Window* Root::GetWindow() { return mWindowInstance; }
 
-    Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
+	Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
 
-    World::WorldManager* Root::GetWorldManager()
-    {
-        return mWorldManager.get();
-    }
+	World::WorldManager* Root::GetWorldManager()
+	{
+		return mWorldManager.get();
+	}
 
-    void Root::SetApplication(Runtime::Application* app)
-    {
-        if (mApplicationInstance)
-        OE_THROW_ERROR("Root", "Failed to set application instance, because it's already set!")
-        mApplicationInstance = app;
-    }
+	void Root::SetApplication(Runtime::Application* app)
+	{
+		if (mApplicationInstance)
+			OE_THROW_ERROR("Root", "Failed to set application instance, because it's already set!")
+		mApplicationInstance = app;
+	}
 
-    void Root::SetWindow(Window* window)
-    {
-        if (mWindowInstance)
-        OE_THROW_ERROR("Root", "Failed to set window instance, because it's already set!")
-        mWindowInstance = window;
-    }
+	void Root::SetWindow(Window* window)
+	{
+		if (mWindowInstance)
+			OE_THROW_ERROR("Root", "Failed to set window instance, because it's already set!")
+		mWindowInstance = window;
+	}
 
-    Window* Root::mWindowInstance{};
-    Runtime::Application* Root::mApplicationInstance{};
-    std::unique_ptr<World::WorldManager> Root::mWorldManager{};
+	Window* Root::mWindowInstance{};
+	Runtime::Application* Root::mApplicationInstance{};
+	std::unique_ptr<World::WorldManager> Root::mWorldManager{};
 }
