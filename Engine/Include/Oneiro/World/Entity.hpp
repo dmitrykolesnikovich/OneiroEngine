@@ -19,7 +19,7 @@ namespace oe::World
 		Entity(entt::entity handle, World* scene);
 
 		template <typename T, typename... Args>
-		T& AddComponent(Args&& ... args)
+		constexpr T& AddComponent(Args&&... args)
 		{
 			if (HasComponent<T>())
 				return mScene->mRegistry.get<T>(mHandle);
@@ -28,7 +28,7 @@ namespace oe::World
 		}
 
 		template <class T>
-		T& GetComponent() const
+		constexpr T& GetComponent() const
 		{
 			if (!HasComponent<T>())
 				OE_THROW_ERROR("Scene", "Entity \"" + GetComponent<TagComponent>().Tag +
@@ -43,32 +43,32 @@ namespace oe::World
 		}
 
 		template <typename T>
-		void RemoveComponent()
+		constexpr void RemoveComponent()
 		{
 			mScene->mRegistry.remove<T>(mHandle);
 		}
 
-		operator bool() const
+		constexpr operator bool() const
 		{
 			return mHandle != entt::null;
 		}
 
-		operator entt::entity() const
+		constexpr operator entt::entity() const
 		{
 			return mHandle;
 		}
 
-		operator uint32_t() const
+		constexpr operator uint32_t() const
 		{
 			return static_cast<uint32_t>(mHandle);
 		}
 
-		bool operator==(const Entity& other) const
+		constexpr bool operator==(const Entity& other) const
 		{
 			return mHandle == other.mHandle && mScene == other.mScene;
 		}
 
-		bool operator!=(const Entity& other) const
+		constexpr bool operator!=(const Entity& other) const
 		{
 			return !(*this == other);
 		}
