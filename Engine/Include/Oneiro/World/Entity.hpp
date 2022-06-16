@@ -37,7 +37,7 @@ namespace oe::World
 		}
 
 		template <typename T>
-		[[nodiscard]] bool HasComponent() const
+		[[nodiscard]] constexpr bool HasComponent() const
 		{
 			return mScene->mRegistry.try_get<T>(mHandle);
 		}

@@ -59,6 +59,8 @@ namespace oe::Runtime
 
 		SetupEvents();
 
+		glfwSwapInterval(1);
+
 		if (!app->Init())
 			throw std::runtime_error("Failed to initialize application!");
 
@@ -156,6 +158,12 @@ namespace oe::Runtime
 				static_cast<Input::Action>(mouseButtonEvent
 					.Action));
 		});
+
+		Event::Dispatcher::Subscribe<Event::CursorPosEvent>([](const Event::Base& e)
+			{
+				const auto& mousePosEvent = dynamic_cast<const Event::CursorPosEvent&>(e);
+				Root::GetApplication()->MousePos(mousePosEvent.XPos, mousePosEvent.YPos);
+			});
 	}
 
 	Core::Root* Engine::mRoot{};

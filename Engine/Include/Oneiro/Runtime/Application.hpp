@@ -19,12 +19,11 @@ namespace oe::Runtime
 		virtual void Shutdown();
 		virtual void HandleKey(Input::Key key, Input::Action action);
 		virtual void HandleButton(Input::Button button, Input::Action action);
+		virtual void MousePos(double xPos, double yPos);
 
-		bool IsStopped() const { return mIsStopped; }
+		[[nodiscard]] bool IsStopped() const;
 	protected:
-		void Stop() { mIsStopped = true; }
-		static void SetKeyInput(bool isEnabled = true);
-		static void SetButtonInput(bool isEnabled = true);
+		void Stop();
 	private:
 		bool mIsStopped{};
 	};

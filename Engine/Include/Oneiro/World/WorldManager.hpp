@@ -15,8 +15,8 @@ namespace oe::World
 		WorldManager();
 
 		World* GetWorld();
-		void Save(const std::string& filepath, const std::string& sceneName);
-		bool Load(const std::string& filePath) const;
+		void SaveWorld(const std::string& filePath, const std::string& worldName, bool reWrite = true);
+		bool LoadWorld(const std::string& filePath) const;
 	private:
 		inline static WorldManager* mInstance{};
 		std::unique_ptr<World> mWorld{};

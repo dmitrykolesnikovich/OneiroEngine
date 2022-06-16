@@ -83,6 +83,31 @@ namespace oe::Core
 		SetAR(static_cast<float>(width) / static_cast<float>(height));
 	}
 
+	void Window::SetupEvents() const
+	{
+		glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
+		{
+			Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
+		});
+		glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int)
+		{
+			Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
+		});
+		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int)
+		{
+			Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
+		});
+		glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused)
+		{
+			Event::Dispatcher::Post(Event::FocusEvent(isFocused));
+		});
+
+		glfwSetCursorPosCallback(mWindow, [](GLFWwindow*, double xpos, double ypos)
+		{
+			Event::Dispatcher::Post(Event::CursorPosEvent(xpos, ypos));
+		});
+	}
+
 	bool Window::Create()
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -96,23 +121,7 @@ namespace oe::Core
 
 		glfwMakeContextCurrent(mWindow);
 
-		glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
-		{
-			Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
-		});
-		glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int)
-		{
-			Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
-		});
-		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int)
-		{
-			Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
-		});
-
-		glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused)
-		{
-			Event::Dispatcher::Post(Event::FocusEvent(isFocused));
-		});
+		SetupEvents();
 
 		UpdateAR(mData.Width, mData.Height);
 

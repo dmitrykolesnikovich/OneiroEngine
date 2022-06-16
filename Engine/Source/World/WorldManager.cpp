@@ -90,9 +90,7 @@ namespace
         out << YAML::Key << "Entity" << YAML::Value << oe::Core::Random::DiceUuid();
 
         // Entities always have Tag and Transform components
-
-        {
-            // Begin TagComponent
+        { // Begin TagComponent
             out << YAML::Key << "TagComponent";
             out << YAML::BeginMap;
 
@@ -102,8 +100,7 @@ namespace
             out << YAML::EndMap;
         } // End TagComponent
 
-        {
-            // Begin TransformComponent
+        { // Begin TransformComponent
             out << YAML::Key << "TransformComponent";
             out << YAML::BeginMap;
 
@@ -115,9 +112,30 @@ namespace
             out << YAML::EndMap;
         } // End TransformComponent
 
+        if (entity.HasComponent<oe::MainCameraComponent>())
+        { // Begin MainCameraComponent
+
+            out << YAML::Key << "MainCameraComponent";
+            out << YAML::BeginMap;
+
+            const auto& mc = entity.GetComponent<oe::MainCameraComponent>();
+
+        	out << YAML::Key << "Position" << YAML::Value << mc.Position;
+            out << YAML::Key << "Front" << YAML::Value << mc.Front;
+            out << YAML::Key << "Up" << YAML::Value << mc.Up;
+            out << YAML::Key << "WorldUp" << YAML::Value << mc.WorldUp;
+            out << YAML::Key << "Right" << YAML::Value << mc.Right;
+
+            out << YAML::Key << "Yaw" << YAML::Value << mc.Yaw;
+            out << YAML::Key << "Pitch" << YAML::Value << mc.Pitch;
+            out << YAML::Key << "MovementSpeed" << YAML::Value << mc.MovementSpeed;
+            out << YAML::Key << "MouseSensitivity" << YAML::Value << mc.MouseSensitivity;
+
+            out << YAML::EndMap;
+        } // End MainCameraComponent
+
         if (entity.HasComponent<oe::CameraComponent>())
-        {
-            // Begin CameraComponent
+        { // Begin CameraComponent
             out << YAML::Key << "CameraComponent";
             out << YAML::BeginMap;
 
@@ -147,12 +165,12 @@ namespace oe::World
         mWorld = std::make_unique<World>();
     }
 
-    void WorldManager::Save(const std::string& filepath, const std::string& sceneName)
+    void WorldManager::SaveWorld(const std::string& filePath, const std::string& worldName, bool reWrite)
     {
         YAML::Emitter out;
         out << YAML::BeginMap;
 
-        out << YAML::Key << "World" << YAML::Value << sceneName;
+        out << YAML::Key << "World" << YAML::Value << worldName;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
         mWorld->mRegistry.each([&](const auto entityID)
@@ -167,20 +185,26 @@ namespace oe::World
         out << YAML::EndSeq;
         out << YAML::EndMap;
 
-        std::ofstream fout(filepath);
+        std::ofstream fout;
+
+    	if (reWrite)
+            fout.open(filePath, std::ios::ate);
+        else
+            fout.open(filePath);
+
         fout << out.c_str();
     }
 
-    bool WorldManager::Load(const std::string& filePath) const
+    bool WorldManager::LoadWorld(const std::string& filePath) const
     {
         // TODO: Add load new scene and clear old
 
         auto data = YAML::LoadFile(filePath);
 
-        if (!data["Scene"])
+        if (!data["World"])
             return false;
 
-        mWorld->mName = data["Scene"].as<std::string>();
+        mWorld->mName = data["World"].as<std::string>();
         const auto& entities = data["Entities"];
 
         for (auto entity : entities)
@@ -188,11 +212,12 @@ namespace oe::World
             // Entities always have Tag and Transform components
             const auto& name = entity["TagComponent"]["Tag"].as<std::string>();
             auto transformComponent = entity["TransformComponent"];
+            auto mainCameraComponent = entity["MainCameraComponent"];
             auto cameraComponent = entity["CameraComponent"];
 
-            Entity loaddedEntity = mWorld->CreateEntity(name);
+            Entity loadedEntity = mWorld->CreateEntity(name);
 
-            auto& tc = loaddedEntity.GetComponent<TransformComponent>();
+            auto& tc = loadedEntity.GetComponent<TransformComponent>();
 
             tc.Translation = transformComponent["Translation"].as<glm::vec3>();
             tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
@@ -200,7 +225,7 @@ namespace oe::World
 
             if (cameraComponent)
             {
-                auto& camera = loaddedEntity.AddComponent<CameraComponent>();
+                auto& camera = loadedEntity.AddComponent<CameraComponent>();
 
                 camera.Translation = cameraComponent["Translation"].as<glm::vec3>();
                 camera.Up = cameraComponent["Up"].as<glm::vec3>();
@@ -209,6 +234,20 @@ namespace oe::World
                 camera.Near = cameraComponent["Near"].as<float>();
                 camera.Far = cameraComponent["Far"].as<float>();
                 camera.Fov = cameraComponent["Fov"].as<float>();
+            }
+
+            if (mainCameraComponent)
+            {
+                auto& mainCamera = loadedEntity.AddComponent<MainCameraComponent>();
+                mainCamera.Position = mainCameraComponent["Position"].as<glm::vec3>();
+                mainCamera.Front = mainCameraComponent["Front"].as<glm::vec3>();
+                mainCamera.Up = mainCameraComponent["Up"].as<glm::vec3>();
+                mainCamera.WorldUp = mainCameraComponent["WorldUp"].as<glm::vec3>();
+                mainCamera.Right = mainCameraComponent["Right"].as<glm::vec3>();
+                mainCamera.Yaw = mainCameraComponent["Yaw"].as<float>();
+                mainCamera.Pitch = mainCameraComponent["Pitch"].as<float>();
+                mainCamera.MovementSpeed = mainCameraComponent["MovementSpeed"].as<float>();
+                mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
             }
         }
 

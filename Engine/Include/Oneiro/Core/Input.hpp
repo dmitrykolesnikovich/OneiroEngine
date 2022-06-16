@@ -7,6 +7,8 @@
 
 #define GLFW_INCLUDE_NONE
 
+#include "Root.hpp"
+#include "Window.hpp"
 #include "GLFW/glfw3.h"
 
 namespace oe::Input
@@ -58,6 +60,17 @@ namespace oe::Input
 		RIGHT = GLFW_MOUSE_BUTTON_RIGHT
 	};
 
+	enum InputMode
+	{
+		CURSOR = GLFW_CURSOR
+	};
+
+	enum InputValue
+	{
+		CURSOR_NORMAL = GLFW_CURSOR_NORMAL,
+		CURSOR_DISABLED = GLFW_CURSOR_DISABLED
+	};
+
 	class Command
 	{
 	public:
@@ -65,4 +78,24 @@ namespace oe::Input
 		virtual void Execute() = 0;
 		virtual void Undo() = 0;
 	};
+
+	inline bool IsKey(Action action, Key key)
+	{
+		return glfwGetKey(Core::Root::GetWindow()->GetGLFW(), static_cast<int>(key)) == static_cast<int>(action);
+	}
+
+	inline bool IsMouseButton(Action action, Button button)
+	{
+		return glfwGetMouseButton(Core::Root::GetWindow()->GetGLFW(), static_cast<int>(button)) == static_cast<int>(action);
+	}
+
+	inline void SetMode(InputMode mode, InputValue value)
+	{
+		glfwSetInputMode(Core::Root::GetWindow()->GetGLFW(), mode, value);
+	}
+
+	inline int GetMode(InputMode mode)
+	{
+		return glfwGetInputMode(Core::Root::GetWindow()->GetGLFW(), mode);
+	}
 }

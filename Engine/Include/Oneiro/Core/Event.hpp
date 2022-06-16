@@ -26,12 +26,7 @@ namespace oe::Core::Event
 			mEventMap.emplace(&typeid(EventWanted), fn);
 		}
 
-		static void Post(const Base& event)
-		{
-			const auto& range = mEventMap.equal_range(&typeid(event));
-			for (auto it = range.first; it != range.second; ++it)
-				it->second(event);
-		}
+		static void Post(const Base& event);
 
 	private:
 		static EventMap mEventMap;
@@ -39,36 +34,28 @@ namespace oe::Core::Event
 
 	struct FrameBufferSizeEvent : Base
 	{
-		FrameBufferSizeEvent(int width, int height) : Width(width), Height(height)
-		{
-		}
+		FrameBufferSizeEvent(int width, int height);
 
 		int Width{}, Height{};
 	};
 
 	struct KeyInputEvent : Base
 	{
-		KeyInputEvent(int key, int action) : Key(key), Action(action)
-		{
-		}
+		KeyInputEvent(int key, int action);
 
 		int Key{}, Action{};
 	};
 
 	struct MouseButtonEvent : Base
 	{
-		MouseButtonEvent(int button, int action) : Button(button), Action(action)
-		{
-		}
+		MouseButtonEvent(int button, int action);
 
 		int Button{}, Action{};
 	};
 
 	struct ErrorEvent : Base
 	{
-		ErrorEvent(int error, const char* description) : Description(description), Error(error)
-		{
-		}
+		ErrorEvent(int error, const char* description);
 
 		const char* Description{};
 		int Error{};
@@ -76,10 +63,15 @@ namespace oe::Core::Event
 
 	struct FocusEvent : Base
 	{
-		FocusEvent(bool isFocused) : IsFocused(isFocused)
-		{
-		}
+		FocusEvent(bool isFocused);
 
 		bool IsFocused{};
+	};
+
+	struct CursorPosEvent : Base
+	{
+		CursorPosEvent(double xPos, double yPos);
+
+		double XPos{}, YPos{};
 	};
 }

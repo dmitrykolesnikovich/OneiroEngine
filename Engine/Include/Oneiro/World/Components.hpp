@@ -16,6 +16,7 @@
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
+#include "Oneiro/Renderer/OpenGL/Mesh.hpp"
 
 namespace oe
 {
@@ -76,6 +77,113 @@ namespace oe
 		}
 
 		Animation::Animation* Animation{};
+	};
+
+	struct MeshComponent
+	{
+		MeshComponent() : Mesh(new Renderer::GL::Mesh) {}
+		MeshComponent(const MeshComponent&) = default;
+
+		MeshComponent(Renderer::GL::Mesh* mesh) : Mesh(mesh)
+		{
+		}
+
+		Renderer::GL::Mesh* Mesh;
+	};
+	
+	struct MainCameraComponent
+	{
+		glm::vec3 Position{}, Front{}, Up{}, WorldUp{}, Right{};
+
+		float Yaw{ -90.0f }, Pitch{};
+
+		float MovementSpeed{ 2.5f }, MouseSensitivity{ 0.1f };
+
+		MainCameraComponent() : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Up(glm::vec3(0.0f, 1.0f, 0.0f)), WorldUp(Up)
+		{
+			UpdateCameraVectors();
+		}
+
+		void UpdateForward(float dt)
+		{
+			const float velocity = MovementSpeed * dt;
+			Position += Front * velocity;
+			UpdateCameraVectors();
+		}
+
+		void UpdateBackward(float dt)
+		{
+			const float velocity = MovementSpeed * dt;
+			Position -= Front * velocity;
+			UpdateCameraVectors();
+		}
+
+		void UpdateRight(float dt)
+		{
+			const float velocity = MovementSpeed * dt;
+			Position += Right * velocity;
+			UpdateCameraVectors();
+		}
+
+		void UpdateLeft(float dt)
+		{
+			const float velocity = MovementSpeed * dt;
+			Position -= Right * velocity;
+			UpdateCameraVectors();
+		}
+
+		[[nodiscard]] glm::mat4 GetViewMatrix() const
+		{
+			return lookAt(Position, Position + Front, Up);
+		}
+
+		void UpdateMouse(float xPos, float yPos, bool constrainPitch = true)
+		{
+			if (mFirstMouse)
+			{
+				mLastX = xPos;
+				mLastY = yPos;
+				mFirstMouse = false;
+			}
+
+			float xOffset = xPos - mLastX;
+			float yOffset = mLastY - yPos;
+
+			mLastX = xPos;
+			mLastY = yPos;
+
+			xOffset *= MouseSensitivity;
+			yOffset *= MouseSensitivity;
+
+			Yaw += xOffset;
+			Pitch += yOffset;
+
+			if (constrainPitch)
+			{
+				if (Pitch > 89.0f)
+					Pitch = 89.0f;
+				if (Pitch < -89.0f)
+					Pitch = -89.0f;
+			}
+
+			UpdateCameraVectors();
+		}
+
+	private:
+		void UpdateCameraVectors()
+		{
+			Front = normalize(glm::vec3{
+				cos(glm::radians(Yaw)) * cos(glm::radians(Pitch)),
+				sin(glm::radians(Pitch)),
+				sin(glm::radians(Yaw)) * cos(glm::radians(Pitch))
+				});
+
+			Right = normalize(cross(Front, WorldUp));
+			Up = normalize(cross(Right, Front));
+		}
+
+		float mLastX{}, mLastY{};
+		bool mFirstMouse{ true };
 	};
 
 	struct CameraComponent

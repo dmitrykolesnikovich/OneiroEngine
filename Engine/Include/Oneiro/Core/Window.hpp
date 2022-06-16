@@ -35,12 +35,10 @@ namespace oe::Core
 		[[nodiscard]] int GetHeight() const;
 
 		void UpdateSize(int width, int height);
-
-		bool IsMouseButtonInput{true};
-		bool IsKeyInput{true};
 	private:
 		void SetAR(float aspectRatio);
 		void UpdateAR(int width, int height);
+		void SetupEvents() const;
 
 		struct WindowData
 		{

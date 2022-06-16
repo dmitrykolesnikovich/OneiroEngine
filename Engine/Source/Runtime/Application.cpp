@@ -34,13 +34,17 @@ namespace oe::Runtime
 	{
 	}
 
-	void Application::SetKeyInput(bool isEnabled)
+	void Application::MousePos(double xPos, double yPos)
 	{
-		Core::Root::GetWindow()->IsKeyInput = isEnabled;
 	}
 
-	void Application::SetButtonInput(bool isEnabled)
+	bool Application::IsStopped() const
 	{
-		Core::Root::GetWindow()->IsMouseButtonInput = isEnabled;
+		return mIsStopped;
+	}
+
+	void Application::Stop()
+	{
+		mIsStopped = true;
 	}
 }
