@@ -62,34 +62,20 @@ namespace oe::Renderer::GL
 	class Mesh
 	{
 	public:
-		void Load(const float* vertices, int64_t verticesCount)
-		{
-            mVAO.Generate();
-            mVBO.Generate();
-            mVAO.Bind();
-            mVBO.Bind();
-            mVBO.BufferData(verticesCount, vertices);
-			VertexAttribPointer<float>(0, 3, 8);
-			VertexAttribPointer<float>(1, 3, 8, 3);
-			VertexAttribPointer<float>(2, 2, 8, 6);
-            mVAO.UnBind();
-            mVBO.UnBind();
-            mVerticesCount = verticesCount;
-		}
-
 		void Load(const std::vector<float>& vertices)
 		{
 			Load(vertices.data(), vertices.size() * sizeof(float));
+			mVertices = vertices;
 		}
 
 		void PushTexture(const std::string& path)
 		{
-			auto texture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
+			const auto texture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
 			mTextures.push_back(texture);
 		}
 
-        void Draw()
-		{
+        void Draw() const
+        {
 			for (size_t i{}; i < mTextures.size(); ++i)
 				mTextures[i]->Bind(i);
 
@@ -100,7 +86,33 @@ namespace oe::Renderer::GL
 			for (const auto& texture : mTextures)
 				texture->UnBind();
 		}
+
+		[[nodiscard]] const auto& GetVertices() const
+		{
+			return mVertices;
+		}
+
+		[[nodiscard]] auto& GetTextures() const
+		{
+			return mTextures;
+		}
 	private:
+		void Load(const float* vertices, int64_t verticesCount)
+		{
+			mVAO.Generate();
+			mVBO.Generate();
+			mVAO.Bind();
+			mVBO.Bind();
+			mVBO.BufferData(verticesCount, vertices);
+			VertexAttribPointer<float>(0, 3, 8);
+			VertexAttribPointer<float>(1, 3, 8, 3);
+			VertexAttribPointer<float>(2, 2, 8, 6);
+			mVAO.UnBind();
+			mVBO.UnBind();
+			mVerticesCount = verticesCount;
+		}
+
+		std::vector<float> mVertices{};
 		std::vector<Texture<gl::TEXTURE_2D>*> mTextures{};
         int64_t mVerticesCount{};
         VertexArray mVAO{};

@@ -151,6 +151,31 @@ namespace
             out << YAML::EndMap;
         } // End CameraComponent
 
+        if (entity.HasComponent<oe::MeshComponent>())
+        { // Begin MeshComponent
+            out << YAML::Key << "MeshComponent";
+            out << YAML::BeginMap;
+
+            const auto& mesh = entity.GetComponent<oe::MeshComponent>().Mesh;
+            const auto& vertices = mesh->GetVertices();
+            const auto& textures = mesh->GetTextures();
+            const auto verticesCount = vertices.size();
+            const auto texturesCount = textures.size();
+            out << YAML::Key << "Vertices";
+            out << YAML::BeginMap;
+            for (size_t i{}; i < verticesCount; ++i)
+                out << YAML::Key << i << YAML::Value << vertices[i];
+            out << YAML::EndMap;
+
+            out << YAML::Key << "Textures";
+            out << YAML::BeginMap;
+            for (size_t i{}; i < texturesCount; ++i)
+                out << YAML::Key << i << YAML::Value << textures[i]->GetData()->Path;
+            out << YAML::EndMap;
+
+            out << YAML::EndMap;
+        } // End MeshComponent
+
         out << YAML::EndMap; // End Entity
     }
 }
@@ -214,6 +239,7 @@ namespace oe::World
             auto transformComponent = entity["TransformComponent"];
             auto mainCameraComponent = entity["MainCameraComponent"];
             auto cameraComponent = entity["CameraComponent"];
+            auto meshComponent = entity["MeshComponent"];
 
             Entity loadedEntity = mWorld->CreateEntity(name);
 
@@ -248,6 +274,21 @@ namespace oe::World
                 mainCamera.Pitch = mainCameraComponent["Pitch"].as<float>();
                 mainCamera.MovementSpeed = mainCameraComponent["MovementSpeed"].as<float>();
                 mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
+            }
+
+            if (meshComponent)
+            {
+                auto& mesh = loadedEntity.AddComponent<MeshComponent>().Mesh;
+                std::vector<float> vertices{};
+                for (size_t i{}; entity["MeshComponent"]["Vertices"][std::to_string(i)].IsDefined(); ++i)
+                {
+                    vertices.push_back(entity["MeshComponent"]["Vertices"][std::to_string(i)].as<float>());
+                }
+                mesh->Load(vertices);
+                for (size_t i{}; entity["MeshComponent"]["Textures"][std::to_string(i)].IsDefined(); ++i)
+                {
+                    mesh->PushTexture(entity["MeshComponent"]["Textures"][std::to_string(i)].as<std::string>());
+                }
             }
         }
 
