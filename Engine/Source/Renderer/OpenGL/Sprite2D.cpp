@@ -94,6 +94,9 @@ namespace oe::Renderer::GL
 
 	void Sprite2D::Draw()
 	{
+		if (!mTexture)
+			return;
+
 		mShader.Use();
 
 		if (mKeepAR)
