@@ -76,13 +76,13 @@ namespace oe::Runtime
 			mDeltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
-			if (!UpdateGame(app)) break;
+			if (!UpdateGame(app, mDeltaTime)) break;
 		}
 
 		app->Shutdown();
 	}
 
-	bool Engine::UpdateGame(const std::shared_ptr<Application>& app)
+	bool Engine::UpdateGame(const std::shared_ptr<Application>& app, float deltaTime)
 	{
 		if (app->IsStopped())
 			return false;
@@ -96,7 +96,7 @@ namespace oe::Runtime
 #endif
 
 		Renderer::GuiLayer::NewFrame();
-		if (!app->Update())
+		if (!app->Update(deltaTime))
 			return false;
 		Renderer::GuiLayer::Draw();
 #ifdef OE_RENDERER_VULKAN

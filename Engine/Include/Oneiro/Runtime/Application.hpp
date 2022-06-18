@@ -15,7 +15,7 @@ namespace oe::Runtime
 	public:
 		virtual ~Application();
 		virtual bool Init();
-		virtual bool Update();
+		virtual bool Update(float deltaTime);
 		virtual void Shutdown();
 		virtual void HandleKey(Input::Key key, Input::Action action);
 		virtual void HandleButton(Input::Button button, Input::Action action);

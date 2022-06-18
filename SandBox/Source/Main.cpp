@@ -22,9 +22,9 @@ namespace SandBox
             return true;
         }
 
-        bool Update() override
+        bool Update(float deltaTime) override
         {
-            oe::VisualNovel::Update(mRenderVnGui);
+            oe::VisualNovel::Update(deltaTime, mRenderVnGui);
             return true;
         }
 

@@ -240,7 +240,7 @@ namespace oe::VisualNovel
 		}
 	}
 
-	void Update(bool gui)
+	void Update(float deltaTime, bool gui)
 	{
 		// Music
 		{
