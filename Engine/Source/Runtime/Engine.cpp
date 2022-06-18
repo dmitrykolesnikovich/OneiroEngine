@@ -69,7 +69,7 @@ namespace oe::Runtime
 
 		LoadResources();
 
-		float lastFrame{};
+		auto lastFrame = static_cast<float>(glfwGetTime());
 		while (!mWindow->IsClosed())
 		{
 			const auto currentFrame = static_cast<float>(glfwGetTime());
