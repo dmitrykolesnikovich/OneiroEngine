@@ -190,7 +190,8 @@ namespace oe
 	{
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		glm::vec3 Translation{2.0f};
+
+		glm::vec3 Translation{};
 		glm::vec3 Up{};
 		glm::vec3 Center{};
 
