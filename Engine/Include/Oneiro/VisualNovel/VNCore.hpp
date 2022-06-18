@@ -58,7 +58,7 @@ namespace oe::VisualNovel
 
 	void Init(const Lua::File* file);
 	void NextStep();
-	void Update(bool gui = false);
+	void Update(float deltaTime, bool gui = false);
 
 	constexpr Instruction& GetCurrentInstruction();
 	void PushInstruction(const Instruction& instruction);

@@ -17,7 +17,7 @@ namespace oe::Runtime
 		return true;
 	}
 
-	bool Application::Update()
+	bool Application::Update(float deltaTime)
 	{
 		return true;
 	}
