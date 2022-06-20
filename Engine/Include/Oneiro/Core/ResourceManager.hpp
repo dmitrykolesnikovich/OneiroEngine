@@ -18,6 +18,7 @@ namespace oe::Audio
 
 namespace oe::Renderer::GL
 {
+	class Mesh;
 	class Model;
 
 	template <int TextureType, bool Mipmaps>
