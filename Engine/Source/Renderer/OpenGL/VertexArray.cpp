@@ -9,7 +9,8 @@ namespace oe::Renderer::GL
 {
 	VertexArray::~VertexArray()
 	{
-		gl::DeleteVertexArrays(1, &mID);
+		if (mID)
+			gl::DeleteVertexArrays(1, &mID);
 	}
 
 	void VertexArray::Generate()

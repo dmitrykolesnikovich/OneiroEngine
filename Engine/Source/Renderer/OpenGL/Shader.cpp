@@ -9,7 +9,8 @@ namespace oe::Renderer::GL
 {
 	Shader::~Shader()
 	{
-		gl::DeleteProgram(mID);
+		if (mID)
+			gl::DeleteProgram(mID);
 	}
 
 	void Shader::CreateProgram()

@@ -8,6 +8,12 @@
 
 namespace oe::Renderer::GL
 {
+	FrameBuffer::~FrameBuffer()
+	{
+		if (mID)
+			gl::DeleteFramebuffers(1, &mID);
+	}
+
 	void FrameBuffer::Generate()
 	{
 		gl::GenFramebuffers(1, &mID);

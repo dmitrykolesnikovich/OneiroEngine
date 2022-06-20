@@ -28,7 +28,8 @@ namespace oe::Renderer::GL
 
 		~Texture()
 		{
-			gl::DeleteTextures(1, &mID);
+			if (mID)
+				gl::DeleteTextures(1, &mID);
 		}
 
 		void Generate()

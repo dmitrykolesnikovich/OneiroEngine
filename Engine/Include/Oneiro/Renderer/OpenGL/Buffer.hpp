@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "Base.hpp"
 
 namespace oe::Renderer::GL
@@ -18,7 +20,8 @@ namespace oe::Renderer::GL
 
 		~Buffer()
 		{
-			gl::DeleteBuffers(1, &mID);
+			if (mID)
+				gl::DeleteBuffers(1, &mID);
 		}
 
 		constexpr void Generate()

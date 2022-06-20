@@ -16,6 +16,7 @@ namespace oe::Renderer::GL
 	public:
 		FrameBuffer() = default;
 		FrameBuffer(const FrameBuffer&) = delete;
+		~FrameBuffer();
 
 		void Generate();
 

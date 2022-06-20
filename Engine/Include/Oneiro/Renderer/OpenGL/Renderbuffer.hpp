@@ -14,6 +14,11 @@ namespace oe::Renderer::GL
 	public:
 		RenderBuffer() = default;
 		RenderBuffer(const RenderBuffer&) = delete;
+		~RenderBuffer()
+		{
+			if (mID)
+				gl::DeleteRenderbuffers(1, &mID);
+		}
 
 		void Generate()
 		{
