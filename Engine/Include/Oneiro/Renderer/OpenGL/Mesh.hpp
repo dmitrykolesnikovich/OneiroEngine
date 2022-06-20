@@ -20,8 +20,7 @@ namespace oe::Renderer::GL
 	{
 	public:
 		Mesh() = delete;
-		Mesh(const Mesh& mesh) = delete;
-		Mesh(Mesh& mesh) = delete;
+		Mesh(const Mesh&) = delete;
 
 		Mesh(VertexArray& vao, Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW>& vbo,
 		     Buffer<gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW>& ebo) : mVAO(vao), mVBO(vbo), mEBO(ebo)

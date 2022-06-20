@@ -18,6 +18,9 @@ namespace oe::Renderer::GL
 	class Sprite2D
 	{
 	public:
+		Sprite2D() = default;
+		Sprite2D(const Sprite2D&) = delete;
+
 		void Init(const std::string& path, bool keepAspectRatio = true);
 		bool Load();
 		bool UnLoad();

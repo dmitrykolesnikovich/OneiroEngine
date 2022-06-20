@@ -12,6 +12,8 @@ namespace oe::Renderer::GL
 	class VertexArray
 	{
 	public:
+		VertexArray() = default;
+		VertexArray(const VertexArray&) = delete;
 		~VertexArray();
 
 		void Generate();

@@ -13,6 +13,9 @@ namespace oe::Renderer::GL
 	class Buffer
 	{
 	public:
+		Buffer() = default;
+		Buffer(const Buffer&) = delete;
+
 		~Buffer()
 		{
 			gl::DeleteBuffers(1, &mID);

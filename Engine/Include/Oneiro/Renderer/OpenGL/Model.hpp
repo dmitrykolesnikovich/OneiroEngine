@@ -13,6 +13,9 @@ namespace oe::Renderer::GL
 	class Model
 	{
 	public:
+		Model() = default;
+		Model(const Model&) = delete;
+
 		void Load(const std::string& path)
 		{
 			mPath = path;

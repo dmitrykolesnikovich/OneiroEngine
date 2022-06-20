@@ -14,6 +14,9 @@ namespace oe::Renderer::GL
 	class FrameBuffer
 	{
 	public:
+		FrameBuffer() = default;
+		FrameBuffer(const FrameBuffer&) = delete;
+
 		void Generate();
 
 		void Bind();

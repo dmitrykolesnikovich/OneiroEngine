@@ -21,6 +21,8 @@ namespace oe::Renderer::GL
 	class Shader
 	{
 	public:
+		Shader() = default;
+		Shader(const Shader&) = delete;
 		~Shader();
 
 		template <int ShaderType>

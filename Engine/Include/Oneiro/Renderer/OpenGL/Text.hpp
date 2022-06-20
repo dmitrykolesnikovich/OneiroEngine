@@ -17,7 +17,6 @@ namespace oe::Renderer::GL
 {
 	class Text
 	{
-	private:
 		struct Character
 		{
 			Texture<gl::TEXTURE_2D>* Texture{new GL::Texture<gl::TEXTURE_2D>};
@@ -25,8 +24,10 @@ namespace oe::Renderer::GL
 			glm::ivec2 Bearing{};
 			uint32_t Advance{};
 		};
-
 	public:
+		Text() = default;
+		Text(const Text&) = delete;
+
 		void Init();
 
 		void SetString(const std::string& str);

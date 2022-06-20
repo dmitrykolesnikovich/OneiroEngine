@@ -23,6 +23,7 @@ namespace oe::Renderer::GL
 	{
 	public:
 		Texture() = default;
+		Texture(const Texture&) = delete;
 		Texture(const std::string& path) { mData.Path = path; }
 
 		~Texture()
