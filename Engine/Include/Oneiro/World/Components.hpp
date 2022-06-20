@@ -16,7 +16,7 @@
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
-#include "Oneiro/Renderer/OpenGL/Mesh.hpp"
+#include "Oneiro/Renderer/OpenGL/Model.hpp"
 
 namespace oe
 {
@@ -79,16 +79,16 @@ namespace oe
 		Animation::Animation* Animation{};
 	};
 
-	struct MeshComponent
+	struct ModelComponent
 	{
-		MeshComponent() : Mesh(new Renderer::GL::Mesh) {}
-		MeshComponent(const MeshComponent&) = default;
+		ModelComponent() : Model(new Renderer::GL::Model) {}
+		ModelComponent(const ModelComponent&) = default;
 
-		MeshComponent(Renderer::GL::Mesh* mesh) : Mesh(mesh)
+		ModelComponent(Renderer::GL::Model* model) : Model(model)
 		{
 		}
 
-		Renderer::GL::Mesh* Mesh;
+		Renderer::GL::Model* Model;
 	};
 	
 	struct MainCameraComponent

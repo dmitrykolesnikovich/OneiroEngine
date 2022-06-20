@@ -23,7 +23,6 @@ namespace oe::Renderer::GL
 	{
 	public:
 		Texture() = default;
-
 		Texture(const std::string& path) { mData.Path = path; }
 
 		~Texture()
@@ -78,9 +77,18 @@ namespace oe::Renderer::GL
 		TextureData mData{};
 		uint32_t mID{};
 	};
+	
+	template <int TextureType, bool Mipmaps = true>
+	bool PreLoad2DTexture(Texture<TextureType, Mipmaps>& texture)
+	{
+		auto data = texture.GetData();
+		data->Data = stbi_load(data->Path.c_str(), &data->Width, &data->Height, &data->Channels, 0);
+		if (data->Data)
+			return true;
+		return false;
+	}
 
-	bool PreLoad2DTexture(TextureData* data);
-
+	// TODO: Rewrite with using templates
 	bool Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture, TextureData* textureData = nullptr);
 
 	bool Load2DTexture(const std::string& path, Texture<gl::TEXTURE_2D>* texture, TextureData* textureData = nullptr);

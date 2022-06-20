@@ -151,30 +151,17 @@ namespace
             out << YAML::EndMap;
         } // End CameraComponent
 
-        if (entity.HasComponent<oe::MeshComponent>())
-        { // Begin MeshComponent
-            out << YAML::Key << "MeshComponent";
+        if (entity.HasComponent<oe::ModelComponent>())
+        { // Begin ModelComponent
+            out << YAML::Key << "ModelComponent";
             out << YAML::BeginMap;
 
-            const auto& mesh = entity.GetComponent<oe::MeshComponent>().Mesh;
-            const auto& vertices = mesh->GetVertices();
-            const auto& textures = mesh->GetTextures();
-            const auto verticesCount = vertices.size();
-            const auto texturesCount = textures.size();
-            out << YAML::Key << "Vertices";
-            out << YAML::BeginMap;
-            for (size_t i{}; i < verticesCount; ++i)
-                out << YAML::Key << i << YAML::Value << vertices[i];
-            out << YAML::EndMap;
+            const auto& model = entity.GetComponent<oe::ModelComponent>().Model;
 
-            out << YAML::Key << "Textures";
-            out << YAML::BeginMap;
-            for (size_t i{}; i < texturesCount; ++i)
-                out << YAML::Key << i << YAML::Value << textures[i]->GetData()->Path;
-            out << YAML::EndMap;
+            out << YAML::Key << "Path" << model->GetPath();
 
             out << YAML::EndMap;
-        } // End MeshComponent
+        } // End ModelComponent
 
         out << YAML::EndMap; // End Entity
     }
@@ -237,9 +224,10 @@ namespace oe::World
             // Entities always have Tag and Transform components
             const auto& name = entity["TagComponent"]["Tag"].as<std::string>();
             auto transformComponent = entity["TransformComponent"];
+
             auto mainCameraComponent = entity["MainCameraComponent"];
             auto cameraComponent = entity["CameraComponent"];
-            auto meshComponent = entity["MeshComponent"];
+            auto modelComponent = entity["ModelComponent"];
 
             Entity loadedEntity = mWorld->CreateEntity(name);
 
@@ -276,19 +264,11 @@ namespace oe::World
                 mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
             }
 
-            if (meshComponent)
+            if (modelComponent)
             {
-                auto& mesh = loadedEntity.AddComponent<MeshComponent>().Mesh;
-                std::vector<float> vertices{};
-                for (size_t i{}; entity["MeshComponent"]["Vertices"][std::to_string(i)].IsDefined(); ++i)
-                {
-                    vertices.push_back(entity["MeshComponent"]["Vertices"][std::to_string(i)].as<float>());
-                }
-                mesh->Load(vertices);
-                for (size_t i{}; entity["MeshComponent"]["Textures"][std::to_string(i)].IsDefined(); ++i)
-                {
-                    mesh->PushTexture(entity["MeshComponent"]["Textures"][std::to_string(i)].as<std::string>());
-                }
+                auto& model = loadedEntity.AddComponent<ModelComponent>().Model;
+                if (modelComponent["Path"].IsDefined())
+            		model->Load(modelComponent["Path"].as<std::string>());
             }
         }
 

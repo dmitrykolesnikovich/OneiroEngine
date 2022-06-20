@@ -7,14 +7,6 @@
 
 namespace oe::Renderer::GL
 {
-	bool PreLoad2DTexture(TextureData* data)
-	{
-		data->Data = stbi_load(data->Path.c_str(), &data->Width, &data->Height, &data->Channels, 0);
-		if (data->Data)
-			return true;
-		return false;
-	}
-
 	bool GL::Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
 	                       TextureData* textureData)
 	{
@@ -103,6 +95,7 @@ namespace oe::Renderer::GL
 		texture->TexParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
 		texture->TexParameter(gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_LINEAR);
 		texture->GenerateMipmap();
+		texture->UnBind();
 		return true;
 	}
 }

@@ -10,46 +10,86 @@
 #include <deque>
 
 #include "Oneiro/Core/Logger.hpp"
+#include "Oneiro/Renderer/OpenGL/Mesh.hpp"
+#include "Oneiro/Renderer/OpenGL/Model.hpp"
 
 namespace
 {
-	oe::Core::ResourceManager<oe::Renderer::GL::Texture<gl::TEXTURE_2D, true>> textureManager;
+	oe::Core::ResourceManager<oe::Renderer::GL::Texture<gl::TEXTURE_2D, true>> texturesManager;
+	oe::Core::ResourceManager<oe::Renderer::GL::Mesh, const std::string> meshesManager;
 }
 
 namespace oe::Core
 {
 	void LoadResources()
 	{
+		using namespace std::chrono_literals;
 		std::deque<std::future<void>> futures{};
-		{
-			const auto& textures = textureManager.GetResources();
-			size_t texturesSize = textures.size();
-			for (size_t i{}; i < texturesSize; ++i)
+
+		{ // Begin async loading meshes
+			const auto& meshes = meshesManager.GetResources();
+			const size_t meshesCount = meshes.size();
+			for (size_t i{}; i < meshesCount; ++i)
 			{
-				futures.emplace_back(std::async(std::launch::async, [](Renderer::GL::Texture<gl::TEXTURE_2D>* texture)
-				{
-					if (!PreLoad2DTexture(texture->GetData()))
-						log::get("log")->warn("Failed to load texture from " + texture->GetData()->Path + " path");
-				}, textures[i].get()));
+				const auto& mesh = meshes[i];
+				futures.emplace_back(std::async(std::launch::async, [](
+					Renderer::GL::Mesh* mesh, const std::string& path)
+					{
+						mesh->Load(path);
+					}, mesh.first.get(), std::get<const std::string>(mesh.second)));
 			}
 
-
-			size_t futuresSize = futures.size();
+			const size_t futuresCount = futures.size();
 			size_t i{};
-			while (i != futuresSize)
+			while (i != futuresCount)
 			{
-				using namespace std::chrono_literals;
 				if (futures[i].wait_for(0ms) == std::future_status::ready)
 				{
-					Load2DTexture(textures[i].get());
+					meshes[i].first->Generate();
 					i++;
 				}
 			}
-		}
+		} // End async loading meshes
+
+		futures.clear();
+
+		{ // Begin async loading textures
+			const auto& textures = texturesManager.GetResources();
+			const size_t texturesCount = textures.size();
+			for (size_t i{}; i < texturesCount; ++i)
+			{
+				const auto& texture = textures[i];
+				futures.emplace_back(std::async(std::launch::async, [](
+					Renderer::GL::Texture<gl::TEXTURE_2D>* texture)
+					{
+						const auto& data = texture->GetData();
+						if (!Renderer::GL::PreLoad2DTexture<gl::TEXTURE_2D>(*texture))
+							log::get("log")->warn(
+								"Failed to load texture from " + data->Path + " path");
+					}, texture.first.get()));
+			}
+
+
+			const size_t futuresCount = futures.size();
+			size_t i{};
+			while (i != futuresCount)
+			{
+				if (futures[i].wait_for(0ms) == std::future_status::ready)
+				{
+					Load2DTexture(textures[i].first.get());
+					i++;
+				}
+			}
+		} // End async loading textures
 	}
 
-	ResourceManager<Renderer::GL::Texture<gl::TEXTURE_2D, true>>& GetTextureManager()
+	ResourceManager<Renderer::GL::Texture<gl::TEXTURE_2D, true>>& GetTexturesManager()
 	{
-		return textureManager;
+		return texturesManager;
+	}
+
+	ResourceManager<Renderer::GL::Mesh, const std::string>& GetMeshesManager()
+	{
+		return meshesManager;
 	}
 }

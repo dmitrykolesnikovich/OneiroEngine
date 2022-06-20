@@ -66,10 +66,8 @@ namespace oe::Renderer::GL
 		VertexAttribPointer<float>(0, 3, 3);
 		mVAO.UnBind();
 		mVBO.UnBind();
-		mTexture = Core::GetTextureManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
+		mTexture = Core::GetTexturesManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
 		mTextureData = mTexture->GetData();
-		//        if (!Load2DTexture(path, &mTexture, &mTextureData))
-		//            log::get("log")->warn("Failed to load texture from " + path + " path!");
 	}
 
 	bool Sprite2D::Load()
