@@ -14,19 +14,22 @@ namespace oe::Runtime
 	{
 	public:
 		virtual ~Application();
+		Application(const char* name, int width, int height);
 		virtual bool Init();
 		virtual bool Update(float deltaTime);
 		virtual void Shutdown();
 		virtual void HandleKey(Input::Key key, Input::Action action);
 		virtual void HandleButton(Input::Button button, Input::Action action);
 		virtual void MousePos(double xPos, double yPos);
+		Core::Window* GetWindow();
 
 		[[nodiscard]] bool IsStopped() const;
 	protected:
 		void Stop();
 	private:
 		bool mIsStopped{};
+		Core::Window* mWindow;
 	};
 
-	std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
+	std::shared_ptr<Application> CreateApplication(int argc, char* argv[], const char* title, int width, int height);
 }

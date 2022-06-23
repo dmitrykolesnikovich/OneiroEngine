@@ -10,6 +10,13 @@
 
 namespace oe::Core
 {
+	Window::Window(const char* title, int width, int height)
+	{
+		mData.Title = title;
+		mData.Width = width;
+		mData.Height = height;
+	}
+
 	Window::~Window()
 	{
 		glfwDestroyWindow(mWindow);
