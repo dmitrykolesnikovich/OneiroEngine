@@ -41,7 +41,7 @@ namespace oe::Core
 		void Remove(const T& resource) { mResources.erase(resource); }
 		void Remove(size_t id) { mResources.erase(id); }
 
-		[[nodiscard]] constexpr T* Get(size_t index) const { return mResources[index].get(); }
+		[[nodiscard]] constexpr T* Get(size_t index) const { return mResources[index].first.get(); }
 		[[nodiscard]] constexpr size_t Size() const { return mResources.size(); }
 		constexpr std::vector<std::pair<std::shared_ptr<T>, std::tuple<Args...>>>& GetResources() { return mResources; }
 	private:
