@@ -6,106 +6,32 @@
 
 ## Why Oneiro?
 
-Oneiro is powerful and fast engine, because it's written in C++ and Vulkan API. For visual novel scripts Oneiro uses lua scripting language, because it's simple and fast language.
+Oneiro is powerful and fast engine, because it's written in C++ with OpenGL backend (and Vulkan in future). With Oneiro Engine you can create your visual novel in Luau scripting language which is simple and fast, than other scripting languages.
 
 **Currently, Oneiro Engine doen't have all features, because it's under development.**
 
-### Example:
-CMakeLists.txt
-```cmake
-cmake_minimum_required(VERSION 3.21)
-project(SandBox)
+## Get started
+1. Clone repository: ```git clone https://github.com/OneiroGames/Oneiro.git --recursive```
+2. Write ```git pull``` in cmd/bash
+3. Open CMakeLists.txt in SandBox directory as project. If you don't know how to open CMakeLists.txt as project, then check documentation for your IDE
 
-set(CMAKE_CXX_STANDARD 20)
+## Documentation
 
-add_executable(${CMAKE_PROJECT_NAME} Source/Main.cpp)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Engine/ Oneiro)
-```
-Main.cpp
-```cpp
-#include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/VisualNovel/VNCore.hpp"
-#include "Oneiro/Lua/LuaFile.hpp"
+- [License](https://github.com/OneiroGames/Oneiro/LICENSE.md)
+- [Code of Conduct](https://github.com/OneiroGames/Oneiro/Docs/CODE_OF_CONDUCT.md) 
+- [Contributing guide](https://github.com/OneiroGames/Oneiro/Docs/CONTRIBUTING.md)
+- [Issues guide](https://github.com/OneiroGames/Oneiro/Docs/ISSUES.md)
 
-namespace SandBox
-{
-    class Application : public oe::Runtime::Application
-    {
-    public:
-        bool Init() override
-        {
-            mFile.LoadFile("Script.lua", false);
-            oe::VisualNovel::Init(&mFile);
-            return true;
-        }
+## Team
+- [Lead Software Engineer](https://github.com/DezlowNG) — Nikita Gordeev
+- [Software Engineer](https://github.com/Kernstall) — Roma
 
-        bool Update() override
-        {
-            oe::VisualNovel::Update();
-            return true;
-        }
+## Special Thanks
 
-        void HandleButton(oe::Input::Button button, oe::Input::Action action) override
-        {
-            if (button == oe::Input::Button::LEFT && action == oe::Input::Action::PRESS)
-                oe::VisualNovel::NextStep();
-        }
-
-        void Shutdown() override {}
-    private:
-        oe::Lua::File mFile;
-    };
-}
-
-namespace oe::Runtime
-{
-    std::shared_ptr<Application> CreateApplication(int, char* [])
-    {
-        return std::make_shared<SandBox::Application>();
-    }
-}
-```
-Script.lua
-```lua
--- creates characters, sprites, and other means
-me = Character("Me")
--- second parameter is aspect ratio for sprite
--- for normal resizing sprite to window size you need keep aspect ratio
-local sprite = Sprite2D("sprite.png", true)
--- but in background you don't need to enabling aspect ratio
-local background = Sprite2D("background.jpg", false)
-local music = Audio("music.mp3")
-
--- you must to set the var name that was passed to the label ctor
--- because for call to label function engine need know name of variable
-start = Label("start")
--- entry point in label is main function
--- you can use colon when you call or define function
-function start:main()
-    background:show()
-    sprite:show()
-    music:play()
-    me "Hello World!"
-    music:stop()
-    sprite:hide()
-    background:hide()
-
-    -- jump to another registered label
-    jump "goodbye"
-    -- if you need you can call function as default
-    -- jump("goodbye")
-end
-
-goodbye = Label("goodbye")
-function goodbye:main()
-    me "Goodbye World!"
-end
-```
-
-### Example output:
-![image](https://user-images.githubusercontent.com/74720936/168714699-10d9a150-e706-4898-a3c3-32a1a5c44c75.png)
-
-[Video](https://youtu.be/unQJ0THmIyg)
+<div align="center">
+  <a href="https://jetbrains.com"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="150" height="150" hspace="5"vspace="5"></a>
+  <a href="https://www.youtube.com/channel/UCQ-W1KE9EYfdxhL6S4twUNw"><img src="https://avatars.githubusercontent.com/u/1475290?v=4" width="150" height="150" hspace="5"vspace="5"></a>
+</div>
 
 #
 
