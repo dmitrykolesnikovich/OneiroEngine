@@ -12,9 +12,18 @@ namespace oe::Runtime
 {
 	Application::~Application() = default;
 
+	Application::Application(const char* name, int width, int height) {
+		mWindow = new Core::Window(name, width, height);
+	}
+
 	bool Application::Init()
 	{
 		return true;
+	}
+
+	Core::Window* Application::GetWindow()
+	{
+		return mWindow;
 	}
 
 	bool Application::Update(float deltaTime)

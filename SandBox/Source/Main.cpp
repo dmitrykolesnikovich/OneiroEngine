@@ -4,41 +4,42 @@
 //
 
 #include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/VisualNovel/VNCore.hpp"
-#include "Oneiro/Lua/LuaFile.hpp"
-#include "Oneiro/Runtime/Engine.hpp"
+//#include "Oneiro/VisualNovel/VNCore.hpp"
+//#include "Oneiro/Lua/LuaFile.hpp"
+//#include "Oneiro/Runtime/Engine.hpp"
 
 namespace SandBox
 {
     class Application : public oe::Runtime::Application
     {
+        using oe::Runtime::Application::Application;
     public:
         bool Init() override
         {
-            Hazel::Audio::SetGlobalVolume(0.01f);
+            /*Hazel::Audio::SetGlobalVolume(0.01f);
             mFile.LoadFile("Assets/Scripts/test.lua", false);
             oe::VisualNovel::Init(&mFile);
-            oe::VisualNovel::LoadTextBox("Assets/Images/textbox.png");
+            oe::VisualNovel::LoadTextBox("Assets/Images/textbox.png");*/
             return true;
         }
 
         bool Update(float deltaTime) override
         {
-            oe::VisualNovel::Update(deltaTime, mRenderVnGui);
+            //oe::VisualNovel::Update(deltaTime, mRenderVnGui);
             return true;
         }
 
         void HandleButton(oe::Input::Button button, oe::Input::Action action) override
         {
-            if (!mEnableInput)
+            /*if (!mEnableInput)
                 return;
             if (button == oe::Input::Button::LEFT && action == oe::Input::Action::PRESS)
-                oe::VisualNovel::NextStep();
+                oe::VisualNovel::NextStep();*/
         }
 
         void HandleKey(oe::Input::Key key, oe::Input::Action action) override
         {
-            if (action == oe::Input::Action::PRESS)
+           /* if (action == oe::Input::Action::PRESS)
             {
                 using namespace oe;
                 if (key == Input::Key::I)
@@ -63,7 +64,7 @@ namespace SandBox
                     default: break;
                     }
                 }
-            }
+            }*/
         }
 
         void Shutdown() override
@@ -72,7 +73,7 @@ namespace SandBox
         }
 
     private:
-        oe::Lua::File mFile;
+        //oe::Lua::File mFile;
         bool mRenderVnGui{};
         bool mEnableInput{true};
     };
@@ -80,8 +81,8 @@ namespace SandBox
 
 namespace oe::Runtime
 {
-    std::shared_ptr<Application> CreateApplication(int, char* [])
+    std::shared_ptr<Application> CreateApplication(int, char* [], const char* title, int width, int height)
     {
-        return std::make_shared<SandBox::Application>();
+        return std::make_shared<SandBox::Application>(title, width, height);
     }
 }

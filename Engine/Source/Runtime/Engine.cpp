@@ -28,17 +28,17 @@ namespace oe::Runtime
 		Renderer::GuiLayer::PreInit();
 		Hazel::Audio::Init();
 		mRoot = new Core::Root;
-		mWindow = new Core::Window;
 	}
 
 	void Engine::Run(const std::shared_ptr<Application>& app)
 	{
 		using namespace Core;
 
-		if (mRoot == nullptr || mWindow == nullptr)
+		if (mRoot == nullptr)
 			return;
 
 		mRoot->SetApplication(app.get());
+		mWindow = app.get()->GetWindow();
 		mRoot->SetWindow(mWindow);
 
 		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)

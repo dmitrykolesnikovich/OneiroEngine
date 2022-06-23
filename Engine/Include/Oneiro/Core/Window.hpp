@@ -16,6 +16,7 @@ namespace oe::Core
 		struct WindowData;
 	public:
 		bool Create();
+		Window(const char* title, int width, int height);
 		~Window();
 
 		static void PollEvents();
