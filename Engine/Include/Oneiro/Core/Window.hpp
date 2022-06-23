@@ -22,7 +22,7 @@ namespace oe::Core
 		static void PollEvents();
 		static void WaitEvents();
 
-		void SwapBuffers();
+		void SwapBuffers() const;
 
 		[[nodiscard]] bool IsClosed() const;
 

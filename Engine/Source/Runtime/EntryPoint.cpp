@@ -12,9 +12,8 @@ int main(const int argc, char* argv[])
 {
 	using namespace oe::Runtime;
 	using namespace oe;
-
-	const char* title = "SandBox";
-	const auto app = CreateApplication(argc, argv, title, 800, 600);
+	
+	const auto app = CreateApplication(argc, argv);
 
 	try
 	{

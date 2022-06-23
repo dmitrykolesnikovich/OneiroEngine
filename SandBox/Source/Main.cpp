@@ -81,8 +81,8 @@ namespace SandBox
 
 namespace oe::Runtime
 {
-    std::shared_ptr<Application> CreateApplication(int, char* [], const char* title, int width, int height)
+    std::shared_ptr<Application> CreateApplication(int, char* [])
     {
-        return std::make_shared<SandBox::Application>(title, width, height);
+        return std::make_shared<SandBox::Application>("SandBox", 1280, 720);
     }
 }

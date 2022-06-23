@@ -13,7 +13,7 @@ namespace oe::Runtime
 	Application::~Application() = default;
 
 	Application::Application(const char* name, int width, int height) {
-		mWindow = new Core::Window(name, width, height);
+		mWindow = std::make_shared<Core::Window>(name, width, height);
 	}
 
 	bool Application::Init()
@@ -21,9 +21,9 @@ namespace oe::Runtime
 		return true;
 	}
 
-	Core::Window* Application::GetWindow()
-	{
-		return mWindow;
+	Core::Window* Application::GetWindow() const
+    {
+		return mWindow.get();
 	}
 
 	bool Application::Update(float deltaTime)

@@ -21,15 +21,15 @@ namespace oe::Runtime
 		virtual void HandleKey(Input::Key key, Input::Action action);
 		virtual void HandleButton(Input::Button button, Input::Action action);
 		virtual void MousePos(double xPos, double yPos);
-		Core::Window* GetWindow();
 
+	    [[nodiscard]] Core::Window* GetWindow() const;
 		[[nodiscard]] bool IsStopped() const;
 	protected:
 		void Stop();
 	private:
 		bool mIsStopped{};
-		Core::Window* mWindow;
+		std::shared_ptr<Core::Window> mWindow;
 	};
 
-	std::shared_ptr<Application> CreateApplication(int argc, char* argv[], const char* title, int width, int height);
+	std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
 }

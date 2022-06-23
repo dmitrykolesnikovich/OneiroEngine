@@ -38,8 +38,8 @@ namespace oe::Runtime
 			return;
 
 		mRoot->SetApplication(app.get());
-		mWindow = app.get()->GetWindow();
-		mRoot->SetWindow(mWindow);
+		const auto window = app->GetWindow();
+		mRoot->SetWindow(window);
 
 		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
 		{
@@ -54,7 +54,7 @@ namespace oe::Runtime
 				.Description);
 		});
 
-		if (!mWindow->Create())
+		if (!window->Create())
 			throw std::runtime_error("Failed to create window!");
 
 		SetupEvents();
@@ -70,19 +70,19 @@ namespace oe::Runtime
 		LoadResources();
 
 		auto lastFrame = static_cast<float>(glfwGetTime());
-		while (!mWindow->IsClosed())
+		while (!window->IsClosed())
 		{
 			const auto currentFrame = static_cast<float>(glfwGetTime());
 			mDeltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
 
-			if (!UpdateGame(app, mDeltaTime)) break;
+			if (!UpdateGame(app, mDeltaTime, window)) break;
 		}
 
 		app->Shutdown();
 	}
 
-	bool Engine::UpdateGame(const std::shared_ptr<Application>& app, float deltaTime)
+	bool Engine::UpdateGame(const std::shared_ptr<Application>& app, float deltaTime, const Core::Window* window)
 	{
 		if (app->IsStopped())
 			return false;
@@ -94,7 +94,6 @@ namespace oe::Runtime
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::BeginScene();
 #endif
-
 		Renderer::GuiLayer::NewFrame();
 		if (!app->Update(deltaTime))
 			return false;
@@ -102,14 +101,13 @@ namespace oe::Runtime
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::EndScene();
 #else
-		mWindow->SwapBuffers();
+		window->SwapBuffers();
 #endif
 		return true;
 	}
 
 	void Engine::Shutdown()
 	{
-		delete mWindow;
 		delete mRoot;
 
 		Hazel::Audio::Shutdown();
@@ -167,5 +165,4 @@ namespace oe::Runtime
 	}
 
 	Core::Root* Engine::mRoot{};
-	Core::Window* Engine::mWindow{};
 }

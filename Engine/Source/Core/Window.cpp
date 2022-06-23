@@ -32,8 +32,8 @@ namespace oe::Core
 		glfwWaitEvents();
 	}
 
-	void Window::SwapBuffers()
-	{
+	void Window::SwapBuffers() const
+    {
 		glfwSwapBuffers(mWindow);
 	}
 
