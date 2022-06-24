@@ -137,7 +137,6 @@ namespace oe::VisualNovel
 		case SHOW_SPRITE:
 			{
 				auto& sprite2D = instruction.Sprite2D;
-				sprite2D->Load();
 				sprite2D->Move({});
 				sprite2D->SetAlpha(0.0f);
 				sprite2Ds.emplace_back(sprite2D, new Animation::DissolveAnimation);
@@ -470,8 +469,7 @@ namespace oe::VisualNovel
 
 	void LoadTextBox(const std::string& path)
 	{
-		textBox.Init(path);
-		textBox.Load();
+		textBox.Load(path);
 		textBox.SetUsingTextureAlpha(true);
 		textBox.SetAlpha(0.0f);
 	}

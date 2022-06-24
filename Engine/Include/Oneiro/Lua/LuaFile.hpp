@@ -52,7 +52,7 @@ namespace oe::Lua
 			                                            {
 				                                            auto
 					                                            ptr = std::make_shared<Renderer::GL::Sprite2D>();
-				                                            ptr->Init(path, keepAspectRatio);
+				                                            ptr->Load(path, keepAspectRatio);
 				                                            return ptr;
 			                                            }), "show",
 			                                            &VisualNovel::ShowSprite2D, "hide",

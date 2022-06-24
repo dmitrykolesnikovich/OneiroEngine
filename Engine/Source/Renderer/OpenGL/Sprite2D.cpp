@@ -14,7 +14,7 @@
 
 namespace oe::Renderer::GL
 {
-	void Sprite2D::Init(const std::string& path, bool keepAspectRatio)
+	void Sprite2D::Load(const std::string& path, bool keepAspectRatio)
 	{
 		mKeepAR = keepAspectRatio;
 		constexpr auto vertexShaderSrc = R"(
@@ -56,7 +56,7 @@ namespace oe::Renderer::GL
 		mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
 		mShader.CreateProgram();
 
-		constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
+		constexpr float vertices[] = { 1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f };
 
 		mVAO.Generate();
 		mVBO.Generate();
@@ -68,26 +68,6 @@ namespace oe::Renderer::GL
 		mVBO.UnBind();
 		mTexture = Core::GetTexturesManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
 		mTextureData = mTexture->GetData();
-	}
-
-	bool Sprite2D::Load()
-	{
-		//        if (!mTexture->IsLoaded())
-		//        {
-		//            mTexture->Load();
-		//            return true;
-		//        }
-		return false;
-	}
-
-	bool Sprite2D::UnLoad()
-	{
-		//        if (mTexture->IsLoaded())
-		//        {
-		//            mTexture->UnLoad();
-		//            return true;
-		//        }
-		return false;
 	}
 
 	void Sprite2D::Draw()

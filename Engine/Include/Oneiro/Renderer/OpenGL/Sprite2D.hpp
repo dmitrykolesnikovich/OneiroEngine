@@ -21,9 +21,7 @@ namespace oe::Renderer::GL
 		Sprite2D() = default;
 		Sprite2D(const Sprite2D&) = delete;
 
-		void Init(const std::string& path, bool keepAspectRatio = true);
-		bool Load();
-		bool UnLoad();
+		void Load(const std::string& path, bool keepAspectRatio = true);
 		void Draw();
 		void Move(const glm::vec3& pos);
 		void Scale(const glm::vec3& scale);
