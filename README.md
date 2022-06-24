@@ -17,10 +17,10 @@ Oneiro is powerful and fast engine, because it's written in C++ with OpenGL back
 
 ## Documentation
 
-- [License](https://github.com/OneiroGames/Oneiro/LICENSE.md)
-- [Code of Conduct](https://github.com/OneiroGames/Oneiro/Docs/CODE_OF_CONDUCT.md) 
-- [Contributing guide](https://github.com/OneiroGames/Oneiro/Docs/CONTRIBUTING.md)
-- [Issues guide](https://github.com/OneiroGames/Oneiro/Docs/ISSUES.md)
+- [License](https://github.com/OneiroGames/Oneiro/tree/main/LICENSE)
+- [Code of Conduct](https://github.com/OneiroGames/Oneiro/tree/main/Docs/CODE_OF_CONDUCT.md) 
+- [Contributing guide](https://github.com/OneiroGames/Oneiro/tree/main/Docs/CONTRIBUTING.md)
+- [Issues guide](https://github.com/OneiroGames/Oneiro/tree/main/Docs/ISSUES.md)
 
 ## Team
 - [Lead Software Engineer](https://github.com/DezlowNG) — Nikita Gordeev
