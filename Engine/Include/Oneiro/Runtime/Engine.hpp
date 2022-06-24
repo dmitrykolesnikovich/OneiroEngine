@@ -20,7 +20,6 @@ namespace oe::Runtime
 	private:
 		static bool UpdateGame(const std::shared_ptr<Application>& app, float deltaTime, const Core::Window* window);
 		static void SetupEvents();
-		static Core::Root* mRoot;
 		inline static float mDeltaTime{};
 	};
 }

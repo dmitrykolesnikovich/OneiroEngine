@@ -12,35 +12,25 @@
 namespace oe::Core
 {
 	class Window;
-	class Config;
 }
 
 namespace oe::Runtime
 {
 	class Application;
-}
-
-namespace oe::World
-{
-	class World;
+	class Engine;
 }
 
 namespace oe::Core
 {
 	class Root
 	{
-	public:
-		Root();
-		~Root();
 	public: // Getters
 		static Window* GetWindow();
 		static Runtime::Application* GetApplication();
-	public: // Setters | Non static to protect against unexpected behavior
-		void SetApplication(Runtime::Application* app);
-		void SetWindow(Window* window);
+	private:
+		friend class Runtime::Engine;
 	private:
 		static Window* mWindowInstance;
 		static Runtime::Application* mApplicationInstance;
-		inline static bool mIsCreated{};
 	};
 }

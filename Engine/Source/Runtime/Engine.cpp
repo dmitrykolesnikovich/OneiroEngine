@@ -26,19 +26,15 @@ namespace oe::Runtime
 		Renderer::PreInit();
 		Renderer::GuiLayer::PreInit();
 		Hazel::Audio::Init();
-		mRoot = new Core::Root;
 	}
 
 	void Engine::Run(const std::shared_ptr<Application>& app)
 	{
 		using namespace Core;
 
-		if (mRoot == nullptr)
-			return;
-
-		mRoot->SetApplication(app.get());
 		const auto window = app->GetWindow();
-		mRoot->SetWindow(window);
+		Root::mApplicationInstance = app.get();
+		Root::mWindowInstance = window;
 
 		Event::Dispatcher::Subscribe<Event::ErrorEvent>([](const Event::Base& e)
 		{
@@ -107,8 +103,6 @@ namespace oe::Runtime
 
 	void Engine::Shutdown()
 	{
-		delete mRoot;
-
 		Hazel::Audio::Shutdown();
 		Renderer::GuiLayer::Shutdown();
 		Renderer::Shutdown();
@@ -162,6 +156,4 @@ namespace oe::Runtime
 				Root::GetApplication()->MousePos(mousePosEvent.XPos, mousePosEvent.YPos);
 			});
 	}
-
-	Core::Root* Engine::mRoot{};
 }
