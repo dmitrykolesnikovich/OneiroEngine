@@ -13,8 +13,9 @@ namespace oe::Runtime
 	class Application
 	{
 	public:
-		virtual ~Application();
 		Application(const char* name, int width, int height);
+		virtual ~Application();
+
 		virtual bool Init();
 		virtual bool Update(float deltaTime);
 		virtual void Shutdown();

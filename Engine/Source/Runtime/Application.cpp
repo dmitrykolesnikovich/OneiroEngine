@@ -10,11 +10,12 @@
 
 namespace oe::Runtime
 {
-	Application::~Application() = default;
-
-	Application::Application(const char* name, int width, int height) {
+	Application::Application(const char* name, int width, int height)
+    {
 		mWindow = std::make_shared<Core::Window>(name, width, height);
 	}
+
+	Application::~Application() = default;
 
 	bool Application::Init()
 	{
