@@ -20,7 +20,7 @@ namespace oe::World
 		};
 	public:
 		World() = delete;
-		World(const World&&) = delete;
+		World(const World&) = delete;
 
 		World(const std::string& name, const std::string& path);
 		~World();
