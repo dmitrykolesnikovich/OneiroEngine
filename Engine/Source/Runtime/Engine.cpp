@@ -14,7 +14,6 @@
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Window.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
-#include "Oneiro/World/WorldManager.hpp"
 #include "Oneiro/Renderer/Gui/GuiLayer.hpp"
 #include "HazelAudio/HazelAudio.h"
 #include "Oneiro/Core/ResourceManager.hpp"

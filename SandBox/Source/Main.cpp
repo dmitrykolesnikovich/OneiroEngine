@@ -6,10 +6,8 @@
 #include <filesystem>
 
 #include "Oneiro/Runtime/Application.hpp"
-#include "Oneiro/Runtime/Engine.hpp"
 #include "Oneiro/World/Components.hpp"
 #include "Oneiro/World/Entity.hpp"
-#include "Oneiro/World/WorldManager.hpp"
 
 namespace SandBox
 {
@@ -64,19 +62,19 @@ namespace SandBox
             gl::CullFace(gl::BACK);
             gl::FrontFace(gl::CCW);
 
-            if (exists(std::filesystem::path("main.oeworld")))
+            if (World::World::IsExists("main"))
             {
-                const auto& worldManager = Core::Root::GetWorldManager();
-                return worldManager->LoadWorld("main.oeworld");
+                mWorld = World::World::Load("main");
+                return mWorld.get();
             }
 
-            const auto& world = Core::Root::GetWorldManager()->GetWorld();
-            auto player = world->CreateEntity("Player");
+            mWorld = std::make_shared<World::World>("Main", "main");
+            auto player = mWorld->CreateEntity("Player");
             player.AddComponent<CameraComponent>();
             player.AddComponent<MainCameraComponent>();
 
-            world->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
-            world->CreateEntity("Cube").AddComponent<ModelComponent>().Model->Load("Assets/Models/cube.fbx");
+            mWorld->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
+            mWorld->CreateEntity("Cube").AddComponent<ModelComponent>().Model->Load("Assets/Models/cube.fbx");
 
             return true;
         }
@@ -84,11 +82,10 @@ namespace SandBox
         bool Update(float deltaTime) override
         {
             using namespace oe;
-            const auto& world = Core::Root::GetWorldManager()->GetWorld();
 
-        	const auto playerEntity = world->GetEntity("Player");
-            const auto backpackEntity = world->GetEntity("Backpack");
-            const auto cubeEntity = world->GetEntity("Cube");
+        	const auto playerEntity = mWorld->GetEntity("Player");
+            const auto backpackEntity = mWorld->GetEntity("Backpack");
+            const auto cubeEntity = mWorld->GetEntity("Cube");
 
         	auto& mainCamera = playerEntity.GetComponent<MainCameraComponent>();
 
@@ -118,23 +115,24 @@ namespace SandBox
 
             mShader.Use();
             mShader.SetUniform("uModel", cubeTransform.GetTransform());
-            Core::Root::GetWorldManager()->GetWorld()->GetEntity("Cube").GetComponent<ModelComponent>().Model->Draw();
+            mWorld->GetEntity("Cube").GetComponent<ModelComponent>().Model->Draw();
 
             return true;
         }
 
         void MousePos(double xPos, double yPos) override
         {
-            auto& mainCamera = oe::Core::Root::GetWorldManager()->GetWorld()->GetEntity("Player").GetComponent<oe::MainCameraComponent>();
+            auto& mainCamera = mWorld->GetEntity("Player").GetComponent<oe::MainCameraComponent>();
             mainCamera.UpdateMouse(static_cast<float>(xPos), static_cast<float>(yPos));
         }
 
         void Shutdown() override
         {
-            oe::Core::Root::GetWorldManager()->SaveWorld("main.oeworld", "Main");
+            mWorld->Save(true);
         }
 
     private:
+        std::shared_ptr<oe::World::World> mWorld{};
         oe::Renderer::GL::Shader mShader{};
     };
 }

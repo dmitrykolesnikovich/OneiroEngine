@@ -8,14 +8,12 @@
 #include "Oneiro/Core/Config.hpp"
 #include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Core/Oneiro.hpp"
-#include "Oneiro/World/WorldManager.hpp"
 
 namespace oe::Core
 {
 	Root::Root()
 	{
 		if (mIsCreated) return;
-		mWorldManager = std::make_unique<World::WorldManager>();
 		mIsCreated = true;
 	}
 
@@ -28,11 +26,6 @@ namespace oe::Core
 	Window* Root::GetWindow() { return mWindowInstance; }
 
 	Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
-
-	World::WorldManager* Root::GetWorldManager()
-	{
-		return mWorldManager.get();
-	}
 
 	void Root::SetApplication(Runtime::Application* app)
 	{
@@ -50,5 +43,4 @@ namespace oe::Core
 
 	Window* Root::mWindowInstance{};
 	Runtime::Application* Root::mApplicationInstance{};
-	std::unique_ptr<World::WorldManager> Root::mWorldManager{};
 }
