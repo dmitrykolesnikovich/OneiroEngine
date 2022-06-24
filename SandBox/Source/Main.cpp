@@ -15,7 +15,7 @@ namespace SandBox
     {
         using oe::Runtime::Application::Application;
     public:
-        bool Init() override
+        bool OnInit() override
         {
             using namespace oe;
                 
@@ -79,7 +79,7 @@ namespace SandBox
             return true;
         }
 
-        bool Update(float deltaTime) override
+        bool OnUpdate(float deltaTime) override
         {
             using namespace oe;
 
@@ -126,7 +126,7 @@ namespace SandBox
             mainCamera.UpdateMouse(static_cast<float>(xPos), static_cast<float>(yPos));
         }
 
-        void Shutdown() override
+        void OnShutdown() override
         {
             mWorld->Save(true);
         }

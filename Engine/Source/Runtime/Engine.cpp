@@ -60,7 +60,7 @@ namespace oe::Runtime
 
 		glfwSwapInterval(1);
 
-		if (!app->Init())
+		if (!app->OnInit())
 			throw std::runtime_error("Failed to initialize application!");
 
 		Renderer::Init();
@@ -78,7 +78,7 @@ namespace oe::Runtime
 			if (!UpdateGame(app, mDeltaTime, window)) break;
 		}
 
-		app->Shutdown();
+		app->OnShutdown();
 	}
 
 	bool Engine::UpdateGame(const std::shared_ptr<Application>& app, float deltaTime, const Core::Window* window)
@@ -94,7 +94,7 @@ namespace oe::Runtime
         Renderer::Vulkan::BeginScene();
 #endif
 		Renderer::GuiLayer::NewFrame();
-		if (!app->Update(deltaTime))
+		if (!app->OnUpdate(deltaTime))
 			return false;
 		Renderer::GuiLayer::Draw();
 #ifdef OE_RENDERER_VULKAN

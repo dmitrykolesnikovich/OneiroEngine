@@ -16,9 +16,9 @@ namespace oe::Runtime
 		Application(const char* name, int width, int height);
 		virtual ~Application();
 
-		virtual bool Init();
-		virtual bool Update(float deltaTime);
-		virtual void Shutdown();
+		virtual bool OnInit();
+		virtual bool OnUpdate(float deltaTime);
+		virtual void OnShutdown();
 		virtual void HandleKey(Input::Key key, Input::Action action);
 		virtual void HandleButton(Input::Button button, Input::Action action);
 		virtual void MousePos(double xPos, double yPos);

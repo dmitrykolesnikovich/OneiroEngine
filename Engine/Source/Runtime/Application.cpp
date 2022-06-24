@@ -17,7 +17,7 @@ namespace oe::Runtime
 
 	Application::~Application() = default;
 
-	bool Application::Init()
+	bool Application::OnInit()
 	{
 		return true;
 	}
@@ -27,12 +27,12 @@ namespace oe::Runtime
 		return mWindow.get();
 	}
 
-	bool Application::Update(float deltaTime)
+	bool Application::OnUpdate(float deltaTime)
 	{
 		return true;
 	}
 
-	void Application::Shutdown()
+	void Application::OnShutdown()
 	{
 	}
 
