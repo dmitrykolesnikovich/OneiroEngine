@@ -5,43 +5,27 @@
 
 #pragma once
 
-#include "Base.hpp"
+#include <cstdint>
 
 namespace oe::Renderer::GL
 {
 	class RenderBuffer
 	{
 	public:
-		RenderBuffer() = default;
+		RenderBuffer();
 		RenderBuffer(const RenderBuffer&) = delete;
-		~RenderBuffer()
-		{
-			if (mID)
-				gl::DeleteRenderbuffers(1, &mID);
-		}
+		~RenderBuffer();
 
-		void Generate()
-		{
-			gl::GenRenderbuffers(1, &mID);
-		}
+        void Generate();
 
-		void Bind()
-		{
-			gl::BindRenderbuffer(gl::RENDERBUFFER, mID);
-		}
+        void Bind();
 
-		void UnBind()
-		{
-			gl::BindRenderbuffer(gl::RENDERBUFFER, 0);
-		}
+        void UnBind();
 
-		void Storage(int internalFormat, int width, int height)
-		{
-			gl::RenderbufferStorage(gl::RENDERBUFFER, internalFormat, width, height);
-		}
+        void Storage(int internalFormat, int width, int height);
 
-		uint32_t Get() const { return mID; }
-	private:
+        [[nodiscard]] uint32_t Get() const;
+    private:
 		uint32_t mID{};
 	};
 }
