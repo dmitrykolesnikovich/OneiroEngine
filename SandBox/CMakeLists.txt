@@ -20,5 +20,5 @@ foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
 endforeach (OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
-add_executable(${CMAKE_PROJECT_NAME} Source/Main.cpp)
+add_executable(${CMAKE_PROJECT_NAME} Source/SandBoxApp.cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Engine/ Oneiro)
