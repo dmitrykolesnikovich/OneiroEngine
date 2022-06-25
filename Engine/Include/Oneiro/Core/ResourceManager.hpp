@@ -11,15 +11,9 @@
 
 #include "OpenGL/gl_core_4_5.hpp"
 
-namespace oe::Audio
-{
-	class Source;
-}
-
 namespace oe::Renderer::GL
 {
 	class Mesh;
-	class Model;
 
 	template <int TextureType, bool Mipmaps>
 	class Texture;
@@ -32,18 +26,15 @@ namespace oe::Core
 	class ResourceManager
 	{
 	public:
-		T* Add(const std::shared_ptr<T>& resourcePtr, Args... args)
+		T* Add(const std::shared_ptr<T>& resourcePtr, const Args&... args)
 		{
 			mResources.push_back(std::make_pair(resourcePtr, std::make_tuple(std::move(args)...)));
 			return resourcePtr.get();
 		}
 
-		void Remove(const T& resource) { mResources.erase(resource); }
-		void Remove(size_t id) { mResources.erase(id); }
-
 		[[nodiscard]] constexpr T* Get(size_t index) const { return mResources[index].first.get(); }
 		[[nodiscard]] constexpr size_t Size() const { return mResources.size(); }
-		constexpr std::vector<std::pair<std::shared_ptr<T>, std::tuple<Args...>>>& GetResources() { return mResources; }
+		[[nodiscard]] constexpr std::vector<std::pair<std::shared_ptr<T>, std::tuple<Args...>>>& GetResources() { return mResources; }
 	private:
 		std::vector<std::pair<std::shared_ptr<T>, std::tuple<Args...>>> mResources{};
 	};

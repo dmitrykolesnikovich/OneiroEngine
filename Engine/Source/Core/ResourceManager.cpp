@@ -4,14 +4,12 @@
 //
 
 #include "Oneiro/Core/ResourceManager.hpp"
+#include "Oneiro/Core/Logger.hpp"
 #include "Oneiro/Renderer/OpenGL/Texture.hpp"
+#include "Oneiro/Renderer/OpenGL/Mesh.hpp"
 
 #include <future>
 #include <deque>
-
-#include "Oneiro/Core/Logger.hpp"
-#include "Oneiro/Renderer/OpenGL/Mesh.hpp"
-#include "Oneiro/Renderer/OpenGL/Model.hpp"
 
 namespace
 {
@@ -31,12 +29,12 @@ namespace oe::Core
 			const size_t meshesCount = meshes.size();
 			for (size_t i{}; i < meshesCount; ++i)
 			{
-				const auto& mesh = meshes[i];
+				const auto& [fst, snd] = meshes[i];
 				futures.emplace_back(std::async(std::launch::async, [](
 					Renderer::GL::Mesh* mesh, const std::string& path)
 					{
 						mesh->Load(path);
-					}, mesh.first.get(), std::get<const std::string>(mesh.second)));
+					}, fst.get(), std::get<const std::string>(snd)));
 			}
 
 			const size_t futuresCount = futures.size();
@@ -58,7 +56,7 @@ namespace oe::Core
 			const size_t texturesCount = textures.size();
 			for (size_t i{}; i < texturesCount; ++i)
 			{
-				const auto& texture = textures[i];
+				const auto& [fst, snd] = textures[i];
 				futures.emplace_back(std::async(std::launch::async, [](
 					Renderer::GL::Texture<gl::TEXTURE_2D>* texture)
 					{
@@ -66,7 +64,7 @@ namespace oe::Core
 						if (!Renderer::GL::PreLoad2DTexture<gl::TEXTURE_2D>(*texture))
 							log::get("log")->warn(
 								"Failed to load texture from " + data->Path + " path");
-					}, texture.first.get()));
+					}, fst.get()));
 			}
 
 
