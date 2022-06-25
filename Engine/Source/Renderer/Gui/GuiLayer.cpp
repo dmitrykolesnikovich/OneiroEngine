@@ -8,12 +8,19 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "Oneiro/Core/Root.hpp"
 
+namespace
+{
+    bool isPreInit{};
+    bool isInit{};
+}
+
 namespace oe::Renderer::GuiLayer
 {
 	void PreInit()
 	{
 		IMGUI_CHECKVERSION();
 		CreateContext();
+        isPreInit = true;
 		StyleColorsDark();
 	}
 
@@ -21,6 +28,7 @@ namespace oe::Renderer::GuiLayer
 	{
 		ImGui_ImplOpenGL3_Init("#version 330");
 		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
+        isInit = true;
 	}
 
 	void NewFrame()
@@ -38,8 +46,10 @@ namespace oe::Renderer::GuiLayer
 
 	void Shutdown()
 	{
-		ImGui_ImplGlfw_Shutdown();
-		DestroyContext();
+        if (isInit)
+		    ImGui_ImplGlfw_Shutdown();
+        if (isPreInit)
+		    DestroyContext();
 	}
 }
 
