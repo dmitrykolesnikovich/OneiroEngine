@@ -83,11 +83,12 @@ namespace oe::Runtime
 			return false;
 
 		Core::Window::PollEvents();
-		gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 #ifdef OE_RENDERER_VULKAN
         Renderer::Vulkan::BeginScene();
+#else
+		Renderer::GL::ClearColor(0.1f, 0.1f, 0.1f);
+		Renderer::GL::Clear(Renderer::GL::ClearType::COLOR_BUFFER | Renderer::GL::ClearType::DEPTH_BUFFER);
 #endif
 		Renderer::GuiLayer::NewFrame();
 		if (!app->OnUpdate(deltaTime))
@@ -109,7 +110,12 @@ namespace oe::Runtime
 		Core::Shutdown();
 	}
 
-	void Engine::SetupEvents()
+    float Engine::GetDeltaTime()
+	{
+	    return mDeltaTime;
+	}
+
+    void Engine::SetupEvents()
 	{
 		using namespace Core;
 		Event::Dispatcher::Subscribe<Event::FrameBufferSizeEvent>([](const Event::Base& e)

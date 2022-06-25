@@ -32,8 +32,8 @@ namespace oe::Renderer::GL
 
 		void SetString(const std::string& str);
 
-		void Draw(const glm::vec2& pos = {25.0F, 25.0F},
-		          const glm::vec3& color = {1.0F, 0.0F, 0.0F});
+		void Draw(const glm::vec2& pos = {25.0f, 25.0f},
+		          const glm::vec3& color = {1.0f, 0.0f, 0.0f});
 	private:
 		std::map<char, Character> mCharacters{};
 		std::string mString{};

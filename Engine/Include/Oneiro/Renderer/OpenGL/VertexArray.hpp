@@ -22,7 +22,7 @@ namespace oe::Renderer::GL
 
 		static void UnBind();
 
-		uint32_t Get();
+        [[nodiscard]] uint32_t Get() const;
 	private:
 		uint32_t mID{};
 	};

@@ -28,5 +28,5 @@ namespace oe::Renderer::GL
 		gl::BindVertexArray(0);
 	}
 
-	uint32_t VertexArray::Get() { return mID; }
+	uint32_t VertexArray::Get() const { return mID; }
 }

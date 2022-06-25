@@ -15,10 +15,8 @@ namespace oe::Animation
 	class Animation
 	{
 	protected:
-		~Animation() = default;
+		~Animation();
 	public:
-		virtual void Update(Renderer::GL::Sprite2D* sprite2D, float dt)
-		{
-		};
-	};
+		virtual void Update(Renderer::GL::Sprite2D* sprite2D, float dt);
+    };
 }

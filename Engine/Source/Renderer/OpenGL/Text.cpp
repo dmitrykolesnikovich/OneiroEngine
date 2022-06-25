@@ -24,9 +24,9 @@ namespace oe::Renderer::GL
 		mVBO.BufferData<float>(6 * 4, nullptr);
 		VertexAttribPointer<float>(0, 4, 4);
 
-		auto vertexShaderSrc = R"(
+        const auto vertexShaderSrc = R"(
                 #version 330 core
-                layout (location = 0) in vec4 aPos; // <vec2 pos, vec2 tex_coord>
+                layout (location = 0) in vec4 aPos;
                 out vec2 UV;
 
                 uniform mat4 projection;
@@ -38,7 +38,7 @@ namespace oe::Renderer::GL
                 }
             )";
 
-		auto fragmentShaderSrc = R"(
+        const auto fragmentShaderSrc = R"(
                 #version 330 core
                 in vec2 UV;
                 out vec4 color;
@@ -153,43 +153,42 @@ namespace oe::Renderer::GL
 		float x = pos.x;
 		float y = pos.y;
 		mShader.Use();
-		mShader.SetUniform("projection", glm::ortho(0.0F, static_cast<float>(Core::Root::GetWindow()->GetWidth()), 0.0F,
+		mShader.SetUniform("projection", glm::ortho(0.0f, static_cast<float>(Core::Root::GetWindow()->GetWidth()), 0.0f,
 		                                            static_cast<float>(Core::Root::GetWindow()->GetHeight())));
-		mShader.SetUniform("textColor", glm::vec3(1.0, 0.0F, 0.0F));
+		mShader.SetUniform("textColor", glm::vec3(1.0f, 0.0f, 0.0f));
 
 		mVAO.Bind();
 
-		std::string::const_iterator stringIt;
-		for (stringIt = mString.begin(); stringIt != mString.end(); ++stringIt)
-		{
-			auto character = mCharacters[*stringIt];
+        for (char stringIt : mString)
+        {
+            const auto [Texture, Size, Bearing, Advance] = mCharacters[stringIt];
 
-			if ((*(stringIt)) == '\n')
+			if (stringIt == '\n')
 			{
 				x = pos.x;
 				y -= 25.0f;
 				continue;
 			}
 
-			float xpos = x + character.Bearing.x * 1.0F;
-			float ypos = y - (character.Size.y - character.Bearing.y) * 1.0F;
+            const float xPos = x + Bearing.x;
+            const float yPos = y - Size.y - Bearing.y;
 
-			const float width = character.Size.x * 1.0F;
-			const float height = character.Size.y * 1.0F;
+			const float width = Size.x;
+			const float height = Size.y;
 			const float vertices[6][4] =
 			{
-				{xpos, ypos + height, 0.0, 0.0}, {xpos, ypos, 0.0, 1.0}, {xpos + width, ypos, 1.0, 1.0},
-				{xpos, ypos + height, 0.0, 0.0}, {xpos + width, ypos, 1.0, 1.0},
-				{xpos + width, ypos + height, 1.0, 0.0}
+				{xPos, yPos + height, 0.0, 0.0}, {xPos, yPos, 0.0, 1.0}, {xPos + width, yPos, 1.0, 1.0},
+				{xPos, yPos + height, 0.0, 0.0}, {xPos + width, yPos, 1.0, 1.0},
+				{xPos + width, yPos + height, 1.0, 0.0}
 			};
-			character.Texture->Bind();
+			Texture->Bind();
 			mVBO.Bind();
 			mVBO.BufferSubData(sizeof(vertices), 0, vertices);
 			DrawArrays(TRIANGLES, 6);
 			mVBO.UnBind();
 
 			// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-			x += (character.Advance >> 6) * 1.0F; // Bitshift by 6 to get value in pixels (2^6 = 64)
+			x += (Advance >> 6) * 1.0F; // Bitshift by 6 to get value in pixels (2^6 = 64)
 		}
 		gl::BindVertexArray(0);
 		gl::BindTexture(gl::TEXTURE_2D, 0);

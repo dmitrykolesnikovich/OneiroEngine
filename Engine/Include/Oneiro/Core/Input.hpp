@@ -5,11 +5,7 @@
 
 #pragma once
 
-#define GLFW_INCLUDE_NONE
-
-#include "Root.hpp"
 #include "Window.hpp"
-#include "GLFW/glfw3.h"
 
 namespace oe::Input
 {
@@ -79,23 +75,8 @@ namespace oe::Input
 		virtual void Undo() = 0;
 	};
 
-	inline bool IsKey(Action action, Key key)
-	{
-		return glfwGetKey(Core::Root::GetWindow()->GetGLFW(), static_cast<int>(key)) == static_cast<int>(action);
-	}
-
-	inline bool IsMouseButton(Action action, Button button)
-	{
-		return glfwGetMouseButton(Core::Root::GetWindow()->GetGLFW(), static_cast<int>(button)) == static_cast<int>(action);
-	}
-
-	inline void SetMode(InputMode mode, InputValue value)
-	{
-		glfwSetInputMode(Core::Root::GetWindow()->GetGLFW(), mode, value);
-	}
-
-	inline int GetMode(InputMode mode)
-	{
-		return glfwGetInputMode(Core::Root::GetWindow()->GetGLFW(), mode);
-	}
+	bool IsKey(Action action, Key key);
+	bool IsMouseButton(Action action, Button button);
+	void SetMode(InputMode mode, InputValue value);
+	int GetMode(InputMode mode);
 }

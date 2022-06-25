@@ -24,10 +24,10 @@ namespace oe::Renderer::GL
 
 		void UnBind();
 
-		template <int T>
-		constexpr void Texture2D(int attachment, const Texture<T>& texture)
+		template <int TextureType, bool TextureMipMaps = true>
+        static constexpr void Texture2D(int attachment, const Texture<TextureType, TextureMipMaps>& texture)
 		{
-			gl::FramebufferTexture2D(gl::FRAMEBUFFER, attachment, T, texture.Get(), 0);
+			gl::FramebufferTexture2D(gl::FRAMEBUFFER, attachment, TextureType, texture.Get(), 0);
 		}
 
 		void RenderBuffer(int attachment, const RenderBuffer& renderBuffer);

@@ -50,16 +50,17 @@ namespace oe::Renderer::GL
 			gl::BindBuffer(BufferType, mID);
 		}
 
-		constexpr void UnBind() const
-		{
+        static constexpr void UnBind()
+        {
 			gl::BindBuffer(BufferType, 0);
 		}
 
-		uint32_t Get() { return mID; }
+        [[nodiscard]] uint32_t Get() const { return mID; }
 	private:
 		uint32_t mID{};
 	};
 
+	// ReSharper disable CppCStyleCast
 	IS_SAME_TEMPLATE(float)
 	constexpr void VertexAttribPointer(int index, int size, int stride, int offset = 0)
 	{
@@ -75,8 +76,8 @@ namespace oe::Renderer::GL
 	{
 		gl::EnableVertexAttribArray(index);
 		gl::VertexAttribPointer(index, size, gl::FLOAT, gl::FALSE_, static_cast<int>(stride * sizeof(U)),
-		                        offset == 0 ? nullptr : (void*)(offset));
-	}
+                                offset == 0 ? nullptr : (void*)(offset));
+    }
 
 	IS_SAME_TEMPLATE(int)
 	constexpr void VertexAttribPointer(int index, int size, int stride, int offset = 0)
@@ -93,4 +94,6 @@ namespace oe::Renderer::GL
 		gl::VertexAttribPointer(index, size, gl::UNSIGNED_BYTE, gl::TRUE_, static_cast<int>(stride *
 			                        sizeof(char)), offset == 0 ? nullptr : (void*)(offset * sizeof(char)));
 	}
+
+	// ReSharper restore CppCStyleCast
 }

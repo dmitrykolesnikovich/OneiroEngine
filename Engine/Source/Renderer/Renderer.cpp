@@ -29,7 +29,32 @@ namespace oe::Renderer
 	{
 	}
 
-	void GL::Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
+    void GL::DrawArrays(DrawMode mode, int first, int count)
+    {
+        gl::DrawArrays(mode, first, count);
+    }
+
+    void GL::DrawArrays(DrawMode mode, int count)
+    {
+        gl::DrawArrays(mode, 0, count);
+    }
+
+    void GL::ClearColor(float r, float g, float b, float a)
+    {
+        gl::ClearColor(r, g, b, a);
+    }
+
+    void GL::DrawElements(DrawMode mode, int count, DataType type, const void* indices)
+    {
+        gl::DrawElements(mode, count, type, indices);
+    }
+
+    void GL::Clear(uint32_t mask)
+    {
+        gl::Clear(mask);
+    }
+
+    void GL::Viewport(GLint x, GLint y, GLsizei width, GLsizei height)
 	{
 		gl::Viewport(x, y, width, height);
 	}

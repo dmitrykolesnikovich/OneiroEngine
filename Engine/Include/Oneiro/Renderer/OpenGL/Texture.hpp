@@ -37,27 +37,27 @@ namespace oe::Renderer::GL
 			gl::GenTextures(1, &mID);
 		}
 
-		void TexImage2D(int internalFormat, int width, int height, int border, int format, int type, const void* data)
+        static void TexImage2D(int internalFormat, int width, int height, int border, int format, int type, const void* data)
 		{
 			gl::TexImage2D(TextureType, 0, internalFormat, width, height, 0, format, type, data);
 		}
 
 		TextureData* GetData() { return &mData; }
 
-		const TextureData* GetData() const { return &mData; }
+        [[nodiscard]] const TextureData* GetData() const { return &mData; }
 
-		void TexImage2D(int textureType, int internalFormat, int width, int height, int border, int format, int type,
-		                const void* data)
+        static void TexImage2D(int textureType, int internalFormat, int width, int height, int border, int format, int type,
+                               const void* data)
 		{
 			gl::TexImage2D(textureType, 0, internalFormat, width, height, 0, format, type, data);
 		}
 
-		void TexParameter(int name, int param)
+        static void TexParameter(int name, int param)
 		{
 			gl::TexParameteri(TextureType, name, param);
 		}
 
-		void GenerateMipmap()
+        static void GenerateMipmap()
 		{
 			gl::GenerateMipmap(TextureType);
 		}
@@ -68,13 +68,12 @@ namespace oe::Renderer::GL
 			gl::BindTexture(gl::TEXTURE_2D, mID);
 		}
 
-		constexpr void UnBind() const
-		{
+        static constexpr void UnBind()
+        {
 			gl::BindTexture(TextureType, 0);
 		}
 
-		uint32_t Get() const { return mID; }
-
+        [[nodiscard]] uint32_t Get() const { return mID; }
 	private:
 		TextureData mData{};
 		uint32_t mID{};

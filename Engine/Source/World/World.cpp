@@ -137,26 +137,12 @@ namespace
             out << YAML::Key << "MovementSpeed" << YAML::Value << mc.MovementSpeed;
             out << YAML::Key << "MouseSensitivity" << YAML::Value << mc.MouseSensitivity;
 
+            out << YAML::Key << "Near" << YAML::Value << mc.Near;
+            out << YAML::Key << "Far" << YAML::Value << mc.Far;
+            out << YAML::Key << "Fov" << YAML::Value << mc.Fov;
+
             out << YAML::EndMap;
         } // End MainCameraComponent
-
-        if (entity.HasComponent<oe::CameraComponent>())
-        {
-            // Begin CameraComponent
-            out << YAML::Key << "CameraComponent";
-            out << YAML::BeginMap;
-
-            const auto& camera = entity.GetComponent<oe::CameraComponent>();
-            out << YAML::Key << "Translation" << YAML::Value << camera.Translation;
-            out << YAML::Key << "Up" << YAML::Value << camera.Up;
-            out << YAML::Key << "Center" << YAML::Value << camera.Center;
-
-            out << YAML::Key << "Near" << YAML::Value << camera.Near;
-            out << YAML::Key << "Far" << YAML::Value << camera.Far;
-            out << YAML::Key << "Fov" << YAML::Value << camera.Fov;
-
-            out << YAML::EndMap;
-        } // End CameraComponent
 
         if (entity.HasComponent<oe::ModelComponent>())
         {
@@ -231,7 +217,6 @@ namespace oe::World
             auto transformComponent = entity["TransformComponent"];
 
             auto mainCameraComponent = entity["MainCameraComponent"];
-            auto cameraComponent = entity["CameraComponent"];
             auto modelComponent = entity["ModelComponent"];
 
             Entity loadedEntity = world->CreateEntity(name);
@@ -241,19 +226,6 @@ namespace oe::World
             tc.Translation = transformComponent["Translation"].as<glm::vec3>();
             tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
             tc.Scale = transformComponent["Scale"].as<glm::vec3>();
-
-            if (cameraComponent)
-            {
-                auto& camera = loadedEntity.AddComponent<CameraComponent>();
-
-                camera.Translation = cameraComponent["Translation"].as<glm::vec3>();
-                camera.Up = cameraComponent["Up"].as<glm::vec3>();
-                camera.Center = cameraComponent["Center"].as<glm::vec3>();
-
-                camera.Near = cameraComponent["Near"].as<float>();
-                camera.Far = cameraComponent["Far"].as<float>();
-                camera.Fov = cameraComponent["Fov"].as<float>();
-            }
 
             if (mainCameraComponent)
             {
@@ -267,6 +239,9 @@ namespace oe::World
                 mainCamera.Pitch = mainCameraComponent["Pitch"].as<float>();
                 mainCamera.MovementSpeed = mainCameraComponent["MovementSpeed"].as<float>();
                 mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
+                mainCamera.Near = mainCameraComponent["Near"].as<float>();
+                mainCamera.Far = mainCameraComponent["Far"].as<float>();
+                mainCamera.Fov = mainCameraComponent["Fov"].as<float>();
             }
 
             if (modelComponent)

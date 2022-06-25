@@ -39,32 +39,17 @@ namespace oe::Renderer::GL
 		STENCIL_BUFFER = gl::STENCIL_BUFFER_BIT
 	};
 
-	inline void DrawArrays(DrawMode mode, int first, int count)
-	{
-		gl::DrawArrays(mode, first, count);
-	}
+	void DrawArrays(DrawMode mode, int first, int count);
 
-	inline void DrawArrays(DrawMode mode, int count)
-	{
-		gl::DrawArrays(mode, 0, count);
-	}
+    void DrawArrays(DrawMode mode, int count);
 
-	inline void ClearColor(float r, float g, float b, float a = 1.0f)
-	{
-		gl::ClearColor(r, g, b, a);
-	}
+    void ClearColor(float r, float g, float b, float a = 1.0f);
 
-	inline void DrawElements(DrawMode mode, int count, DataType type, const void* indices = nullptr)
-	{
-		gl::DrawElements(mode, count, type, indices);
-	}
+    void DrawElements(DrawMode mode, int count, DataType type, const void* indices = nullptr);
 
-	inline void Clear(uint32_t mask)
-	{
-		gl::Clear(mask);
-	}
+    void Clear(uint32_t mask);
 
-	void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
+    void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
 	void Viewport(GLsizei width, GLsizei height);
 }
 #else

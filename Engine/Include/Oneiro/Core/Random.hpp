@@ -18,7 +18,7 @@ namespace oe::Core
 
 		static std::string DiceUuid();
 	private:
-		inline static std::mt19937 mGenerator;
+		inline static std::mt19937 mGenerator{};
 		inline static std::uniform_int_distribution<> mDis{0, 15};
 		inline static std::uniform_int_distribution<> mDis2{8, 11};
 	};

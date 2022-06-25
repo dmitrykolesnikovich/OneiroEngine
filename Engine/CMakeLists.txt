@@ -93,12 +93,14 @@ else ()
 endif ()
 
 file(GLOB ONEIRO_SOURCE
+        "Source/Animation/*.cpp"
         "Source/Core/*.cpp"
+        "Source/Lua/*.cpp"
         "Source/Renderer/*.cpp"
         "Source/Renderer/Gui/*.cpp"
         "Source/Runtime/*.cpp"
-        "Source/World/*.cpp"
         "Source/VisualNovel/*.cpp"
+        "Source/World/*.cpp"
         )
 
 add_library(${PROJECT_NAME} STATIC ${ONEIRO_SOURCE} ${IMGUI_SOURCE} ${OPENGL_SOURCE} ${ONEIRO_RENDERER_SOURCE})

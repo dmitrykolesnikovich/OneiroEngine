@@ -5,12 +5,13 @@
 
 #include "Oneiro/Renderer/OpenGL/Texture.hpp"
 
+// ReSharper disable CppClangTidyReadabilityStaticAccessedThroughInstance
 namespace oe::Renderer::GL
 {
 	bool GL::Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
 	                       TextureData* textureData)
 	{
-		uint8_t* data{};
+		uint8_t* data;
 		int width{}, height{}, nrChannels{};
 		if (textureData)
 		{
@@ -26,8 +27,8 @@ namespace oe::Renderer::GL
 		}
 		if (data)
 		{
-			int internalFormat{};
-			int format{};
+			int internalFormat;
+			int format;
 			switch (nrChannels)
 			{
 			case 4:
@@ -67,8 +68,8 @@ namespace oe::Renderer::GL
 
 	bool GL::Load2DTexture(Texture<gl::TEXTURE_2D>* texture)
 	{
-		int internalFormat{};
-		int format{};
+		int internalFormat;
+		int format;
 		const auto* data = texture->GetData();
 		switch (data->Channels)
 		{

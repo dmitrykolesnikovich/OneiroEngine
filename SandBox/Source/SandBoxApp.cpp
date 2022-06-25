@@ -62,7 +62,6 @@ namespace SandBox
 
         mWorld = std::make_shared<World::World>("Main", "main");
         auto player = mWorld->CreateEntity("Player");
-        player.AddComponent<CameraComponent>();
         player.AddComponent<MainCameraComponent>();
 
         mWorld->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
@@ -102,7 +101,7 @@ namespace SandBox
         mShader.Use();
         mShader.SetUniform("uModel", backpackTransform.GetTransform());
         mShader.SetUniform("uView", mainCamera.GetViewMatrix());
-        mShader.SetUniform("uProjection", playerEntity.GetComponent<CameraComponent>().GetPerspectiveProjection());
+        mShader.SetUniform("uProjection", mainCamera.GetPerspectiveProjection());
         backpackEntity.GetComponent<ModelComponent>().Model->Draw();
 
         mShader.Use();

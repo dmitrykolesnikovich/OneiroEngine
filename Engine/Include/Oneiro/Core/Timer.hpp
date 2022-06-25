@@ -12,18 +12,13 @@ namespace oe::Core
     class Timer
     {
     public:
-        Timer() { }
-        void Start() { mStart = std::chrono::high_resolution_clock::now(); }
+        Timer();
+        void Start();
 
         /**
-         * @return returns total time in milliseconds
+         * @return Returns total time in milliseconds
          */
-        [[nodiscard]] float End() const
-        {
-            return std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f *
-                    0.001f * 1000.0f;
-        }
+        [[nodiscard]] float End() const;
     private:
         std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
     };
