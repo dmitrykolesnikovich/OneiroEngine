@@ -24,7 +24,7 @@ jobs:
       run: sudo apt-get install -y libopengl-dev xorg-dev
       
     - name: Clone submodules 1
-      run: git submodule sync
+      run: git submodule init
     - name: Clone submodules 2
       run: git submodule update
 
