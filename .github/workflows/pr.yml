@@ -1,0 +1,40 @@
+on:
+  pull_request:
+    types: [opened, reopened]  # let PR-synchronize events be handled by push events
+  push:
+
+jobs:
+  cpp-linter:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+
+      # this step can be skipped if the desired
+      # version already comes with the runner's OS
+      - name: Install clang-tools
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          # v12 is the recommended minimum for the Visual Studio compiler (on Windows)
+          version: 14
+          # specifying an install path is required (on Windows) because installing
+          # multiple versions on Windows runners needs non-default install paths.
+          directory: ${{ runner.temp }}/llvm
+
+      - name: Install linter python package
+        run: python3 -m pip install git+https://github.com/cpp-linter/cpp-linter-action@v1
+
+      - name: run linter as a python package
+        id: linter
+        # pass the installed path to the '--version' argument (Windows only).
+        # Any other OS-based runners only take the version number.
+        #     Example. run: cpp-linter --version=14
+        # Omit the version option if using the default version available in the OS.
+        run: cpp-linter --version=${{ runner.temp }}/llvm 
+
+      - name: Fail fast?!
+        if: steps.linter.outputs.checks-failed > 0
+        run: echo "Some files failed the linting checks!"
+        # for actual deployment
+        # run: exit 1
