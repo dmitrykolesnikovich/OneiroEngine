@@ -35,4 +35,8 @@ Oneiro is powerful and fast engine, because it's written in C++ with OpenGL back
 
 #
 
+[![cpp-linter](https://github.com/DezlowNG/OneiroEngine/actions/workflows/main.yml/badge.svg)](https://github.com/DezlowNG/OneiroEngine/actions/workflows/main.yml)
+
+#
+
 <h1 align="center">Made with ❤️</h1>
