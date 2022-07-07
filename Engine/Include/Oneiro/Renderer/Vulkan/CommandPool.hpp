@@ -11,14 +11,15 @@ namespace oe::Renderer::Vulkan
 {
     class CommandPool
     {
-    public:
+      public:
         void Create();
 
         void Destroy();
 
         [[nodiscard]] VkCommandPool Get() const;
         [[nodiscard]] const VkCommandPool* GetPtr() const;
-    private:
+
+      private:
         VkCommandPool mCommandPool{};
     };
-}
+} // namespace oe::Renderer::Vulkan

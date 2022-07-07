@@ -11,15 +11,16 @@ namespace oe::Renderer::Vulkan
 {
     class Instance
     {
-    public:
+      public:
         void Create(bool enableValidationLayer = true);
 
         [[nodiscard]] VkInstance Get() const;
         [[nodiscard]] const VkInstance* GetPtr() const;
 
         void Destroy() const;
-    private:
+
+      private:
         VkInstance mVkInstance{};
         ValidationLayers mValidationLayers;
     };
-}
+} // namespace oe::Renderer::Vulkan

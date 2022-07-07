@@ -12,15 +12,14 @@ namespace oe::Renderer::Vulkan
 {
     class PhysicalDevice
     {
-    public:
+      public:
         static VkSurfaceCapabilitiesKHR GetSurfaceCapabilities(VkPhysicalDevice device);
 
         static std::vector<VkSurfaceFormatKHR> GetSurfaceFormats(VkPhysicalDevice device);
 
         static std::vector<VkPresentModeKHR> GetPresentModes(VkPhysicalDevice device);
 
-        void CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily,
-                                   VkDeviceQueueCreateInfo& queueCreateInfo);
+        void CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily, VkDeviceQueueCreateInfo& queueCreateInfo);
         bool IsDeviceSuitable(VkPhysicalDevice device);
 
         bool CheckDeviceExtensionsSupport(VkPhysicalDevice device) const;
@@ -47,7 +46,8 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] const std::vector<VkDeviceQueueCreateInfo>& GetQueueInfos() const;
         [[nodiscard]] const std::vector<const char*>& GetExtensions() const;
         VkSampleCountFlagBits GetMsaaSamples() const;
-    private:
+
+      private:
         VkPhysicalDevice mPhysicalDevice{};
         VkPhysicalDeviceProperties mDeviceProperties{};
         VkPhysicalDeviceFeatures mDeviceFeatures{};
@@ -56,4 +56,4 @@ namespace oe::Renderer::Vulkan
         std::vector<const char*> mDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
         VkSampleCountFlagBits mMsaaSamples{VK_SAMPLE_COUNT_1_BIT};
     };
-}
+} // namespace oe::Renderer::Vulkan

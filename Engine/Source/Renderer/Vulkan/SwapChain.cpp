@@ -16,9 +16,8 @@
 
 namespace
 {
-    void CreateSwapChainInfo(uint32_t imageCount, VkSurfaceFormatKHR surfaceFormat,
-                             VkSurfaceCapabilitiesKHR capabilities, VkPresentModeKHR presentMode,
-                             VkExtent2D extent, VkSwapchainCreateInfoKHR& createInfo);
+    void CreateSwapChainInfo(uint32_t imageCount, VkSurfaceFormatKHR surfaceFormat, VkSurfaceCapabilitiesKHR capabilities,
+                             VkPresentModeKHR presentMode, VkExtent2D extent, VkSwapchainCreateInfoKHR& createInfo);
 }
 
 namespace oe::Renderer::Vulkan
@@ -39,17 +38,13 @@ namespace oe::Renderer::Vulkan
             imageCount = capabilities.maxImageCount;
 
         VkSwapchainCreateInfoKHR createInfo{};
-        CreateSwapChainInfo(imageCount, surfaceFormat, capabilities, presentMode, extent,
-                            createInfo);
+        CreateSwapChainInfo(imageCount, surfaceFormat, capabilities, presentMode, extent, createInfo);
 
-        VK_CHECK_RESULT(
-                vkCreateSwapchainKHR(GetLogicalDevice()->Get(), &createInfo, nullptr, &mSwapchain),
-                "Failed to create swapchain!")
+        VK_CHECK_RESULT(vkCreateSwapchainKHR(GetLogicalDevice()->Get(), &createInfo, nullptr, &mSwapchain), "Failed to create swapchain!")
 
         vkGetSwapchainImagesKHR(GetLogicalDevice()->Get(), mSwapchain, &imageCount, nullptr);
         mSwapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(GetLogicalDevice()->Get(), mSwapchain, &imageCount,
-                                mSwapChainImages.data());
+        vkGetSwapchainImagesKHR(GetLogicalDevice()->Get(), mSwapchain, &imageCount, mSwapChainImages.data());
         mSwapChainImageFormat = surfaceFormat.format;
         mSwapChainExtent = extent;
     }
@@ -79,19 +74,16 @@ namespace oe::Renderer::Vulkan
         return mSwapchain;
     }
 
-    VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(
-            const std::vector<VkSurfaceFormatKHR>& availableFormats)
+    VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
     {
         for (const auto& availableFormat : availableFormats)
-            if (availableFormat.format == VK_FORMAT_R8G8B8A8_UNORM &&
-                    availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            if (availableFormat.format == VK_FORMAT_R8G8B8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
                 return availableFormat;
 
         return availableFormats[0];
     }
 
-    VkPresentModeKHR SwapChain::ChooseSwapPresentMode(
-            const std::vector<VkPresentModeKHR>& availablePresentModes)
+    VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
     {
         for (const auto& availablePresentMode : availablePresentModes)
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
@@ -106,30 +98,25 @@ namespace oe::Renderer::Vulkan
             return capabilities.currentExtent;
 
         VkExtent2D actualExtent = {static_cast<uint32_t>(Core::Root::GetWindow()->GetWidth()),
-                static_cast<uint32_t>(Core::Root::GetWindow()->GetHeight())};
+                                   static_cast<uint32_t>(Core::Root::GetWindow()->GetHeight())};
 
-        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
-                                        capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height,
-                                         capabilities.maxImageExtent.height);
+        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
         return actualExtent;
     }
-}
+} // namespace oe::Renderer::Vulkan
 
 namespace
 {
-    void CreateSwapChainInfo(uint32_t imageCount, VkSurfaceFormatKHR surfaceFormat,
-                             VkSurfaceCapabilitiesKHR capabilities, VkPresentModeKHR presentMode,
-                             VkExtent2D extent, VkSwapchainCreateInfoKHR& createInfo)
+    void CreateSwapChainInfo(uint32_t imageCount, VkSurfaceFormatKHR surfaceFormat, VkSurfaceCapabilitiesKHR capabilities,
+                             VkPresentModeKHR presentMode, VkExtent2D extent, VkSwapchainCreateInfoKHR& createInfo)
     {
         using namespace oe::Renderer::Vulkan;
 
         const auto& physDevice = GetPhysDevice()->Get();
-        const PhysicalDevice::QueueFamilyIndices
-                indices = PhysicalDevice::FindQueueFamilies(physDevice);
-        const uint32_t queueFamilyIndices[] =
-                {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
+        const PhysicalDevice::QueueFamilyIndices indices = PhysicalDevice::FindQueueFamilies(physDevice);
+        const uint32_t queueFamilyIndices[] = {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
 
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         createInfo.surface = GetWindowSurface()->Get();
@@ -159,4 +146,4 @@ namespace
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = VK_NULL_HANDLE;
     }
-}
+} // namespace

@@ -11,49 +11,39 @@ namespace oe
 
     TagComponent::TagComponent(const TagComponent&) = default;
 
-    TagComponent::TagComponent(std::string tag) : Tag(std::move(tag))
-    {
-    }
+    TagComponent::TagComponent(std::string tag) : Tag(std::move(tag)) {}
 
     TransformComponent::TransformComponent() = default;
     TransformComponent::TransformComponent(const TransformComponent&) = default;
 
-    TransformComponent::TransformComponent(const glm::vec3& translation, const glm::vec3& rotation,
-        const glm::vec3& scale) : Translation(translation), Rotation(rotation),
-        Scale(scale)
+    TransformComponent::TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale)
+        : Translation(translation), Rotation(rotation), Scale(scale)
     {
     }
 
     glm::mat4 TransformComponent::GetTransform() const
     {
         const glm::mat4 rotation = toMat4(glm::quat(Rotation));
-        return translate(glm::mat4(1.0f), Translation) * rotation *
-            scale(glm::mat4(1.0f), Scale);
+        return translate(glm::mat4(1.0f), Translation) * rotation * scale(glm::mat4(1.0f), Scale);
     }
 
     Sprite2DComponent::Sprite2DComponent() = default;
 
     Sprite2DComponent::Sprite2DComponent(const Sprite2DComponent&) = default;
 
-    Sprite2DComponent::Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D) : Sprite2D(sprite2D)
-    {
-    }
+    Sprite2DComponent::Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D) : Sprite2D(sprite2D) {}
 
     AnimationComponent::AnimationComponent() = default;
 
     AnimationComponent::AnimationComponent(const AnimationComponent&) = default;
 
-    AnimationComponent::AnimationComponent(Animation::Animation* animation) : Animation(animation)
-    {
-    }
+    AnimationComponent::AnimationComponent(Animation::Animation* animation) : Animation(animation) {}
 
     ModelComponent::ModelComponent() : Model(new Renderer::GL::Model) {}
 
     ModelComponent::ModelComponent(const ModelComponent&) = default;
 
-    ModelComponent::ModelComponent(Renderer::GL::Model* model) : Model(model)
-    {
-    }
+    ModelComponent::ModelComponent(Renderer::GL::Model* model) : Model(model) {}
 
     MainCameraComponent::MainCameraComponent() : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Up(glm::vec3(0.0f, 1.0f, 0.0f)), WorldUp(Up)
     {
@@ -127,11 +117,9 @@ namespace oe
 
     glm::mat4 MainCameraComponent::GetPerspectiveProjection() const
     {
-        return glm::perspective(glm::radians(Fov),
-            static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
-            static_cast<float>(
-                Core::Root::GetWindow()->GetHeight()), Near,
-            Far);
+        return glm::perspective(
+            glm::radians(Fov),
+            static_cast<float>(Core::Root::GetWindow()->GetWidth()) / static_cast<float>(Core::Root::GetWindow()->GetHeight()), Near, Far);
     }
 
     glm::mat4 MainCameraComponent::GetOrthoProjection() const
@@ -141,13 +129,10 @@ namespace oe
 
     void MainCameraComponent::UpdateCameraVectors()
     {
-        Front = normalize(glm::vec3{
-            cos(glm::radians(Yaw)) * cos(glm::radians(Pitch)),
-            sin(glm::radians(Pitch)),
-            sin(glm::radians(Yaw)) * cos(glm::radians(Pitch))
-            });
+        Front = normalize(glm::vec3{cos(glm::radians(Yaw)) * cos(glm::radians(Pitch)), sin(glm::radians(Pitch)),
+                                    sin(glm::radians(Yaw)) * cos(glm::radians(Pitch))});
 
         Right = normalize(cross(Front, WorldUp));
         Up = normalize(cross(Right, Front));
     }
-}
+} // namespace oe

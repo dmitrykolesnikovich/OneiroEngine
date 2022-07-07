@@ -12,15 +12,16 @@ namespace oe::Renderer::Vulkan
 {
     class DescriptorSet
     {
-    public:
+      public:
         void Begin(VkDescriptorPool pool, const VkDescriptorSetLayout* layout);
         void AddBufferWriteDescriptor(int binding, VkBuffer buffer, VkDeviceSize bufferSize);
         void AddImageWriteDescriptor(int binding, VkImageView imageView, VkSampler imageSampler);
         void End();
 
         void Bind() const;
-    private:
+
+      private:
         std::vector<VkWriteDescriptorSet> mDescriptorWrites;
         VkDescriptorSet mDescriptorSet{};
     };
-}
+} // namespace oe::Renderer::Vulkan

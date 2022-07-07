@@ -11,7 +11,7 @@ namespace oe::Renderer::Vulkan
 {
     class LogicalDevice
     {
-    public:
+      public:
         void Create(bool enableValidationLayers = true);
         void Destroy();
 
@@ -19,9 +19,10 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] const VkDevice* GetPtr() const;
 
         void WaitIdle() const;
-    private:
+
+      private:
         void CreateDeviceInfo(bool enableValidationLayers, VkDeviceCreateInfo& createInfo) const;
 
         VkDevice mDevice{};
     };
-}
+} // namespace oe::Renderer::Vulkan

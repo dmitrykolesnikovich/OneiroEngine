@@ -13,7 +13,7 @@ namespace oe::Renderer::Vulkan
 
     class Pipeline
     {
-    public:
+      public:
         bool IsCreated()
         {
             return mGraphicsPipeline != VK_NULL_HANDLE && mPipelineLayout != VK_NULL_HANDLE;
@@ -50,7 +50,7 @@ namespace oe::Renderer::Vulkan
             mVertexInputAttribute = attribute;
         }
 
-    private:
+      private:
         VkShaderModule mVertShaderModule{};
         VkShaderModule mFragShaderModule{};
         VkVertexInputBindingDescription mVertexInputBinding{};
@@ -58,4 +58,4 @@ namespace oe::Renderer::Vulkan
         VkPipelineLayout mPipelineLayout{};
         VkPipeline mGraphicsPipeline{};
     };
-}
+} // namespace oe::Renderer::Vulkan

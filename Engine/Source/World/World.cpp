@@ -4,8 +4,8 @@
 //
 
 #include "Oneiro/World/World.hpp"
-#include "Oneiro/World/Entity.hpp"
 #include "Oneiro/Core/Random.hpp"
+#include "Oneiro/World/Entity.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -15,8 +15,7 @@
 // ReSharper disable CppInconsistentNaming
 namespace YAML
 {
-    template <>
-    struct convert<glm::vec3>
+    template <> struct convert<glm::vec3>
     {
         static Node encode(const glm::vec3& rhs)
         {
@@ -40,8 +39,7 @@ namespace YAML
         }
     };
 
-    template <>
-    struct convert<glm::vec2>
+    template <> struct convert<glm::vec2>
     {
         static Node encode(const glm::vec2& rhs)
         {
@@ -63,8 +61,7 @@ namespace YAML
         }
     };
 
-    template <>
-    struct convert<glm::vec4>
+    template <> struct convert<glm::vec4>
     {
         static Node encode(const glm::vec4& rhs)
         {
@@ -89,7 +86,7 @@ namespace YAML
             return true;
         }
     };
-}
+} // namespace YAML
 
 // ReSharper restore CppInconsistentNaming
 
@@ -209,7 +206,7 @@ namespace
 
         out << YAML::EndMap; // End Entity
     }
-}
+} // namespace
 
 namespace oe::World
 {
@@ -218,36 +215,36 @@ namespace oe::World
         constexpr auto vertexShaderSrc = R"(
                 #version 330 core
                 layout (location = 0) in vec4 aColor;
-				layout (location = 1) in vec3 aPos;
-				layout (location = 2) in vec2 aNormal;
-				layout (location = 3) in vec2 aTexCoords;
+                layout (location = 1) in vec3 aPos;
+                layout (location = 2) in vec2 aNormal;
+                layout (location = 3) in vec2 aTexCoords;
                 uniform mat4 uView;
                 uniform mat4 uProjection;
                 uniform mat4 uModel;
-				out vec4 Color;
-				out vec2 TexCoords;
+                out vec4 Color;
+                out vec2 TexCoords;
                 void main()
                 {
                     gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
-					TexCoords = aTexCoords;
-					Color = aColor;
+                    TexCoords = aTexCoords;
+                    Color = aColor;
                 }
             )";
 
         constexpr auto fragmentShaderSrc = R"(
                 #version 330 core
                 out vec4 FragColor;
-				uniform sampler2D uTexture;
-				in vec4 Color;
-				in vec2 TexCoords;
+                uniform sampler2D uTexture;
+                in vec4 Color;
+                in vec2 TexCoords;
                 uniform vec3 uColor;
                 void main()
                 {
                     vec4 texture = texture(uTexture, TexCoords);
-					if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
-						FragColor = Color;
-					else
-						FragColor = pow(texture, vec4(1.0/2.2));
+                    if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
+                        FragColor = Color;
+                    else
+                        FragColor = pow(texture, vec4(1.0/2.2));
                 }
             )";
 
@@ -347,12 +344,8 @@ namespace oe::World
                         const YAML::Node& nd = modelComponent["Vertices"][std::to_string(i)];
                         if (nd.IsDefined())
                         {
-                            vertices.push_back({
-                                nd["Color"].as<glm::vec4>(),
-                                nd["Position"].as<glm::vec3>(),
-                                nd["Normal"].as<glm::vec3>(),
-                                nd["TexCoords"].as<glm::vec2>()
-                            });
+                            vertices.push_back({nd["Color"].as<glm::vec4>(), nd["Position"].as<glm::vec3>(), nd["Normal"].as<glm::vec3>(),
+                                                nd["TexCoords"].as<glm::vec2>()});
                             i++;
                         }
                         else
@@ -374,8 +367,7 @@ namespace oe::World
         out << YAML::Key << "World" << YAML::Value << mData.Name;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-        mRegistry.each([&](const auto entityID)
-        {
+        mRegistry.each([&](const auto entityID) {
             const Entity entity = {entityID, this};
             if (!entity)
                 return;
@@ -428,7 +420,7 @@ namespace oe::World
 
         for (auto entity : view)
         {
-            //const auto& tagComponent = view.get<const TagComponent>(entity);
+            // const auto& tagComponent = view.get<const TagComponent>(entity);
             const auto& transformComponent = view.get<const TransformComponent>(entity);
             const auto& mainCamera = mRegistry.try_get<const MainCameraComponent>(entity);
             const auto& modelComponent = mRegistry.try_get<const ModelComponent>(entity);
@@ -453,4 +445,4 @@ namespace oe::World
             }
         }
     }
-}
+} // namespace oe::World

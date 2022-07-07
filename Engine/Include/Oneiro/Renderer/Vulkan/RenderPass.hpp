@@ -11,7 +11,7 @@ namespace oe::Renderer::Vulkan
 {
     class RenderPass
     {
-    public:
+      public:
         void Create();
 
         static void Begin(VkRenderPass renderPass);
@@ -21,7 +21,8 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] const VkRenderPass* GetPtr() const;
 
         void Destroy();
-    private:
+
+      private:
         VkRenderPass mRenderPass{};
     };
-}
+} // namespace oe::Renderer::Vulkan

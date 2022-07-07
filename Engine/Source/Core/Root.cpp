@@ -7,10 +7,16 @@
 
 namespace oe::Core
 {
-	Window* Root::GetWindow() { return mWindowInstance; }
+    Window* Root::GetWindow()
+    {
+        return mWindowInstance;
+    }
 
-	Runtime::Application* Root::GetApplication() { return mApplicationInstance; }
+    Runtime::Application* Root::GetApplication()
+    {
+        return mApplicationInstance;
+    }
 
-	Window* Root::mWindowInstance{};
-	Runtime::Application* Root::mApplicationInstance{};
-}
+    Window* Root::mWindowInstance{};
+    Runtime::Application* Root::mApplicationInstance{};
+} // namespace oe::Core

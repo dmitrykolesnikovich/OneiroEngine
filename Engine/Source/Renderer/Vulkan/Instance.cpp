@@ -22,16 +22,15 @@ namespace
 
         return extensions;
     }
-}
+} // namespace
 
 namespace oe::Renderer::Vulkan
 {
     void Instance::Create(bool enableValidationLayers)
     {
-        constexpr VkApplicationInfo applicationInfo
-                {VK_STRUCTURE_TYPE_APPLICATION_INFO, nullptr, "Oneiro Engine",
-                        VK_MAKE_VERSION(1, 0, 0), "Oneiro Engine", VK_MAKE_VERSION(1, 0, 0),
-                        VK_API_VERSION_1_3};
+        constexpr VkApplicationInfo applicationInfo{
+            VK_STRUCTURE_TYPE_APPLICATION_INFO, nullptr,           "Oneiro Engine", VK_MAKE_VERSION(1, 0, 0), "Oneiro Engine",
+            VK_MAKE_VERSION(1, 0, 0),           VK_API_VERSION_1_3};
 
         VkInstanceCreateInfo createInfo{};
         const bool useValidationLayers{enableValidationLayers && ValidationLayers::CheckSupport()};
@@ -54,8 +53,7 @@ namespace oe::Renderer::Vulkan
         createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &mVkInstance),
-                        "Failed to create instance!")
+        VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &mVkInstance), "Failed to create instance!")
 
         if (useValidationLayers)
             mValidationLayers.Setup();
@@ -76,4 +74,4 @@ namespace oe::Renderer::Vulkan
         mValidationLayers.Destroy();
         vkDestroyInstance(mVkInstance, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan

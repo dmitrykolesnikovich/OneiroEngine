@@ -22,9 +22,8 @@ namespace oe::Renderer::Vulkan
         allocInfo.commandBufferCount = 1;
 
         // TODO: multi-threaded command buffer generation
-        VK_CHECK_RESULT(
-                vkAllocateCommandBuffers(GetLogicalDevice()->Get(), &allocInfo, &mCommandBuffer),
-                "Failed to allocate command buffers!")
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(GetLogicalDevice()->Get(), &allocInfo, &mCommandBuffer),
+                        "Failed to allocate command buffers!")
     }
 
     void CommandBuffer::Begin() const
@@ -34,8 +33,7 @@ namespace oe::Renderer::Vulkan
         beginInfo.flags = 0;
         beginInfo.pInheritanceInfo = nullptr;
 
-        VK_CHECK_RESULT(vkBeginCommandBuffer(mCommandBuffer, &beginInfo),
-                        "Failed to begin recording command buffer!")
+        VK_CHECK_RESULT(vkBeginCommandBuffer(mCommandBuffer, &beginInfo), "Failed to begin recording command buffer!")
     }
 
     void CommandBuffer::End() const
@@ -57,16 +55,14 @@ namespace oe::Renderer::Vulkan
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer;
-        VK_CHECK_RESULT(
-                vkAllocateCommandBuffers(GetLogicalDevice()->Get(), &allocInfo, &commandBuffer),
-                "Failed to allocate command buffers!")
+        VK_CHECK_RESULT(vkAllocateCommandBuffers(GetLogicalDevice()->Get(), &allocInfo, &commandBuffer),
+                        "Failed to allocate command buffers!")
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-        VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &beginInfo),
-                        "Failed to begin command buffer!")
+        VK_CHECK_RESULT(vkBeginCommandBuffer(commandBuffer, &beginInfo), "Failed to begin command buffer!")
 
         return commandBuffer;
     }
@@ -82,8 +78,7 @@ namespace oe::Renderer::Vulkan
 
         const auto graphicsQueue = GetGraphicsQueue();
 
-        VK_CHECK_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE),
-                        "Failed to submit queue!")
+        VK_CHECK_RESULT(vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE), "Failed to submit queue!")
         VK_CHECK_RESULT(vkQueueWaitIdle(graphicsQueue), "Failed to wait queue idle!")
 
         vkFreeCommandBuffers(GetLogicalDevice()->Get(), GetCommandPool()->Get(), 1, &commandBuffer);
@@ -98,4 +93,4 @@ namespace oe::Renderer::Vulkan
     {
         return &mCommandBuffer;
     }
-}
+} // namespace oe::Renderer::Vulkan

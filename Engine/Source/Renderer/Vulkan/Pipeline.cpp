@@ -7,36 +7,32 @@
 
 #include <array>
 
+#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
+#include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
-#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 namespace
 {
     void CreateDepthStencilStateInfo(VkPipelineDepthStencilStateCreateInfo& depthStencil);
-    void CreateVertexInputStateInfo(const VkVertexInputBindingDescription* binding,
-                                    const VkVertexInputAttributeDescription* attribute,
+    void CreateVertexInputStateInfo(const VkVertexInputBindingDescription* binding, const VkVertexInputAttributeDescription* attribute,
                                     VkPipelineVertexInputStateCreateInfo& vertexInputInfo);
     void CreateInputAssemblyStateInfo(VkPipelineInputAssemblyStateCreateInfo& inputAssembly);
     void CreateViewport(VkViewport& viewport);
     void CreateScissor(VkRect2D& scissor);
-    void CreateViewportStateInfo(VkViewport& viewport, VkRect2D& scissor,
-                                 VkPipelineViewportStateCreateInfo& viewportState);
-    void CreateRasterizationStateInfo(VkFrontFace frontFace,
-                                      VkPipelineRasterizationStateCreateInfo& rasterizer);
+    void CreateViewportStateInfo(VkViewport& viewport, VkRect2D& scissor, VkPipelineViewportStateCreateInfo& viewportState);
+    void CreateRasterizationStateInfo(VkFrontFace frontFace, VkPipelineRasterizationStateCreateInfo& rasterizer);
     void CreateMultiSamplingStateInfo(VkPipelineMultisampleStateCreateInfo& multisampling);
     void CreateColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& colorBlendAttachment);
     void CreateColorBlendStateInfo(const VkPipelineColorBlendAttachmentState& colorBlendAttachment,
                                    VkPipelineColorBlendStateCreateInfo& colorBlending);
     void CreateDynamicStateInfo(VkPipelineDynamicStateCreateInfo& dynamicState);
     void CreatePipelineLayoutInfo(bool is3d, VkPipelineLayoutCreateInfo& pipelineLayoutInfo);
-    VkPipelineShaderStageCreateInfo CreateShaderStageInfo(VkShaderStageFlagBits stage,
-                                                          VkShaderModule shaderModule);
-}
+    VkPipelineShaderStageCreateInfo CreateShaderStageInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule);
+} // namespace
 
 namespace oe::Renderer::Vulkan
 {
@@ -84,9 +80,7 @@ namespace oe::Renderer::Vulkan
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         CreatePipelineLayoutInfo(frontFace == VK_FRONT_FACE_COUNTER_CLOCKWISE, pipelineLayoutInfo);
 
-        VK_CHECK_RESULT(
-                vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &mPipelineLayout),
-                "Failed to create pipeline layput!")
+        VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &mPipelineLayout), "Failed to create pipeline layput!")
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
 
@@ -111,16 +105,14 @@ namespace oe::Renderer::Vulkan
             AddPipeline(this);
 
         // TODO: Add pipeline cache
-        VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr,
-                                                  &mGraphicsPipeline),
+        VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &mGraphicsPipeline),
                         "Failed to create graphics pipeline!")
     }
 
     void Pipeline::Bind() const
     {
         Renderer::Vulkan::SetCurrentPipeline(const_cast<Pipeline*>(this));
-        vkCmdBindPipeline(GetCommandBuffer()->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          mGraphicsPipeline);
+        vkCmdBindPipeline(GetCommandBuffer()->Get(), VK_PIPELINE_BIND_POINT_GRAPHICS, mGraphicsPipeline);
     }
 
     void Pipeline::Destroy(bool destroyShaders)
@@ -138,7 +130,7 @@ namespace oe::Renderer::Vulkan
         vkDestroyPipeline(device, mGraphicsPipeline, nullptr);
         vkDestroyPipelineLayout(device, mPipelineLayout, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan
 
 namespace
 {
@@ -156,8 +148,7 @@ namespace
         depthStencil.back = {};
     }
 
-    void CreateVertexInputStateInfo(const VkVertexInputBindingDescription* binding,
-                                    const VkVertexInputAttributeDescription* attribute,
+    void CreateVertexInputStateInfo(const VkVertexInputBindingDescription* binding, const VkVertexInputAttributeDescription* attribute,
                                     VkPipelineVertexInputStateCreateInfo& vertexInputInfo)
     {
         using namespace oe::Renderer::Vulkan;
@@ -193,8 +184,7 @@ namespace
         scissor.extent = oe::Renderer::Vulkan::GetSwapChain()->GetExtent2D();
     }
 
-    void CreateViewportStateInfo(VkViewport& viewport, VkRect2D& scissor,
-                                 VkPipelineViewportStateCreateInfo& viewportState)
+    void CreateViewportStateInfo(VkViewport& viewport, VkRect2D& scissor, VkPipelineViewportStateCreateInfo& viewportState)
     {
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
@@ -203,8 +193,7 @@ namespace
         viewportState.pScissors = &scissor;
     }
 
-    void CreateRasterizationStateInfo(VkFrontFace frontFace,
-                                      VkPipelineRasterizationStateCreateInfo& rasterizer)
+    void CreateRasterizationStateInfo(VkFrontFace frontFace, VkPipelineRasterizationStateCreateInfo& rasterizer)
     {
         rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         rasterizer.depthClampEnable = VK_TRUE;
@@ -223,8 +212,7 @@ namespace
     {
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_TRUE;
-        multisampling.rasterizationSamples =
-                oe::Renderer::Vulkan::GetPhysDevice()->GetMsaaSamples();
+        multisampling.rasterizationSamples = oe::Renderer::Vulkan::GetPhysDevice()->GetMsaaSamples();
         multisampling.minSampleShading = .2f;
         multisampling.pSampleMask = nullptr;
         multisampling.alphaToCoverageEnable = VK_FALSE;
@@ -234,8 +222,7 @@ namespace
     void CreateColorBlendAttachmentState(VkPipelineColorBlendAttachmentState& colorBlendAttachment)
     {
         colorBlendAttachment.colorWriteMask =
-                VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                        VK_COLOR_COMPONENT_A_BIT;
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         colorBlendAttachment.blendEnable = VK_TRUE;
         colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
         colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -269,15 +256,13 @@ namespace
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         if (is3d)
         {
-            const std::vector<VkDescriptorSetLayout>
-                    & descriptorSetLayouts = oe::Renderer::Vulkan::GetDescriptorSetLayouts3D();
+            const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts = oe::Renderer::Vulkan::GetDescriptorSetLayouts3D();
             pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
             pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
         }
         else
         {
-            const std::vector<VkDescriptorSetLayout>
-                    & descriptorSetLayouts = oe::Renderer::Vulkan::GetDescriptorSetLayouts();
+            const std::vector<VkDescriptorSetLayout>& descriptorSetLayouts = oe::Renderer::Vulkan::GetDescriptorSetLayouts();
             pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
             pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
         }
@@ -285,8 +270,7 @@ namespace
         pipelineLayoutInfo.pPushConstantRanges = nullptr;
     }
 
-    VkPipelineShaderStageCreateInfo CreateShaderStageInfo(VkShaderStageFlagBits stage,
-                                                          VkShaderModule shaderModule)
+    VkPipelineShaderStageCreateInfo CreateShaderStageInfo(VkShaderStageFlagBits stage, VkShaderModule shaderModule)
     {
         VkPipelineShaderStageCreateInfo shaderStageCreateInfo{};
 
@@ -297,4 +281,4 @@ namespace
 
         return shaderStageCreateInfo;
     }
-}
+} // namespace

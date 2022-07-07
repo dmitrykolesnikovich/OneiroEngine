@@ -4,65 +4,65 @@
 
 #ifndef OE_RENDERER_VULKAN
 
+#include "Oneiro/Core/Root.hpp"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "Oneiro/Core/Root.hpp"
 
 namespace
 {
     bool isPreInit{};
     bool isInit{};
-}
+} // namespace
 
 namespace oe::Renderer::GuiLayer
 {
-	void PreInit()
-	{
-		IMGUI_CHECKVERSION();
-		CreateContext();
+    void PreInit()
+    {
+        IMGUI_CHECKVERSION();
+        CreateContext();
         isPreInit = true;
-		StyleColorsDark();
-	}
+        StyleColorsDark();
+    }
 
-	void Init()
-	{
-		ImGui_ImplOpenGL3_Init("#version 330");
-		ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
+    void Init()
+    {
+        ImGui_ImplOpenGL3_Init("#version 330");
+        ImGui_ImplGlfw_InitForOpenGL(Core::Root::GetWindow()->GetGLFW(), true);
         isInit = true;
-	}
+    }
 
-	void NewFrame()
-	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
+    void NewFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
 
-	void Draw()
-	{
-		Render();
-		ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
-	}
+    void Draw()
+    {
+        Render();
+        ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+    }
 
-	void Shutdown()
-	{
+    void Shutdown()
+    {
         if (isInit)
-		    ImGui_ImplGlfw_Shutdown();
+            ImGui_ImplGlfw_Shutdown();
         if (isPreInit)
-		    DestroyContext();
-	}
-}
+            DestroyContext();
+    }
+} // namespace oe::Renderer::GuiLayer
 
 #else
+#include "Oneiro/Core/Root.hpp"
+#include "Oneiro/Core/Window.hpp"
+#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
+#include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
 #include "Oneiro/Renderer/Vulkan/DescriptorPool.hpp"
 #include "Oneiro/Renderer/Vulkan/Intance.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
-#include "Oneiro/Core/Root.hpp"
-#include "Oneiro/Core/Window.hpp"
-#include "Oneiro/Renderer/Vulkan/CommandBuffer.hpp"
-#include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
 
 namespace oe::Renderer::GuiLayer
 {
@@ -88,7 +88,8 @@ namespace oe::Renderer::GuiLayer
         init_info.MSAASamples = VK_SAMPLE_COUNT_2_BIT;
         ImGui_ImplVulkan_Init(&init_info, Vulkan::GetRenderPass()->Get());
 
-        VK_CHECK_RESULT(vkResetCommandPool(Vulkan::GetLogicalDevice()->Get(), Vulkan::GetCommandPool()->Get(), 0), "Failed to reset command pool!")
+        VK_CHECK_RESULT(vkResetCommandPool(Vulkan::GetLogicalDevice()->Get(), Vulkan::GetCommandPool()->Get(), 0),
+                        "Failed to reset command pool!")
         VkCommandBufferBeginInfo begin_info = {};
         begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -107,7 +108,7 @@ namespace oe::Renderer::GuiLayer
 
     void NewFrame()
     {
-        //Vulkan::BeginGuiScene();
+        // Vulkan::BeginGuiScene();
 
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -119,7 +120,7 @@ namespace oe::Renderer::GuiLayer
         Render();
         ImGui_ImplVulkan_RenderDrawData(GetDrawData(), Vulkan::GetCommandBuffer()->Get());
 
-        //Vulkan::EndGuiScene();
+        // Vulkan::EndGuiScene();
     }
 
     void Shutdown()
@@ -129,6 +130,6 @@ namespace oe::Renderer::GuiLayer
         DestroyContext();
     }
 
-}
+} // namespace oe::Renderer::GuiLayer
 
 #endif

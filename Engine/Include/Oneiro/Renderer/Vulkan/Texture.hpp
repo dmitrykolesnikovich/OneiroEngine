@@ -13,27 +13,27 @@ namespace oe::Renderer::Vulkan
     // TODO: Move to renderer utils
     struct Image
     {
-        static void TransitionLayout(VkImage image, VkFormat format, VkImageLayout oldLayout,
-                                     VkImageLayout newLayout, uint32_t mipmaps = 1);
+        static void TransitionLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout,
+                                     uint32_t mipmaps = 1);
 
-        static void Create(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling,
-                           VkImageUsageFlags usage, VkMemoryPropertyFlags properties,
-                           VkImage& image, VkDeviceMemory& imageMemory,
-                           VkSampleCountFlagBits numSamples, uint32_t mipmaps = 1);
+        static void Create(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
+                           VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory, VkSampleCountFlagBits numSamples,
+                           uint32_t mipmaps = 1);
 
-        static void CreateView(VkImageView* imageView, VkImage image, VkFormat format,
-                               VkImageAspectFlags aspectFlags, uint32_t mipmaps = 1);
+        static void CreateView(VkImageView* imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags,
+                               uint32_t mipmaps = 1);
 
-    private:
-        static void CreateViewInfo(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags,
-                                   uint32_t mipmaps, VkImageViewCreateInfo& viewInfo);
+      private:
+        static void CreateViewInfo(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipmaps,
+                                   VkImageViewCreateInfo& viewInfo);
     };
 
     class Texture
     {
-    private:
+      private:
         struct Data;
-    public:
+
+      public:
         /**
          * \brief Loading texture from path. \n
          * WARNING: Load texture before creating uniform buffer.
@@ -55,7 +55,7 @@ namespace oe::Renderer::Vulkan
             return mData;
         }
 
-    private:
+      private:
         static void CreateTextureSampler(VkSampler* sampler, uint32_t mipmaps);
 
         struct Data
@@ -76,4 +76,4 @@ namespace oe::Renderer::Vulkan
 
         bool mIsLoaded{};
     };
-}
+} // namespace oe::Renderer::Vulkan

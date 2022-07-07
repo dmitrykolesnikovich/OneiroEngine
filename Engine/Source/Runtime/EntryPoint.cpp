@@ -10,12 +10,12 @@
 
 int main(const int argc, char* argv[])
 {
-	using namespace oe::Runtime;
-	using namespace oe;
+    using namespace oe::Runtime;
+    using namespace oe;
 
     {
         const auto app = CreateApplication(argc, argv);
-        
+
         try
         {
             Engine::Init();
@@ -26,6 +26,6 @@ int main(const int argc, char* argv[])
             log::get("log")->error(ex.what());
         }
     }
-	Engine::Shutdown();
-	return 0;
+    Engine::Shutdown();
+    return 0;
 }

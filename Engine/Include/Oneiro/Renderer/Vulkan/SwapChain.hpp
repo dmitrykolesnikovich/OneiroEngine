@@ -12,7 +12,7 @@ namespace oe::Renderer::Vulkan
 {
     class SwapChain
     {
-    public:
+      public:
         void Create();
 
         void Destroy();
@@ -21,19 +21,20 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] VkFormat GetImageFormat() const;
         [[nodiscard]] VkExtent2D GetExtent2D() const;
         [[nodiscard]] VkSwapchainKHR Get() const;
-        const VkSwapchainKHR* GetPtr() const { return &mSwapchain; }
-    private:
-        static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
-                const std::vector<VkSurfaceFormatKHR>& availableFormats);
+        const VkSwapchainKHR* GetPtr() const
+        {
+            return &mSwapchain;
+        }
 
-        static VkPresentModeKHR ChooseSwapPresentMode(
-                const std::vector<VkPresentModeKHR>& availablePresentModes);
+      private:
+        static VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
-        [[nodiscard]] VkExtent2D ChooseSwapExtent(
-                const VkSurfaceCapabilitiesKHR& capabilities) const;
+        static VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+
+        [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
         VkSwapchainKHR mSwapchain{};
         std::vector<VkImage> mSwapChainImages{};
         VkFormat mSwapChainImageFormat{};
         VkExtent2D mSwapChainExtent{};
     };
-}
+} // namespace oe::Renderer::Vulkan

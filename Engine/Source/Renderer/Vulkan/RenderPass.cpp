@@ -22,7 +22,7 @@ namespace
     void CreateDepthAttachment(VkAttachmentDescription& depthAttachment);
 
     void CreateColorAttachentResolve(VkAttachmentDescription& colorAttachmentResolve);
-}
+} // namespace
 
 namespace oe::Renderer::Vulkan
 {
@@ -37,14 +37,11 @@ namespace oe::Renderer::Vulkan
         VkAttachmentDescription colorAttachmentResolve{};
         CreateColorAttachentResolve(colorAttachmentResolve);
 
-        constexpr VkAttachmentReference
-                colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+        constexpr VkAttachmentReference colorAttachmentRef{0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
-        constexpr VkAttachmentReference
-                depthAttachmentRef{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+        constexpr VkAttachmentReference depthAttachmentRef{1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
 
-        constexpr VkAttachmentReference
-                colorAttachmentResolveRef{2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+        constexpr VkAttachmentReference colorAttachmentResolveRef{2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -70,8 +67,8 @@ namespace oe::Renderer::Vulkan
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
-        VK_CHECK_RESULT(vkCreateRenderPass(GetLogicalDevice()->Get(), &renderPassInfo, nullptr,
-                                           &mRenderPass), "Failed to create render pass!")
+        VK_CHECK_RESULT(vkCreateRenderPass(GetLogicalDevice()->Get(), &renderPassInfo, nullptr, &mRenderPass),
+                        "Failed to create render pass!")
     }
 
     void RenderPass::Begin(VkRenderPass renderPass)
@@ -83,14 +80,12 @@ namespace oe::Renderer::Vulkan
         renderPassInfo.renderArea.offset = {0, 0};
         renderPassInfo.renderArea.extent = GetSwapChain()->GetExtent2D();
 
-        constexpr std::array<VkClearValue, 2>
-                clearValues{{{{0.0f, 0.0f, 0.0f, 1.0f}}, {{1.0f, 0}}}};
+        constexpr std::array<VkClearValue, 2> clearValues{{{{0.0f, 0.0f, 0.0f, 1.0f}}, {{1.0f, 0}}}};
 
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
 
-        vkCmdBeginRenderPass(GetCommandBuffer()->Get(), &renderPassInfo,
-                             VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(GetCommandBuffer()->Get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     void RenderPass::End()
@@ -112,7 +107,7 @@ namespace oe::Renderer::Vulkan
     {
         vkDestroyRenderPass(GetLogicalDevice()->Get(), mRenderPass, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan
 
 namespace
 {
@@ -153,4 +148,4 @@ namespace
         colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     }
-}
+} // namespace

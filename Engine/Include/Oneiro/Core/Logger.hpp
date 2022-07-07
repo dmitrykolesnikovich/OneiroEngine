@@ -13,5 +13,5 @@
 
 namespace oe::log
 {
-	using namespace spdlog;
+    using namespace spdlog;
 }

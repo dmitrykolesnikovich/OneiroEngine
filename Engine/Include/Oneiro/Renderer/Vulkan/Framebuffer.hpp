@@ -12,14 +12,15 @@ namespace oe::Renderer::Vulkan
 {
     class Framebuffer
     {
-    public:
+      public:
         void Create(const std::vector<VkImageView>& attachments);
 
         [[nodiscard]] VkFramebuffer Get() const;
         [[nodiscard]] const VkFramebuffer* GetPtr() const;
 
         void Destroy();
-    private:
+
+      private:
         VkFramebuffer mFramebuffer{};
     };
-}
+} // namespace oe::Renderer::Vulkan

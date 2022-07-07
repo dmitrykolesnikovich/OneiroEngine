@@ -29,14 +29,13 @@ namespace SandBox
         mWorld->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
         mWorld->CreateEntity("Cube").AddComponent<ModelComponent>().Model->Load("Assets/Models/cube.fbx");
 
-        mWorld->CreateEntity("Plane").AddComponent<ModelComponent>().Model->Load({
-            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f,  0.0f}},
-            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f,  0.0f}},
-            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
-            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f,  0.0f}},
-            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
-            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 10.0f}}
-        });
+        mWorld->CreateEntity("Plane").AddComponent<ModelComponent>().Model->Load(
+            {{{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 10.0f}}});
 
         return true;
     }
@@ -88,7 +87,7 @@ namespace SandBox
     {
         mWorld->Save(true);
     }
-}
+} // namespace SandBox
 
 namespace oe::Runtime
 {
@@ -96,4 +95,4 @@ namespace oe::Runtime
     {
         return std::make_shared<SandBox::Application>("SandBox", 1280, 720);
     }
-}
+} // namespace oe::Runtime

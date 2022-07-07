@@ -7,16 +7,17 @@
 
 namespace oe::Renderer::GL
 {
-	class Sprite2D;
+    class Sprite2D;
 }
 
 namespace oe::Animation
 {
-	class Animation
-	{
-	protected:
-		~Animation();
-	public:
-		virtual void Update(Renderer::GL::Sprite2D* sprite2D, float dt);
+    class Animation
+    {
+      protected:
+        ~Animation();
+
+      public:
+        virtual void Update(Renderer::GL::Sprite2D* sprite2D, float dt);
     };
-}
+} // namespace oe::Animation

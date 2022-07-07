@@ -12,7 +12,7 @@ namespace oe::Renderer::Vulkan
 {
     class DescriptorSetLayout
     {
-    public:
+      public:
         void AddBinding(int binding, VkDescriptorType type, VkShaderStageFlagBits stage);
         void Create();
 
@@ -21,8 +21,9 @@ namespace oe::Renderer::Vulkan
         [[nodiscard]] const VkDescriptorSetLayout* GetPtr() const;
 
         void Destroy();
-    private:
+
+      private:
         std::vector<VkDescriptorSetLayoutBinding> mBindings;
         VkDescriptorSetLayout mDescriptorSetLayout{};
     };
-}
+} // namespace oe::Renderer::Vulkan

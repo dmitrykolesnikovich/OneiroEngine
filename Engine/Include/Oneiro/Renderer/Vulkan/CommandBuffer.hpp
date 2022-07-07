@@ -11,7 +11,7 @@ namespace oe::Renderer::Vulkan
 {
     class CommandBuffer
     {
-    public:
+      public:
         void Create();
 
         void Begin() const;
@@ -26,7 +26,8 @@ namespace oe::Renderer::Vulkan
 
         [[nodiscard]] VkCommandBuffer Get() const;
         [[nodiscard]] const VkCommandBuffer* GetPtr() const;
-    private:
+
+      private:
         VkCommandBuffer mCommandBuffer{};
     };
-}
+} // namespace oe::Renderer::Vulkan

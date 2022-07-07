@@ -10,43 +10,39 @@
 
 namespace oe::Runtime
 {
-	Application::Application(const char* name, int width, int height)
+    Application::Application(const char* name, int width, int height)
     {
-		mWindow = std::make_shared<Core::Window>(name, width, height);
-	}
+        mWindow = std::make_shared<Core::Window>(name, width, height);
+    }
 
-	Application::~Application() = default;
+    Application::~Application() = default;
 
-	bool Application::OnInit()
-	{
-		return true;
-	}
-
-	Core::Window* Application::GetWindow() const
+    bool Application::OnInit()
     {
-		return mWindow.get();
-	}
+        return true;
+    }
 
-	bool Application::OnUpdate(float deltaTime)
-	{
-		return true;
-	}
+    Core::Window* Application::GetWindow() const
+    {
+        return mWindow.get();
+    }
 
-	void Application::OnShutdown()
-	{
-	}
+    bool Application::OnUpdate(float deltaTime)
+    {
+        return true;
+    }
 
-	void Application::OnEvent(const Core::Event::Base& e)
-	{
-	}
+    void Application::OnShutdown() {}
 
-	bool Application::IsStopped() const
-	{
-		return mIsStopped;
-	}
+    void Application::OnEvent(const Core::Event::Base& e) {}
 
-	void Application::Stop()
-	{
-		mIsStopped = true;
-	}
-}
+    bool Application::IsStopped() const
+    {
+        return mIsStopped;
+    }
+
+    void Application::Stop()
+    {
+        mIsStopped = true;
+    }
+} // namespace oe::Runtime

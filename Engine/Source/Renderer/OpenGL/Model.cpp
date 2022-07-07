@@ -55,4 +55,4 @@ namespace oe::Renderer::GL
     {
         return mPath;
     }
-}
+} // namespace oe::Renderer::GL

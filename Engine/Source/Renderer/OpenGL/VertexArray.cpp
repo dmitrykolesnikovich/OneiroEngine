@@ -7,26 +7,29 @@
 
 namespace oe::Renderer::GL
 {
-	VertexArray::~VertexArray()
-	{
-		if (mID)
-			gl::DeleteVertexArrays(1, &mID);
-	}
+    VertexArray::~VertexArray()
+    {
+        if (mID)
+            gl::DeleteVertexArrays(1, &mID);
+    }
 
-	void VertexArray::Generate()
-	{
-		gl::GenVertexArrays(1, &mID);
-	}
+    void VertexArray::Generate()
+    {
+        gl::GenVertexArrays(1, &mID);
+    }
 
-	void VertexArray::Bind() const
-	{
-		gl::BindVertexArray(mID);
-	}
+    void VertexArray::Bind() const
+    {
+        gl::BindVertexArray(mID);
+    }
 
-	void VertexArray::UnBind()
-	{
-		gl::BindVertexArray(0);
-	}
+    void VertexArray::UnBind()
+    {
+        gl::BindVertexArray(0);
+    }
 
-	uint32_t VertexArray::Get() const { return mID; }
-}
+    uint32_t VertexArray::Get() const
+    {
+        return mID;
+    }
+} // namespace oe::Renderer::GL

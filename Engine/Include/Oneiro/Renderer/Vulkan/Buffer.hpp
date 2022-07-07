@@ -11,9 +11,8 @@ namespace oe::Renderer::Vulkan
 {
     class Buffer
     {
-    public:
-        static void Create(VkDeviceSize size, VkBufferUsageFlags usage,
-                           VkMemoryPropertyFlags properties, VkBuffer& buffer,
+      public:
+        static void Create(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
                            VkDeviceMemory& bufferMemory);
 
         static void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
@@ -22,4 +21,4 @@ namespace oe::Renderer::Vulkan
 
         static void CopyToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     };
-}
+} // namespace oe::Renderer::Vulkan

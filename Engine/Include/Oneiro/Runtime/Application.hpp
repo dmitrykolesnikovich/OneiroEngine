@@ -5,31 +5,33 @@
 
 #pragma once
 
-#include "Oneiro/Core/Input.hpp"
 #include "Oneiro/Core/Event.hpp"
+#include "Oneiro/Core/Input.hpp"
 #include <memory>
 
 namespace oe::Runtime
 {
-	class Application
-	{
-	public:
-		Application(const char* name, int width, int height);
-		virtual ~Application();
+    class Application
+    {
+      public:
+        Application(const char* name, int width, int height);
+        virtual ~Application();
 
-		virtual bool OnInit();
-		virtual bool OnUpdate(float deltaTime);
-		virtual void OnShutdown();
-		virtual void OnEvent(const Core::Event::Base& e);
+        virtual bool OnInit();
+        virtual bool OnUpdate(float deltaTime);
+        virtual void OnShutdown();
+        virtual void OnEvent(const Core::Event::Base& e);
 
-	    [[nodiscard]] Core::Window* GetWindow() const;
-		[[nodiscard]] bool IsStopped() const;
-	protected:
-		void Stop();
-	private:
-		bool mIsStopped{};
-		std::shared_ptr<Core::Window> mWindow;
-	};
+        [[nodiscard]] Core::Window* GetWindow() const;
+        [[nodiscard]] bool IsStopped() const;
 
-	std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
-}
+      protected:
+        void Stop();
+
+      private:
+        bool mIsStopped{};
+        std::shared_ptr<Core::Window> mWindow;
+    };
+
+    std::shared_ptr<Application> CreateApplication(int argc, char* argv[]);
+} // namespace oe::Runtime

@@ -9,21 +9,22 @@
 
 namespace oe::Renderer::GL
 {
-	class VertexArray
-	{
-	public:
-		VertexArray() = default;
-		VertexArray(const VertexArray&) = delete;
-		~VertexArray();
+    class VertexArray
+    {
+      public:
+        VertexArray() = default;
+        VertexArray(const VertexArray&) = delete;
+        ~VertexArray();
 
-		void Generate();
+        void Generate();
 
-		void Bind() const;
+        void Bind() const;
 
-		static void UnBind();
+        static void UnBind();
 
         [[nodiscard]] uint32_t Get() const;
-	private:
-		uint32_t mID{};
-	};
-}
+
+      private:
+        uint32_t mID{};
+    };
+} // namespace oe::Renderer::GL
