@@ -35,6 +35,12 @@ namespace oe::Renderer::GL
 		return true;
 	}
 
+    bool Mesh::Load(const std::vector<Vertex>& vertices)
+    {
+        mVertices = vertices;
+        return true;
+    }
+
 	bool Mesh::Generate()
 	{
 		mVAO.Generate();
@@ -61,9 +67,6 @@ namespace oe::Renderer::GL
 		mVAO.UnBind();
 		mVBO.UnBind();
 		mEBO.UnBind();
-
-		mVertices.clear();
-		mIndices.clear();
 
 		return true;
 	}

@@ -13,12 +13,23 @@ namespace oe::Renderer::GL
         mMesh = Core::GetMeshesManager().Add(std::make_shared<Mesh>(mVAO, mVBO, mEBO), path);
     }
 
+    void Model::Load(const std::vector<Vertex>& vertices)
+    {
+        mMesh = new Mesh(mVAO, mVBO, mEBO);
+        mMesh->Load(vertices);
+        mMesh->Generate();
+        mIsNeed2SaveVertices = true;
+    }
+
     void Model::Draw() const
     {
         const auto& textures = mMesh->GetTextures();
-        const auto texturesCount = static_cast<uint8_t>(textures.size());
-        for (uint8_t i{}; i < texturesCount; ++i)
-            textures[i]->Bind(i);
+        if (!textures.empty())
+        {
+            const auto texturesCount = static_cast<uint8_t>(textures.size());
+            for (uint8_t i{}; i < texturesCount; ++i)
+                textures[i]->Bind(i);
+        }
 
         mVAO.Bind();
 

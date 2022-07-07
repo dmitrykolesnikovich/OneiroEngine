@@ -41,6 +41,29 @@ namespace YAML
     };
 
     template <>
+    struct convert<glm::vec2>
+    {
+        static Node encode(const glm::vec2& rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.SetStyle(EmitterStyle::Flow);
+            return node;
+        }
+
+        static bool decode(const Node& node, glm::vec2& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 2)
+                return false;
+
+            rhs.x = node[0].as<float>();
+            rhs.y = node[1].as<float>();
+            return true;
+        }
+    };
+
+    template <>
     struct convert<glm::vec4>
     {
         static Node encode(const glm::vec4& rhs)
@@ -72,6 +95,13 @@ namespace YAML
 
 namespace
 {
+    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+    {
+        out << YAML::Flow;
+        out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+        return out;
+    }
+
     YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
     {
         out << YAML::Flow;
@@ -152,7 +182,27 @@ namespace
 
             const auto& model = entity.GetComponent<oe::ModelComponent>().Model;
 
-            out << YAML::Key << "Path" << model->GetPath();
+            if (model->IsNeed2SaveVertices())
+            {
+                const auto& vertices = model->GetVertices();
+                const size_t verticesCount = vertices.size();
+                out << YAML::Key << "Vertices";
+                out << YAML::BeginMap;
+                for (size_t i{}; i < verticesCount; ++i)
+                {
+                    const auto& vertex = vertices[i];
+                    out << YAML::Key << i;
+                    out << YAML::BeginMap;
+                    out << YAML::Key << "Color" << vertex.Color;
+                    out << YAML::Key << "Position" << vertex.Position;
+                    out << YAML::Key << "Normal" << vertex.Normal;
+                    out << YAML::Key << "TexCoords" << vertex.TexCoords;
+                    out << YAML::EndMap;
+                }
+                out << YAML::EndMap;
+            }
+            else
+                out << YAML::Key << "Path" << model->GetPath();
 
             out << YAML::EndMap;
         } // End ModelComponent
@@ -163,7 +213,7 @@ namespace
 
 namespace oe::World
 {
-    World::World(const std::string& name, const std::string& path) : mData(name, path)
+    World::World(const std::string& name, const std::string& path) : mData({name, path})
     {
     }
 
@@ -249,6 +299,28 @@ namespace oe::World
                 auto& model = loadedEntity.AddComponent<ModelComponent>().Model;
                 if (modelComponent["Path"].IsDefined())
                     model->Load(modelComponent["Path"].as<std::string>());
+                if (modelComponent["Vertices"].IsDefined())
+                {
+                    std::vector<Renderer::GL::Vertex> vertices;
+                    size_t i{};
+                    while (true)
+                    {
+                        const YAML::Node& nd = modelComponent["Vertices"][std::to_string(i)];
+                        if (nd.IsDefined())
+                        {
+                            vertices.push_back({
+                                nd["Color"].as<glm::vec4>(),
+                                nd["Position"].as<glm::vec3>(),
+                                nd["Normal"].as<glm::vec3>(),
+                                nd["TexCoords"].as<glm::vec2>()
+                            });
+                            i++;
+                        }
+                        else
+                            break;
+                    }
+                    model->Load(vertices);
+                }
             }
         }
 

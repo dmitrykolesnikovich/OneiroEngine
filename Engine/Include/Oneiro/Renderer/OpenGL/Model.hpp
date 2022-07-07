@@ -17,10 +17,13 @@ namespace oe::Renderer::GL
 		Model(const Model&) = delete;
 
 		void Load(const std::string& path);
+        void Load(const std::vector<Vertex>& vertices);
 
         void Draw() const;
 
-        std::string GetPath();
+        [[nodiscard]] std::string GetPath();
+        [[nodiscard]] bool IsNeed2SaveVertices() const { return mIsNeed2SaveVertices; }
+        [[nodiscard]] constexpr std::vector<Vertex>& GetVertices() const { return mMesh->GetVertices(); }
     private:
 		Mesh* mMesh{};
 
@@ -29,5 +32,6 @@ namespace oe::Renderer::GL
 		VertexArray mVAO{};
 		Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
 		Buffer<gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW> mEBO{};
+        bool mIsNeed2SaveVertices{};
 	};
 }

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <assimp/material.h>
 #include "Buffer.hpp"
 #include "VertexArray.hpp"
 #include "Texture.hpp"
@@ -14,7 +15,6 @@ struct aiMaterial;
 struct aiMesh;
 struct aiScene;
 struct aiNode;
-enum aiTextureType;
 
 namespace oe::Renderer::GL
 {
@@ -28,6 +28,7 @@ namespace oe::Renderer::GL
 		     Buffer<gl::ELEMENT_ARRAY_BUFFER, gl::STATIC_DRAW>& ebo);
 
 		bool Load(const std::string& path);
+        bool Load(const std::vector<Vertex>& vertices);
 
 		bool Generate();
 
@@ -36,6 +37,7 @@ namespace oe::Renderer::GL
 		[[nodiscard]] int GetVerticesCount() const;
 		[[nodiscard]] int GetIndicesCount() const;
 		[[nodiscard]] bool IsUseEBO() const;
+        [[nodiscard]] constexpr std::vector<Vertex>& GetVertices() { return mVertices; }
 	private:
 		void ProcessAiNode(const aiNode* node, const aiScene* scene);
 
