@@ -8,7 +8,7 @@
 // ReSharper disable CppClangTidyReadabilityStaticAccessedThroughInstance
 namespace oe::Renderer::GL
 {
-	bool GL::Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
+	bool Load2DTexture(const char* path, Texture<gl::TEXTURE_2D>* texture,
 	                       TextureData* textureData)
 	{
 		uint8_t* data;
@@ -66,7 +66,7 @@ namespace oe::Renderer::GL
 		return Load2DTexture(path.c_str(), texture, textureData);
 	}
 
-	bool GL::Load2DTexture(Texture<gl::TEXTURE_2D>* texture)
+	bool Load2DTexture(Texture<gl::TEXTURE_2D>* texture)
 	{
 		int internalFormat;
 		int format;

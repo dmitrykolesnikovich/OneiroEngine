@@ -60,7 +60,7 @@ namespace oe::VisualNovel
 	void NextStep();
 	void Update(float deltaTime, bool gui = false);
 
-	constexpr Instruction& GetCurrentInstruction();
+	Instruction& GetCurrentInstruction();
 	void PushInstruction(const Instruction& instruction);
 	void PushInstruction(Instruction&& instruction);
 

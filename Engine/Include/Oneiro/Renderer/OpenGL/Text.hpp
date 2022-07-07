@@ -19,7 +19,7 @@ namespace oe::Renderer::GL
 	{
 		struct Character
 		{
-			Texture<gl::TEXTURE_2D>* Texture{new GL::Texture<gl::TEXTURE_2D>};
+			GL::Texture<gl::TEXTURE_2D>* Texture = new GL::Texture<gl::TEXTURE_2D>;
 			glm::ivec2 Size{};
 			glm::ivec2 Bearing{};
 			uint32_t Advance{};

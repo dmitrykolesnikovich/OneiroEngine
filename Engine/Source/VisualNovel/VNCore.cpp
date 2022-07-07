@@ -381,26 +381,26 @@ namespace oe::VisualNovel
 		{
 			using namespace Renderer;
 
-			GuiLayer::Begin("Visual Novel");
-			{
-				if (GuiLayer::CollapsingHeader("Core"))
-				{
-					GuiLayer::Text("Current iterator: %zu", currentIt);
-					if (GuiLayer::CollapsingHeader("Sprite2Ds"))
-					{
-						static size_t selected{};
-						const size_t sprite2DsSize{sprite2Ds.size()};
-						if (ImGui::TreeNode("List"))
-						{
-							for (size_t n = 0; n < sprite2DsSize; n++)
-							{
-								char buf[32];
-								sprintf_s(buf, "Sprite2D %llu", n);
-								if (ImGui::Selectable(buf, selected == n))
-									selected = n;
-							}
-							ImGui::TreePop();
-						}
+            GuiLayer::Begin("Visual Novel");
+            {
+                if (GuiLayer::CollapsingHeader("Core"))
+                {
+                    GuiLayer::Text("Current iterator: %zu", currentIt);
+                    if (GuiLayer::CollapsingHeader("Sprite2Ds"))
+                    {
+                        static size_t selected{};
+                        const size_t sprite2DsSize{sprite2Ds.size()};
+                        if (ImGui::TreeNode("List"))
+                        {
+                            for (size_t n = 0; n < sprite2DsSize; n++)
+                            {
+                                char buf[32];
+                                sprintf(buf, "Sprite2D %llu", n);
+                                if (ImGui::Selectable(buf, selected == n))
+                                    selected = n;
+                            }
+                            ImGui::TreePop();
+                        }
 
 						if (selected < sprite2DsSize)
 						{
@@ -504,8 +504,8 @@ namespace oe::VisualNovel
 		instructions.push_back({STOP_AMBIENT, {}, {}, audioSource});
 	}
 
-	constexpr Instruction& GetCurrentInstruction()
-	{
-		return instructions[currentIt];
-	}
-}
+    Instruction& GetCurrentInstruction()
+    {
+        return instructions[currentIt];
+    }
+} // namespace oe::VisualNovel

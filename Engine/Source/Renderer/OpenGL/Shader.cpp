@@ -3,6 +3,7 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
+#include <cstring>
 #include "Oneiro/Renderer/OpenGL/Shader.hpp"
 
 namespace oe::Renderer::GL
@@ -61,7 +62,7 @@ namespace oe::Renderer::GL
 		int success{};
 		char infoLog[512];
 
-		if (std::strcmp(type, "PROGRAM") != 0)
+		if (strcmp(type, "PROGRAM") != 0)
 		{
 			gl::GetShaderiv(id, gl::COMPILE_STATUS, &success);
 			if (!success)
