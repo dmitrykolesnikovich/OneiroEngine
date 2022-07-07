@@ -36,12 +36,14 @@ namespace SandBox
 				uniform sampler2D uTexture;
 				in vec4 Color;
 				in vec2 TexCoords;
+                uniform vec3 uColor;
                 void main()
                 {
-					if (TexCoords.x == 0.0 && TexCoords.y == 0.0)
+                    vec4 texture = texture(uTexture, TexCoords);
+					if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
 						FragColor = Color;
 					else
-						FragColor = pow(texture(uTexture, TexCoords), vec4(1.0/2.2));
+						FragColor = pow(texture, vec4(1.0/2.2));
                 }
             )";
 
@@ -53,6 +55,8 @@ namespace SandBox
 
         gl::CullFace(gl::BACK);
         gl::FrontFace(gl::CCW);
+
+        Renderer::GL::Load2DTexture("Assets/Images/background.jpg", &mCubeTexture);
 
         if (World::World::IsExists("main"))
         {
@@ -66,6 +70,15 @@ namespace SandBox
 
         mWorld->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
         mWorld->CreateEntity("Cube").AddComponent<ModelComponent>().Model->Load("Assets/Models/cube.fbx");
+
+        mWorld->CreateEntity("Plane").AddComponent<ModelComponent>().Model->Load({
+            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f,  0.0f}},
+            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f,  0.0f}},
+            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f,  10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f,  0.0f}},
+            {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+            {{1.0f, 1.0f, 1.0f, 1.0f}, { 10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 10.0f}}
+        });
 
         return true;
     }
@@ -99,14 +112,16 @@ namespace SandBox
         cubeTransform.Rotation.x = 90.0f;
 
         mShader.Use();
+        mShader.SetUniform("uColor", glm::vec3(1.0f));
         mShader.SetUniform("uModel", backpackTransform.GetTransform());
         mShader.SetUniform("uView", mainCamera.GetViewMatrix());
         mShader.SetUniform("uProjection", mainCamera.GetPerspectiveProjection());
         backpackEntity.GetComponent<ModelComponent>().Model->Draw();
-
-        mShader.Use();
         mShader.SetUniform("uModel", cubeTransform.GetTransform());
         mWorld->GetEntity("Cube").GetComponent<ModelComponent>().Model->Draw();
+
+        mShader.SetUniform("uModel", mWorld->GetEntity("Plane").GetComponent<TransformComponent>().GetTransform());
+        mWorld->GetEntity("Plane").GetComponent<ModelComponent>().Model->Draw();
 
         return true;
     }
@@ -115,8 +130,7 @@ namespace SandBox
     {
         if (typeid(e) == typeid(oe::Core::Event::CursorPosEvent))
         {
-            const auto& cursorEvent =
-                dynamic_cast<const oe::Core::Event::CursorPosEvent&>(e);
+            const auto& cursorEvent = dynamic_cast<const oe::Core::Event::CursorPosEvent&>(e);
             auto& mainCamera = mWorld->GetEntity("Player").GetComponent<oe::MainCameraComponent>();
             mainCamera.UpdateMouse(static_cast<float>(cursorEvent.XPos), static_cast<float>(cursorEvent.YPos));
         }
