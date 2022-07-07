@@ -41,11 +41,9 @@ namespace oe::Core
 			size_t i{};
 			while (i != futuresCount)
 			{
-				if (futures[i].wait_for(0ms) == std::future_status::ready)
-				{
-					meshes[i].first->Generate();
-					i++;
-				}
+                futures[i].wait();
+                meshes[i].first->Generate();
+                i++;
 			}
 		} // End async loading meshes
 
@@ -72,11 +70,9 @@ namespace oe::Core
 			size_t i{};
 			while (i != futuresCount)
 			{
-				if (futures[i].wait_for(0ms) == std::future_status::ready)
-				{
-					Load2DTexture(textures[i].first.get());
-					i++;
-				}
+                futures[i].wait();
+                Load2DTexture(textures[i].first.get());
+                i++;
 			}
 		} // End async loading textures
 	}
