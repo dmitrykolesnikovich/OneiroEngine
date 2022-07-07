@@ -7,6 +7,8 @@
 
 #include "entt/entt.hpp"
 
+#include "Oneiro/Renderer/OpenGL/Shader.hpp"
+
 namespace oe::World
 {
 	class Entity;
@@ -47,9 +49,12 @@ namespace oe::World
 		 * \param reWrite If you need to rewrite the output file, then you must pass true
 		 */
 		bool Save(bool reWrite);
+
+        void UpdateEntities();
 	private:
 		entt::registry mRegistry{};
 		WorldData mData{};
+        Renderer::GL::Shader mMainShader{};
 		friend class Entity;
 	};
 }

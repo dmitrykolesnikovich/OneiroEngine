@@ -21,8 +21,6 @@ namespace SandBox
         void OnShutdown() override;
     private:
         std::shared_ptr<oe::World::World> mWorld{};
-        oe::Renderer::GL::Shader mShader{};
-        oe::Renderer::GL::Texture<gl::TEXTURE_2D> mCubeTexture{};
     };
 }
 

@@ -11,52 +11,10 @@ namespace SandBox
     {
         using namespace oe;
 
-        constexpr auto vertexShaderSrc = R"(
-                #version 330 core
-                layout (location = 0) in vec4 aColor;
-				layout (location = 1) in vec3 aPos;
-				layout (location = 2) in vec2 aNormal;
-				layout (location = 3) in vec2 aTexCoords;
-                uniform mat4 uView;
-                uniform mat4 uProjection;
-                uniform mat4 uModel;
-				out vec4 Color;
-				out vec2 TexCoords;
-                void main()
-                {
-                    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
-					TexCoords = aTexCoords;
-					Color = aColor;
-                }
-            )";
-
-        constexpr auto fragmentShaderSrc = R"(
-                #version 330 core
-                out vec4 FragColor;
-				uniform sampler2D uTexture;
-				in vec4 Color;
-				in vec2 TexCoords;
-                uniform vec3 uColor;
-                void main()
-                {
-                    vec4 texture = texture(uTexture, TexCoords);
-					if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
-						FragColor = Color;
-					else
-						FragColor = pow(texture, vec4(1.0/2.2));
-                }
-            )";
-
-        mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
-        mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
-        mShader.CreateProgram();
-
         SetMode(Input::CURSOR, Input::CURSOR_DISABLED);
 
         gl::CullFace(gl::BACK);
         gl::FrontFace(gl::CCW);
-
-        Renderer::GL::Load2DTexture("Assets/Images/background.jpg", &mCubeTexture);
 
         if (World::World::IsExists("main"))
         {
@@ -111,17 +69,7 @@ namespace SandBox
         cubeTransform.Translation = glm::vec3(5.5f, 1.0f, 0.5f);
         cubeTransform.Rotation.x = 90.0f;
 
-        mShader.Use();
-        mShader.SetUniform("uColor", glm::vec3(1.0f));
-        mShader.SetUniform("uModel", backpackTransform.GetTransform());
-        mShader.SetUniform("uView", mainCamera.GetViewMatrix());
-        mShader.SetUniform("uProjection", mainCamera.GetPerspectiveProjection());
-        backpackEntity.GetComponent<ModelComponent>().Model->Draw();
-        mShader.SetUniform("uModel", cubeTransform.GetTransform());
-        mWorld->GetEntity("Cube").GetComponent<ModelComponent>().Model->Draw();
-
-        mShader.SetUniform("uModel", mWorld->GetEntity("Plane").GetComponent<TransformComponent>().GetTransform());
-        mWorld->GetEntity("Plane").GetComponent<ModelComponent>().Model->Draw();
+        mWorld->UpdateEntities();
 
         return true;
     }

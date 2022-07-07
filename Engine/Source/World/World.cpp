@@ -215,6 +215,45 @@ namespace oe::World
 {
     World::World(const std::string& name, const std::string& path) : mData({name, path})
     {
+        constexpr auto vertexShaderSrc = R"(
+                #version 330 core
+                layout (location = 0) in vec4 aColor;
+				layout (location = 1) in vec3 aPos;
+				layout (location = 2) in vec2 aNormal;
+				layout (location = 3) in vec2 aTexCoords;
+                uniform mat4 uView;
+                uniform mat4 uProjection;
+                uniform mat4 uModel;
+				out vec4 Color;
+				out vec2 TexCoords;
+                void main()
+                {
+                    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
+					TexCoords = aTexCoords;
+					Color = aColor;
+                }
+            )";
+
+        constexpr auto fragmentShaderSrc = R"(
+                #version 330 core
+                out vec4 FragColor;
+				uniform sampler2D uTexture;
+				in vec4 Color;
+				in vec2 TexCoords;
+                uniform vec3 uColor;
+                void main()
+                {
+                    vec4 texture = texture(uTexture, TexCoords);
+					if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
+						FragColor = Color;
+					else
+						FragColor = pow(texture, vec4(1.0/2.2));
+                }
+            )";
+
+        mMainShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
+        mMainShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
+        mMainShader.CreateProgram();
     }
 
     World::~World() = default;
@@ -380,5 +419,38 @@ namespace oe::World
     entt::registry& World::GetEntities()
     {
         return mRegistry;
+    }
+
+    void World::UpdateEntities()
+    {
+        mMainShader.Use();
+        auto view = mRegistry.view<const TagComponent, const TransformComponent>();
+
+        for (auto entity : view)
+        {
+            //const auto& tagComponent = view.get<const TagComponent>(entity);
+            const auto& transformComponent = view.get<const TransformComponent>(entity);
+            const auto& mainCamera = mRegistry.try_get<const MainCameraComponent>(entity);
+            const auto& modelComponent = mRegistry.try_get<const ModelComponent>(entity);
+            const auto& spriteComponent = mRegistry.try_get<const Sprite2DComponent>(entity);
+
+            mMainShader.SetUniform("uModel", transformComponent.GetTransform());
+
+            if (mainCamera)
+            {
+                mMainShader.SetUniform("uView", mainCamera->GetViewMatrix());
+                mMainShader.SetUniform("uProjection", mainCamera->GetPerspectiveProjection());
+            }
+
+            if (modelComponent)
+            {
+                modelComponent->Model->Draw();
+            }
+
+            if (spriteComponent)
+            {
+                spriteComponent->Sprite2D->Draw();
+            }
+        }
     }
 }
