@@ -17,45 +17,6 @@ namespace oe::Renderer::GL
     void Sprite2D::Load(const std::string& path, bool keepAspectRatio)
     {
         mKeepAR = keepAspectRatio;
-        constexpr auto vertexShaderSrc = R"(
-                #version 330 core
-                layout (location = 0) in vec3 aPos;
-                uniform mat4 uView;
-                uniform mat4 uProjection;
-                uniform mat4 uModel;
-                out vec2 TexCoords;
-                uniform float uAR;
-                uniform bool uKeepAspectRatio;
-                void main()
-                {
-                    vec2 scale = uKeepAspectRatio ? vec2(uAR > 1 ? 1 / uAR : 1, uAR < 1 ? uAR : 1) : vec2(1.0);
-                    TexCoords = aPos.xy;
-                    gl_Position = uProjection * uView * uModel * vec4(aPos.xy * scale, 0.0, 1.0);
-                }
-            )";
-
-        constexpr auto fragmentShaderSrc = R"(
-                #version 330 core
-                out vec4 FragColor;
-                uniform sampler2D uTexture;
-                uniform bool uUseTextureAlpha;
-                uniform float uTextureAlpha;
-                in vec2 TexCoords;
-                void main()
-                {
-                    vec4 Texture = texture2D(uTexture, TexCoords);
-                    if (Texture.a < 0.35)
-                            discard;
-                    if (uTextureAlpha <= Texture.a)
-                            Texture.a = uTextureAlpha;
-                        FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
-                }
-            )";
-
-        mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
-        mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
-        mShader.CreateProgram();
-
         constexpr float vertices[] = {1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f};
 
         mVAO.Generate();
@@ -67,7 +28,6 @@ namespace oe::Renderer::GL
         mVAO.UnBind();
         mVBO.UnBind();
         mTexture = Core::GetTexturesManager().Add(std::make_shared<Texture<gl::TEXTURE_2D>>(path));
-        mTextureData = mTexture->GetData();
     }
 
     void Sprite2D::Draw()
@@ -75,31 +35,9 @@ namespace oe::Renderer::GL
         if (!mTexture)
             return;
 
-        mShader.Use();
-
-        if (mKeepAR)
-            mShader.SetUniform("uAR", Core::Root::GetWindow()->GetAr() / (static_cast<float>(mTextureData->Width) / mTextureData->Height));
-
-        mShader.SetUniform("uTextureAlpha", mAlpha);
-        mShader.SetUniform("uModel", mModel);
-        mShader.SetUniform("uUseTextureAlpha", mUseTextureAlpha);
-        mShader.SetUniform("uKeepAspectRatio", mKeepAR);
-        mShader.SetUniform("uProjection", glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f));
-        mShader.SetUniform("uView", glm::mat4(1.0f));
-
         mVAO.Bind();
         mTexture->Bind();
         DrawArrays(TRIANGLES, 6);
-    }
-
-    void Sprite2D::Move(const glm::vec3& pos)
-    {
-        mModel = translate(mModel, pos);
-    }
-
-    void Sprite2D::Scale(const glm::vec3& scale)
-    {
-        mModel = glm::scale(mModel, scale);
     }
 
     void Sprite2D::SetAlpha(float alpha)
@@ -120,5 +58,15 @@ namespace oe::Renderer::GL
     float Sprite2D::GetAlpha() const
     {
         return mAlpha;
+    }
+
+    bool Sprite2D::IsKeepAR() const
+    {
+        return mKeepAR;
+    }
+
+    bool Sprite2D::IsUseTextureAlpha() const
+    {
+        return mUseTextureAlpha;
     }
 } // namespace oe::Renderer::GL

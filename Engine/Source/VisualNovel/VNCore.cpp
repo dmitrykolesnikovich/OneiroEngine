@@ -145,7 +145,6 @@ namespace oe::VisualNovel
         {
         case SHOW_SPRITE: {
             auto& sprite2D = instruction.Sprite2D;
-            sprite2D->Move({});
             sprite2D->SetAlpha(0.0f);
             sprite2Ds.emplace_back(sprite2D, new Animation::DissolveAnimation);
             if (textBox.GetAlpha() >= 1.0f)
@@ -215,7 +214,6 @@ namespace oe::VisualNovel
             break;
         }
         case MOVE_SPRITE: {
-            instruction.Sprite2D->Move(instruction.Vector3);
             currentIt++;
             NextStep();
             break;
@@ -244,8 +242,8 @@ namespace oe::VisualNovel
             {
                 fadeMusic->Update(Runtime::Engine::GetDeltaTime());
 
-                if (fadeMusic->IsEnded())
-                    std::ranges::remove(fadeMusicContainer, fadeMusic);
+                // if (fadeMusic->IsEnded())
+                // std::ranges::remove(fadeMusicContainer, fadeMusic);
             }
         }
 

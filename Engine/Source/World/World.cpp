@@ -164,8 +164,11 @@ namespace
             out << YAML::Key << "MovementSpeed" << YAML::Value << mc.MovementSpeed;
             out << YAML::Key << "MouseSensitivity" << YAML::Value << mc.MouseSensitivity;
 
-            out << YAML::Key << "Near" << YAML::Value << mc.Near;
-            out << YAML::Key << "Far" << YAML::Value << mc.Far;
+            out << YAML::Key << "OrthoNear" << YAML::Value << mc.OrthoNear;
+            out << YAML::Key << "OrthoFar" << YAML::Value << mc.OrthoFar;
+
+            out << YAML::Key << "PerspectiveNear" << YAML::Value << mc.PerspectiveNear;
+            out << YAML::Key << "PerspectiveFar" << YAML::Value << mc.PerspectiveFar;
             out << YAML::Key << "Fov" << YAML::Value << mc.Fov;
 
             out << YAML::EndMap;
@@ -248,9 +251,47 @@ namespace oe::World
                 }
             )";
 
+        constexpr auto spriteVertShaderSrc = R"(
+                #version 330 core
+                layout (location = 0) in vec3 aPos;
+                uniform mat4 uView;
+                uniform mat4 uProjection;
+                out vec2 TexCoords;
+                uniform float uAR;
+                uniform bool uKeepAspectRatio;
+                void main()
+                {
+                    vec2 scale = uKeepAspectRatio ? vec2(uAR > 1 ? 1 / uAR : 1, uAR < 1 ? uAR : 1) : vec2(1.0);
+                    TexCoords = aPos.xy;
+                    gl_Position = uProjection * uView * vec4(aPos.xy * scale, 0.0, 1.0);
+                }
+            )";
+
+        constexpr auto spriteFragShaderSrc = R"(
+                #version 330 core
+                out vec4 FragColor;
+                uniform sampler2D uTexture;
+                uniform bool uUseTextureAlpha;
+                uniform float uTextureAlpha;
+                in vec2 TexCoords;
+                void main()
+                {
+                    vec4 Texture = texture2D(uTexture, TexCoords);
+                    if (Texture.a < 0.35)
+                            discard;
+                    if (uTextureAlpha <= Texture.a)
+                            Texture.a = uTextureAlpha;
+                        FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
+                }
+            )";
+
         mMainShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
         mMainShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
         mMainShader.CreateProgram();
+
+        mSprite2DShader.LoadShaderSrc<gl::VERTEX_SHADER>(spriteVertShaderSrc);
+        mSprite2DShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(spriteFragShaderSrc);
+        mSprite2DShader.CreateProgram();
     }
 
     World::~World() = default;
@@ -325,8 +366,10 @@ namespace oe::World
                 mainCamera.Pitch = mainCameraComponent["Pitch"].as<float>();
                 mainCamera.MovementSpeed = mainCameraComponent["MovementSpeed"].as<float>();
                 mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
-                mainCamera.Near = mainCameraComponent["Near"].as<float>();
-                mainCamera.Far = mainCameraComponent["Far"].as<float>();
+                mainCamera.OrthoNear = mainCameraComponent["OrthoNear"].as<float>();
+                mainCamera.OrthoFar = mainCameraComponent["OrthoFar"].as<float>();
+                mainCamera.PerspectiveNear = mainCameraComponent["PerspectiveNear"].as<float>();
+                mainCamera.PerspectiveFar = mainCameraComponent["PerspectiveFar"].as<float>();
                 mainCamera.Fov = mainCameraComponent["Fov"].as<float>();
             }
 
@@ -415,33 +458,49 @@ namespace oe::World
 
     void World::UpdateEntities()
     {
-        mMainShader.Use();
         auto view = mRegistry.view<const TagComponent, const TransformComponent>();
+
+        MainCameraComponent* mainCamera{};
+
+        for (auto entity : view)
+        {
+            mainCamera = &*mRegistry.try_get<MainCameraComponent>(entity);
+            if (mainCamera)
+                break;
+        }
 
         for (auto entity : view)
         {
             // const auto& tagComponent = view.get<const TagComponent>(entity);
             const auto& transformComponent = view.get<const TransformComponent>(entity);
-            const auto& mainCamera = mRegistry.try_get<const MainCameraComponent>(entity);
             const auto& modelComponent = mRegistry.try_get<const ModelComponent>(entity);
             const auto& spriteComponent = mRegistry.try_get<const Sprite2DComponent>(entity);
 
-            mMainShader.SetUniform("uModel", transformComponent.GetTransform());
-
-            if (mainCamera)
-            {
-                mMainShader.SetUniform("uView", mainCamera->GetViewMatrix());
-                mMainShader.SetUniform("uProjection", mainCamera->GetPerspectiveProjection());
-            }
-
-            if (modelComponent)
-            {
-                modelComponent->Model->Draw();
-            }
+            //            if (modelComponent)
+            //            {
+            //                mMainShader.Use();
+            //                mMainShader.SetUniform("uModel", transformComponent.GetTransform());
+            //                mMainShader.SetUniform("uView", mainCamera->GetViewMatrix());
+            //                mMainShader.SetUniform("uProjection", mainCamera->GetPerspectiveProjection());
+            //                modelComponent->Model->Draw();
+            //            }
 
             if (spriteComponent)
             {
-                spriteComponent->Sprite2D->Draw();
+                const auto sprite = spriteComponent->Sprite2D;
+                mSprite2DShader.Use();
+                mSprite2DShader.SetUniform("uModel", transformComponent.GetTransform());
+                mSprite2DShader.SetUniform("uView", glm::mat4(1.0f));
+                mSprite2DShader.SetUniform("uProjection", mainCamera->GetOrthoProjection());
+                if (sprite->IsKeepAR())
+                    mSprite2DShader.SetUniform(
+                        "uAR", Core::Root::GetWindow()->GetAr() /
+                                   (static_cast<float>(sprite->GetTexture()->GetData()->Width) / sprite->GetTexture()->GetData()->Height));
+
+                mSprite2DShader.SetUniform("uTextureAlpha", sprite->GetAlpha());
+                mSprite2DShader.SetUniform("uUseTextureAlpha", sprite->IsUseTextureAlpha());
+                mSprite2DShader.SetUniform("uKeepAspectRatio", sprite->IsKeepAR());
+                sprite->Draw();
             }
         }
     }

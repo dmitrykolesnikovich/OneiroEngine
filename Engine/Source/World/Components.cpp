@@ -117,14 +117,15 @@ namespace oe
 
     glm::mat4 MainCameraComponent::GetPerspectiveProjection() const
     {
-        return glm::perspective(
-            glm::radians(Fov),
-            static_cast<float>(Core::Root::GetWindow()->GetWidth()) / static_cast<float>(Core::Root::GetWindow()->GetHeight()), Near, Far);
+        return glm::perspective(glm::radians(Fov),
+                                static_cast<float>(Core::Root::GetWindow()->GetWidth()) /
+                                    static_cast<float>(Core::Root::GetWindow()->GetHeight()),
+                                PerspectiveNear, PerspectiveFar);
     }
 
     glm::mat4 MainCameraComponent::GetOrthoProjection() const
     {
-        return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, Near, Far);
+        return glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, OrthoNear, OrthoFar);
     }
 
     void MainCameraComponent::UpdateCameraVectors()

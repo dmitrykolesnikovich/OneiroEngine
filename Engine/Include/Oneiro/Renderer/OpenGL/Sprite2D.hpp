@@ -23,18 +23,17 @@ namespace oe::Renderer::GL
 
         void Load(const std::string& path, bool keepAspectRatio = true);
         void Draw();
-        void Move(const glm::vec3& pos);
-        void Scale(const glm::vec3& scale);
-        const Texture<gl::TEXTURE_2D>* GetTexture() const;
-        float GetAlpha() const;
         void SetAlpha(float alpha);
         void SetUsingTextureAlpha(bool useTextureAlpha);
 
+        [[nodiscard]] const Texture<gl::TEXTURE_2D>* GetTexture() const;
+        [[nodiscard]] float GetAlpha() const;
+
+        [[nodiscard]] bool IsKeepAR() const;
+        [[nodiscard]] bool IsUseTextureAlpha() const;
+
       private:
-        TextureData* mTextureData{};
-        glm::mat4 mModel{1.0f};
         Texture<gl::TEXTURE_2D>* mTexture{};
-        Shader mShader{};
         Buffer<gl::ARRAY_BUFFER, gl::STATIC_DRAW> mVBO{};
         VertexArray mVAO;
         float mAlpha{1.0f};

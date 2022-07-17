@@ -82,7 +82,8 @@ namespace oe
 
         float MovementSpeed{2.5f}, MouseSensitivity{0.1f};
 
-        float Near{0.1f}, Far{100.0f}, Fov{45.0f};
+        float PerspectiveNear{0.1f}, PerspectiveFar{100.0f}, Fov{45.0f};
+        float OrthoNear{-1.0f}, OrthoFar{1.0f};
 
         MainCameraComponent();
 
@@ -104,7 +105,6 @@ namespace oe
 
       private:
         void UpdateCameraVectors();
-
         float mLastX{}, mLastY{};
         bool mFirstMouse{true};
     };
