@@ -13,4 +13,4 @@ clone_script:
 
 build_script:
 #- sh: cmake SandBox/ -DCMAKE_CXX23_EXTENSION_COMPILE_OPTION="-std=gnu++2a" && make
-- cmd: cd SandBox/ && mkdir build && cd build/ && cmake .. && cmake --build ..
+- cmd: cd SandBox/ && mkdir build && cd build/ && cmake .. && cmake --build .
