@@ -9,16 +9,17 @@
 
 namespace oe::Animation
 {
-	class DissolveAnimation final : public Animation
-	{
-	public:
-		void Update(Renderer::GL::Sprite2D* sprite2D, float dt) override;
+    class DissolveAnimation final : public Animation
+    {
+      public:
+        void Update(Renderer::GL::Sprite2D* sprite2D, float dt) override;
         void SetReversed(bool isReversed);
         bool IsReversed();
         void Reset();
         void SetTime(float time);
-    private:
-		float mTime{};
-		bool mIsReversed{};
-	};
-}
+
+      private:
+        float mTime{};
+        bool mIsReversed{};
+    };
+} // namespace oe::Animation

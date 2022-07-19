@@ -7,6 +7,6 @@
 
 namespace oe::Core
 {
-	void Init();
-	void Shutdown();
-}
+    void Init();
+    void Shutdown();
+} // namespace oe::Core

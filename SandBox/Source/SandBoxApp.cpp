@@ -11,44 +11,6 @@ namespace SandBox
     {
         using namespace oe;
 
-        constexpr auto vertexShaderSrc = R"(
-                #version 330 core
-                layout (location = 0) in vec4 aColor;
-				layout (location = 1) in vec3 aPos;
-				layout (location = 2) in vec2 aNormal;
-				layout (location = 3) in vec2 aTexCoords;
-                uniform mat4 uView;
-                uniform mat4 uProjection;
-                uniform mat4 uModel;
-				out vec4 Color;
-				out vec2 TexCoords;
-                void main()
-                {
-                    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
-					TexCoords = aTexCoords;
-					Color = aColor;
-                }
-            )";
-
-        constexpr auto fragmentShaderSrc = R"(
-                #version 330 core
-                out vec4 FragColor;
-				uniform sampler2D uTexture;
-				in vec4 Color;
-				in vec2 TexCoords;
-                void main()
-                {
-					if (TexCoords.x == 0.0 && TexCoords.y == 0.0)
-						FragColor = Color;
-					else
-						FragColor = pow(texture(uTexture, TexCoords), vec4(1.0/2.2));
-                }
-            )";
-
-        mShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
-        mShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
-        mShader.CreateProgram();
-
         SetMode(Input::CURSOR, Input::CURSOR_DISABLED);
 
         gl::CullFace(gl::BACK);
@@ -66,6 +28,14 @@ namespace SandBox
 
         mWorld->CreateEntity("Backpack").AddComponent<ModelComponent>().Model->Load("Assets/Models/backpack/backpack.obj");
         mWorld->CreateEntity("Cube").AddComponent<ModelComponent>().Model->Load("Assets/Models/cube.fbx");
+
+        mWorld->CreateEntity("Plane").AddComponent<ModelComponent>().Model->Load(
+            {{{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, 10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 0.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {-10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 10.0f}},
+             {{1.0f, 1.0f, 1.0f, 1.0f}, {10.0f, -3.0f, -10.0f}, {0.0f, 1.0f, 0.0f}, {10.0f, 10.0f}}});
 
         return true;
     }
@@ -98,30 +68,26 @@ namespace SandBox
         cubeTransform.Translation = glm::vec3(5.5f, 1.0f, 0.5f);
         cubeTransform.Rotation.x = 90.0f;
 
-        mShader.Use();
-        mShader.SetUniform("uModel", backpackTransform.GetTransform());
-        mShader.SetUniform("uView", mainCamera.GetViewMatrix());
-        mShader.SetUniform("uProjection", mainCamera.GetPerspectiveProjection());
-        backpackEntity.GetComponent<ModelComponent>().Model->Draw();
-
-        mShader.Use();
-        mShader.SetUniform("uModel", cubeTransform.GetTransform());
-        mWorld->GetEntity("Cube").GetComponent<ModelComponent>().Model->Draw();
+        mWorld->UpdateEntities();
 
         return true;
     }
 
-    void Application::MousePos(double xPos, double yPos)
+    void Application::OnEvent(const oe::Core::Event::Base& e)
     {
-        auto& mainCamera = mWorld->GetEntity("Player").GetComponent<oe::MainCameraComponent>();
-        mainCamera.UpdateMouse(static_cast<float>(xPos), static_cast<float>(yPos));
+        if (typeid(e) == typeid(oe::Core::Event::CursorPosEvent))
+        {
+            const auto& cursorEvent = dynamic_cast<const oe::Core::Event::CursorPosEvent&>(e);
+            auto& mainCamera = mWorld->GetEntity("Player").GetComponent<oe::MainCameraComponent>();
+            mainCamera.UpdateMouse(static_cast<float>(cursorEvent.XPos), static_cast<float>(cursorEvent.YPos));
+        }
     }
 
     void Application::OnShutdown()
     {
         mWorld->Save(true);
     }
-}
+} // namespace SandBox
 
 namespace oe::Runtime
 {
@@ -129,4 +95,4 @@ namespace oe::Runtime
     {
         return std::make_shared<SandBox::Application>("SandBox", 1280, 720);
     }
-}
+} // namespace oe::Runtime

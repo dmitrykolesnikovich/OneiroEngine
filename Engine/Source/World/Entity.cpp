@@ -9,7 +9,5 @@ namespace oe::World
 {
     Entity::Entity() = default;
 
-    Entity::Entity(entt::entity handle, World* scene) : mHandle(handle), mScene(scene)
-    {
-    }
-}
+    Entity::Entity(entt::entity handle, World* scene) : mHandle(handle), mScene(scene) {}
+} // namespace oe::World

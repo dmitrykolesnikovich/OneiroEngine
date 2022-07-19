@@ -9,12 +9,12 @@
 
 namespace oe::Renderer::GL
 {
-	class RenderBuffer
-	{
-	public:
-		RenderBuffer();
-		RenderBuffer(const RenderBuffer&) = delete;
-		~RenderBuffer();
+    class RenderBuffer
+    {
+      public:
+        RenderBuffer();
+        RenderBuffer(const RenderBuffer&) = delete;
+        ~RenderBuffer();
 
         void Generate();
 
@@ -25,7 +25,8 @@ namespace oe::Renderer::GL
         void Storage(int internalFormat, int width, int height);
 
         [[nodiscard]] uint32_t Get() const;
-    private:
-		uint32_t mID{};
-	};
-}
+
+      private:
+        uint32_t mID{};
+    };
+} // namespace oe::Renderer::GL

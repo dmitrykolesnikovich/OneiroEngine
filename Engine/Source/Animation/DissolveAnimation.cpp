@@ -54,4 +54,4 @@ namespace oe::Animation
     {
         mTime = time;
     }
-}
+} // namespace oe::Animation

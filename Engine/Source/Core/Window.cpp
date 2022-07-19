@@ -10,128 +10,123 @@
 
 namespace oe::Core
 {
-	Window::Window(const char* title, int width, int height)
-	{
-		mData.Title = title;
-		mData.Width = width;
-		mData.Height = height;
-	}
-
-	Window::~Window()
-	{
-		glfwDestroyWindow(mWindow);
-	}
-
-	void Window::PollEvents()
-	{
-		glfwPollEvents();
-	}
-
-	void Window::WaitEvents()
-	{
-		glfwWaitEvents();
-	}
-
-	void Window::SwapBuffers() const
+    Window::Window(const char* title, int width, int height)
     {
-		glfwSwapBuffers(mWindow);
-	}
+        mData.Title = title;
+        mData.Width = width;
+        mData.Height = height;
+    }
 
-	bool Window::IsClosed() const
-	{
-		return glfwWindowShouldClose(mWindow) != 0;
-	}
+    Window::~Window()
+    {
+        glfwDestroyWindow(mWindow);
+    }
 
-	GLFWwindow* Window::GetGLFW() const
-	{
-		return mWindow;
-	}
+    void Window::PollEvents()
+    {
+        glfwPollEvents();
+    }
 
-	void Window::SetSize(int width, int height)
-	{
-		mData.Width = width;
-		mData.Height = height;
-	}
+    void Window::WaitEvents()
+    {
+        glfwWaitEvents();
+    }
 
-	const char* Window::GetTitle() const
-	{
-		return mData.Title;
-	}
+    void Window::SwapBuffers() const
+    {
+        glfwSwapBuffers(mWindow);
+    }
 
-	float Window::GetAr() const
-	{
-		return mData.AR;
-	}
+    bool Window::IsClosed() const
+    {
+        return glfwWindowShouldClose(mWindow) != 0;
+    }
 
-	int Window::GetWidth() const
-	{
-		return mData.Width;
-	}
+    GLFWwindow* Window::GetGLFW() const
+    {
+        return mWindow;
+    }
 
-	int Window::GetHeight() const
-	{
-		return mData.Height;
-	}
+    void Window::SetSize(int width, int height)
+    {
+        mData.Width = width;
+        mData.Height = height;
+    }
 
-	void Window::UpdateSize(int width, int height)
-	{
-		UpdateAR(width, height);
-		SetSize(width, height);
-		glfwSetWindowSize(mWindow, width, height);
-	}
+    const char* Window::GetTitle() const
+    {
+        return mData.Title;
+    }
 
-	void Window::SetAR(float aspectRatio)
-	{
-		mData.AR = aspectRatio;
-	}
+    float Window::GetAr() const
+    {
+        return mData.AR;
+    }
 
-	void Window::UpdateAR(int width, int height)
-	{
-		SetAR(static_cast<float>(width) / static_cast<float>(height));
-	}
+    int Window::GetWidth() const
+    {
+        return mData.Width;
+    }
 
-	void Window::SetupEvents() const
-	{
-		glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height)
-		{
-			Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
-		});
-		glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int)
-		{
-			Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
-		});
-		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int)
-		{
-			Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
-		});
-		glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused)
-		{
-			Event::Dispatcher::Post(Event::FocusEvent(isFocused));
-		});
+    int Window::GetHeight() const
+    {
+        return mData.Height;
+    }
 
-		glfwSetCursorPosCallback(mWindow, [](GLFWwindow*, double xpos, double ypos)
-		{
-			Event::Dispatcher::Post(Event::CursorPosEvent(xpos, ypos));
-		});
-	}
+    void Window::UpdateSize(int width, int height)
+    {
+        UpdateAR(width, height);
+        SetSize(width, height);
+        glfwSetWindowSize(mWindow, width, height);
+    }
 
-	bool Window::Create()
-	{
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    void Window::SetAR(float aspectRatio)
+    {
+        mData.AR = aspectRatio;
+    }
 
-		mWindow = glfwCreateWindow(mData.Width, mData.Height, mData.Title, nullptr, nullptr);
+    void Window::UpdateAR(int width, int height)
+    {
+        SetAR(static_cast<float>(width) / static_cast<float>(height));
+    }
 
-		if (mWindow == nullptr)
-			return false;
+    void Window::SetupEvents() const
+    {
+        glfwSetFramebufferSizeCallback(mWindow, [](GLFWwindow*, int width, int height) {
+            Event::Dispatcher::Post(Event::FrameBufferSizeEvent(width, height));
+        });
+        glfwSetKeyCallback(mWindow, [](GLFWwindow*, int key, int, int action, int) {
+            Event::Dispatcher::Post(Event::KeyInputEvent(key, action));
+        });
+        glfwSetMouseButtonCallback(mWindow, [](GLFWwindow*, int button, int action, int) {
+            Event::Dispatcher::Post(Event::MouseButtonEvent(button, action));
+        });
+        glfwSetWindowFocusCallback(mWindow, [](GLFWwindow*, int isFocused) {
+            Event::Dispatcher::Post(Event::FocusEvent(isFocused));
+        });
 
-		glfwMakeContextCurrent(mWindow);
+        glfwSetCursorPosCallback(mWindow, [](GLFWwindow*, double xpos, double ypos) {
+            Event::Dispatcher::Post(Event::CursorPosEvent(xpos, ypos));
+        });
+    }
 
-		SetupEvents();
+    bool Window::Create()
+    {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		UpdateAR(mData.Width, mData.Height);
+        mWindow = glfwCreateWindow(mData.Width, mData.Height, mData.Title, nullptr, nullptr);
 
-		return true;
-	}
-}
+        if (mWindow == nullptr)
+            return false;
+
+        glfwMakeContextCurrent(mWindow);
+
+        SetupEvents();
+
+        UpdateAR(mData.Width, mData.Height);
+
+        return true;
+    }
+} // namespace oe::Core

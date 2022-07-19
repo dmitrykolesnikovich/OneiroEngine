@@ -11,7 +11,7 @@ namespace oe::Renderer::Vulkan
 {
     class MSAA
     {
-    public:
+      public:
         void Create();
 
         [[nodiscard]] VkImageView GetView() const
@@ -21,9 +21,9 @@ namespace oe::Renderer::Vulkan
 
         void Destroy();
 
-    private:
+      private:
         VkImage mImage{};
         VkDeviceMemory mDeviceMemory{};
         VkImageView mView{};
     };
-}
+} // namespace oe::Renderer::Vulkan

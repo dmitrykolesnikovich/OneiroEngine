@@ -5,29 +5,29 @@
 
 #pragma once
 
-#include <fstream>
 #include "sol/state.hpp"
+#include <fstream>
 
 namespace oe::Lua
 {
-	class File
-	{
-	public:
-		template <class... Args>
-		void OpenLibraries(Args&& ... args)
-		{
-			mState.open_libraries(std::forward<Args>(args)...);
-		}
+    class File
+    {
+      public:
+        template <class... Args> void OpenLibraries(Args&&... args)
+        {
+            mState.open_libraries(std::forward<Args>(args)...);
+        }
 
-		sol::protected_function_result LoadFile(const std::string& pathToFile, bool out = true);
+        sol::protected_function_result LoadFile(const std::string& pathToFile, bool out = true);
 
         [[nodiscard]] bool CallFunction(const std::string& name) const;
         [[nodiscard]] bool CallFunction(const std::string& name, const std::string& tableName) const;
 
         std::fstream& GetFile();
         sol::state* GetState();
-    private:
-		sol::state mState{};
-		std::fstream mFile{};
-	};
-}
+
+      private:
+        sol::state mState{};
+        std::fstream mFile{};
+    };
+} // namespace oe::Lua

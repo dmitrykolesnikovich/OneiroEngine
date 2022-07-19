@@ -14,18 +14,14 @@ namespace SandBox
     class Application final : public oe::Runtime::Application
     {
         using oe::Runtime::Application::Application;
-    public:
+
+      public:
         bool OnInit() override;
         bool OnUpdate(float deltaTime) override;
-        void MousePos(double xPos, double yPos) override;
+        void OnEvent(const oe::Core::Event::Base& e) override;
         void OnShutdown() override;
-    private:
-        std::shared_ptr<oe::World::World> mWorld{};
-        oe::Renderer::GL::Shader mShader{};
-    };
-}
 
-namespace oe::Runtime
-{
-    std::shared_ptr<Application> CreateApplication(int, char*[]);
-}
+      private:
+        std::shared_ptr<oe::World::World> mWorld{};
+    };
+} // namespace SandBox

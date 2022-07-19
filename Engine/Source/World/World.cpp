@@ -4,8 +4,8 @@
 //
 
 #include "Oneiro/World/World.hpp"
-#include "Oneiro/World/Entity.hpp"
 #include "Oneiro/Core/Random.hpp"
+#include "Oneiro/World/Entity.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -15,8 +15,7 @@
 // ReSharper disable CppInconsistentNaming
 namespace YAML
 {
-    template <>
-    struct convert<glm::vec3>
+    template <> struct convert<glm::vec3>
     {
         static Node encode(const glm::vec3& rhs)
         {
@@ -40,8 +39,29 @@ namespace YAML
         }
     };
 
-    template <>
-    struct convert<glm::vec4>
+    template <> struct convert<glm::vec2>
+    {
+        static Node encode(const glm::vec2& rhs)
+        {
+            Node node;
+            node.push_back(rhs.x);
+            node.push_back(rhs.y);
+            node.SetStyle(EmitterStyle::Flow);
+            return node;
+        }
+
+        static bool decode(const Node& node, glm::vec2& rhs)
+        {
+            if (!node.IsSequence() || node.size() != 2)
+                return false;
+
+            rhs.x = node[0].as<float>();
+            rhs.y = node[1].as<float>();
+            return true;
+        }
+    };
+
+    template <> struct convert<glm::vec4>
     {
         static Node encode(const glm::vec4& rhs)
         {
@@ -66,12 +86,19 @@ namespace YAML
             return true;
         }
     };
-}
+} // namespace YAML
 
 // ReSharper restore CppInconsistentNaming
 
 namespace
 {
+    YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v)
+    {
+        out << YAML::Flow;
+        out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+        return out;
+    }
+
     YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v)
     {
         out << YAML::Flow;
@@ -137,8 +164,11 @@ namespace
             out << YAML::Key << "MovementSpeed" << YAML::Value << mc.MovementSpeed;
             out << YAML::Key << "MouseSensitivity" << YAML::Value << mc.MouseSensitivity;
 
-            out << YAML::Key << "Near" << YAML::Value << mc.Near;
-            out << YAML::Key << "Far" << YAML::Value << mc.Far;
+            out << YAML::Key << "OrthoNear" << YAML::Value << mc.OrthoNear;
+            out << YAML::Key << "OrthoFar" << YAML::Value << mc.OrthoFar;
+
+            out << YAML::Key << "PerspectiveNear" << YAML::Value << mc.PerspectiveNear;
+            out << YAML::Key << "PerspectiveFar" << YAML::Value << mc.PerspectiveFar;
             out << YAML::Key << "Fov" << YAML::Value << mc.Fov;
 
             out << YAML::EndMap;
@@ -152,19 +182,117 @@ namespace
 
             const auto& model = entity.GetComponent<oe::ModelComponent>().Model;
 
-            out << YAML::Key << "Path" << model->GetPath();
+            if (model->IsNeed2SaveVertices())
+            {
+                const auto& vertices = model->GetVertices();
+                const size_t verticesCount = vertices.size();
+                out << YAML::Key << "Vertices";
+                out << YAML::BeginMap;
+                for (size_t i{}; i < verticesCount; ++i)
+                {
+                    const auto& vertex = vertices[i];
+                    out << YAML::Key << i;
+                    out << YAML::BeginMap;
+                    out << YAML::Key << "Color" << vertex.Color;
+                    out << YAML::Key << "Position" << vertex.Position;
+                    out << YAML::Key << "Normal" << vertex.Normal;
+                    out << YAML::Key << "TexCoords" << vertex.TexCoords;
+                    out << YAML::EndMap;
+                }
+                out << YAML::EndMap;
+            }
+            else
+                out << YAML::Key << "Path" << model->GetPath();
 
             out << YAML::EndMap;
         } // End ModelComponent
 
         out << YAML::EndMap; // End Entity
     }
-}
+} // namespace
 
 namespace oe::World
 {
-    World::World(const std::string& name, const std::string& path) : mData(name, path)
+    World::World(const std::string& name, const std::string& path) : mData({name, path})
     {
+        constexpr auto vertexShaderSrc = R"(
+                #version 330 core
+                layout (location = 0) in vec4 aColor;
+                layout (location = 1) in vec3 aPos;
+                layout (location = 2) in vec2 aNormal;
+                layout (location = 3) in vec2 aTexCoords;
+                uniform mat4 uView;
+                uniform mat4 uProjection;
+                uniform mat4 uModel;
+                out vec4 Color;
+                out vec2 TexCoords;
+                void main()
+                {
+                    gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
+                    TexCoords = aTexCoords;
+                    Color = aColor;
+                }
+            )";
+
+        constexpr auto fragmentShaderSrc = R"(
+                #version 330 core
+                out vec4 FragColor;
+                uniform sampler2D uTexture;
+                in vec4 Color;
+                in vec2 TexCoords;
+                uniform vec3 uColor;
+                void main()
+                {
+                    vec4 texture = texture(uTexture, TexCoords);
+                    if (Color != vec4(0.0) && texture.rgb == vec3(0.0))
+                        FragColor = Color;
+                    else
+                        FragColor = pow(texture, vec4(1.0/2.2));
+                }
+            )";
+
+        constexpr auto spriteVertShaderSrc = R"(
+                #version 330 core
+                layout (location = 0) in vec3 aPos;
+                uniform mat4 uModel;
+                uniform mat4 uView;
+                uniform mat4 uProjection;
+                out vec2 TexCoords;
+                uniform float uAR;
+                uniform bool uKeepAspectRatio;
+                void main()
+                {
+                    vec2 scale = uKeepAspectRatio ? vec2(uAR > 1 ? 1 / uAR : 1, uAR < 1 ? uAR : 1) : vec2(1.0);
+                    TexCoords = aPos.xy;
+                    gl_Position = uProjection * uView * uModel * vec4(aPos.xy * scale, 0.0, 1.0);
+                }
+            )";
+
+        constexpr auto spriteFragShaderSrc = R"(
+                #version 330 core
+                out vec4 FragColor;
+                uniform sampler2D uTexture;
+                uniform bool uUseTextureAlpha;
+                uniform float uTextureAlpha;
+                in vec2 TexCoords;
+                void main()
+                {
+                    vec4 Texture = texture2D(uTexture, TexCoords);
+                    if (Texture.a < 0.35)
+                            discard;
+                    if (uTextureAlpha <= Texture.a)
+                            Texture.a = uTextureAlpha;
+                        FragColor = pow(vec4(Texture.rgba), vec4(1.0/2.2));
+                }
+            )";
+
+        mMainShader.LoadShaderSrc<gl::VERTEX_SHADER>(vertexShaderSrc);
+        mMainShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(fragmentShaderSrc);
+        mMainShader.CreateProgram();
+
+        mSprite2DShader.LoadShaderSrc<gl::VERTEX_SHADER>(spriteVertShaderSrc);
+        mSprite2DShader.LoadShaderSrc<gl::FRAGMENT_SHADER>(spriteFragShaderSrc);
+        mSprite2DShader.CreateProgram();
     }
 
     World::~World() = default;
@@ -239,8 +367,10 @@ namespace oe::World
                 mainCamera.Pitch = mainCameraComponent["Pitch"].as<float>();
                 mainCamera.MovementSpeed = mainCameraComponent["MovementSpeed"].as<float>();
                 mainCamera.MouseSensitivity = mainCameraComponent["MouseSensitivity"].as<float>();
-                mainCamera.Near = mainCameraComponent["Near"].as<float>();
-                mainCamera.Far = mainCameraComponent["Far"].as<float>();
+                mainCamera.OrthoNear = mainCameraComponent["OrthoNear"].as<float>();
+                mainCamera.OrthoFar = mainCameraComponent["OrthoFar"].as<float>();
+                mainCamera.PerspectiveNear = mainCameraComponent["PerspectiveNear"].as<float>();
+                mainCamera.PerspectiveFar = mainCameraComponent["PerspectiveFar"].as<float>();
                 mainCamera.Fov = mainCameraComponent["Fov"].as<float>();
             }
 
@@ -249,6 +379,24 @@ namespace oe::World
                 auto& model = loadedEntity.AddComponent<ModelComponent>().Model;
                 if (modelComponent["Path"].IsDefined())
                     model->Load(modelComponent["Path"].as<std::string>());
+                if (modelComponent["Vertices"].IsDefined())
+                {
+                    std::vector<Renderer::GL::Vertex> vertices;
+                    size_t i{};
+                    while (true)
+                    {
+                        const YAML::Node& nd = modelComponent["Vertices"][std::to_string(i)];
+                        if (nd.IsDefined())
+                        {
+                            vertices.push_back({nd["Color"].as<glm::vec4>(), nd["Position"].as<glm::vec3>(), nd["Normal"].as<glm::vec3>(),
+                                                nd["TexCoords"].as<glm::vec2>()});
+                            i++;
+                        }
+                        else
+                            break;
+                    }
+                    model->Load(vertices);
+                }
             }
         }
 
@@ -263,8 +411,7 @@ namespace oe::World
         out << YAML::Key << "World" << YAML::Value << mData.Name;
         out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-        mRegistry.each([&](const auto entityID)
-        {
+        mRegistry.each([&](const auto entityID) {
             const Entity entity = {entityID, this};
             if (!entity)
                 return;
@@ -309,4 +456,53 @@ namespace oe::World
     {
         return mRegistry;
     }
-}
+
+    void World::UpdateEntities()
+    {
+        auto view = mRegistry.view<const TagComponent, const TransformComponent>();
+
+        MainCameraComponent* mainCamera{};
+
+        for (auto entity : view)
+        {
+            mainCamera = &*mRegistry.try_get<MainCameraComponent>(entity);
+            if (mainCamera)
+                break;
+        }
+
+        for (auto entity : view)
+        {
+            // const auto& tagComponent = view.get<const TagComponent>(entity);
+            const auto& transformComponent = view.get<const TransformComponent>(entity);
+            const auto& modelComponent = mRegistry.try_get<const ModelComponent>(entity);
+            const auto& spriteComponent = mRegistry.try_get<const Sprite2DComponent>(entity);
+
+            //            if (modelComponent)
+            //            {
+            //                mMainShader.Use();
+            //                mMainShader.SetUniform("uModel", transformComponent.GetTransform());
+            //                mMainShader.SetUniform("uView", mainCamera->GetViewMatrix());
+            //                mMainShader.SetUniform("uProjection", mainCamera->GetPerspectiveProjection());
+            //                modelComponent->Model->Draw();
+            //            }
+
+            if (spriteComponent)
+            {
+                const auto sprite = spriteComponent->Sprite2D;
+                mSprite2DShader.Use();
+                mSprite2DShader.SetUniform("uModel", transformComponent.GetTransform());
+                mSprite2DShader.SetUniform("uView", glm::mat4(1.0f));
+                mSprite2DShader.SetUniform("uProjection", mainCamera->GetOrthoProjection());
+                if (sprite->IsKeepAR())
+                    mSprite2DShader.SetUniform(
+                        "uAR", Core::Root::GetWindow()->GetAr() /
+                                   (static_cast<float>(sprite->GetTexture()->GetData()->Width) / sprite->GetTexture()->GetData()->Height));
+
+                mSprite2DShader.SetUniform("uTextureAlpha", sprite->GetAlpha());
+                mSprite2DShader.SetUniform("uUseTextureAlpha", sprite->IsUseTextureAlpha());
+                mSprite2DShader.SetUniform("uKeepAspectRatio", sprite->IsKeepAR());
+                sprite->Draw();
+            }
+        }
+    }
+} // namespace oe::World

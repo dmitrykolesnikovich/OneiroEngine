@@ -3,8 +3,8 @@
 // Licensed under the GNU General Public License, Version 3.0.
 //
 
-#include "OpenGL/gl_core_4_5.hpp"
 #include "Oneiro/Renderer/OpenGL/Renderbuffer.hpp"
+#include "OpenGL/gl_core_4_5.hpp"
 
 namespace oe::Renderer::GL
 {
@@ -40,4 +40,4 @@ namespace oe::Renderer::GL
     {
         return mID;
     }
-}
+} // namespace oe::Renderer::GL

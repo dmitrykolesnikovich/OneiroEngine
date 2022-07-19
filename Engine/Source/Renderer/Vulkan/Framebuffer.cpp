@@ -5,9 +5,9 @@
 
 #include "Oneiro/Renderer/Vulkan/Framebuffer.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/RenderPass.hpp"
 #include "Oneiro/Renderer/Vulkan/SwapChain.hpp"
-#include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 
 #include <stdexcept>
 
@@ -24,8 +24,8 @@ namespace oe::Renderer::Vulkan
         framebufferInfo.height = GetSwapChain()->GetExtent2D().height;
         framebufferInfo.layers = 1;
 
-        VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(), &framebufferInfo, nullptr,
-                                            &mFramebuffer), "Failed to create framebuffer!")
+        VK_CHECK_RESULT(vkCreateFramebuffer(GetLogicalDevice()->Get(), &framebufferInfo, nullptr, &mFramebuffer),
+                        "Failed to create framebuffer!")
     }
 
     VkFramebuffer Framebuffer::Get() const
@@ -42,4 +42,4 @@ namespace oe::Renderer::Vulkan
     {
         vkDestroyFramebuffer(GetLogicalDevice()->Get(), mFramebuffer, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan

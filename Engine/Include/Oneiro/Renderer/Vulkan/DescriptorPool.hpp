@@ -11,14 +11,15 @@ namespace oe::Renderer::Vulkan
 {
     class DescriptorPool
     {
-    public:
+      public:
         void Create(VkDescriptorType type, uint32_t bindingsCount);
         void Create();
 
         void Destroy();
 
         [[nodiscard]] VkDescriptorPool Get() const;
-    private:
+
+      private:
         VkDescriptorPool mDescriptorPool{};
     };
-}
+} // namespace oe::Renderer::Vulkan

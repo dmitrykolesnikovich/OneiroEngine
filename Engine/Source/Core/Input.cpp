@@ -28,4 +28,4 @@ namespace oe::Input
     {
         return glfwGetInputMode(Core::Root::GetWindow()->GetGLFW(), mode);
     }
-}
+} // namespace oe::Input

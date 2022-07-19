@@ -15,8 +15,8 @@
 #elif __linux__
 #define GLFW_EXPOSE_NATIVE_WAYLAND
 
-#include "vulkan/vulkan_wayland.h"
 #include "GLFW/glfw3native.h"
+#include "vulkan/vulkan_wayland.h"
 
 #elif __APPLE__
 #include "vulkan/vulkan_macos.h"
@@ -47,15 +47,13 @@ namespace oe::Renderer::Vulkan
     }
 
 #ifdef _WIN32
-    void WindowSurface::Setup(GLFWwindow * window)
+    void WindowSurface::Setup(GLFWwindow* window)
     {
         VkWin32SurfaceCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
         createInfo.hwnd = glfwGetWin32Window(window);
         createInfo.hinstance = GetModuleHandle(nullptr);
-        VK_CHECK_RESULT(
-                vkCreateWin32SurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface),
-                "Failed to create window surface!")
+        VK_CHECK_RESULT(vkCreateWin32SurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface), "Failed to create window surface!")
     }
 #elif __linux__
     void WindowSurface::Setup(GLFWwindow* window)
@@ -63,17 +61,15 @@ namespace oe::Renderer::Vulkan
         VkWaylandSurfaceCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
         createInfo.display = glfwGetWaylandDisplay();
-        VK_CHECK_RESULT(
-                vkCreateWaylandSurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface),
-                "Failed to create window surface!")
+        VK_CHECK_RESULT(vkCreateWaylandSurfaceKHR(GetInstance()->Get(), &createInfo, nullptr, &mSurface),
+                        "Failed to create window surface!")
     }
 #elif __APPLE__
     void WindowSurface::Setup(GLFWwindow* window)
     {
         VkMacOSSurfaceCreateInfoMVK createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-        VK_CHECK_RESULT(vkCreateMacOSSurfaceMVK(GetInstance()->Get(), &createInfo, nullptr,
-            &mSurface), "Failed to create window surface!")
+        VK_CHECK_RESULT(vkCreateMacOSSurfaceMVK(GetInstance()->Get(), &createInfo, nullptr, &mSurface), "Failed to create window surface!")
     }
 #endif
-}
+} // namespace oe::Renderer::Vulkan

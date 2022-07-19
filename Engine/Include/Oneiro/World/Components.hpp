@@ -15,97 +15,97 @@
 
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Core/Window.hpp"
-#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 #include "Oneiro/Renderer/OpenGL/Model.hpp"
+#include "Oneiro/Renderer/OpenGL/Sprite2D.hpp"
 
 namespace oe
 {
-	struct TagComponent
-	{
-		TagComponent();
-		TagComponent(const TagComponent&);
+    struct TagComponent
+    {
+        TagComponent();
+        TagComponent(const TagComponent&);
 
-		TagComponent(std::string tag);
+        TagComponent(std::string tag);
 
-		std::string Tag{};
-	};
+        std::string Tag{};
+    };
 
     struct TransformComponent
-	{
-		TransformComponent();
-		TransformComponent(const TransformComponent&);
+    {
+        TransformComponent();
+        TransformComponent(const TransformComponent&);
 
-		TransformComponent(const glm::vec3& translation, const glm::vec3& rotation,
-		                   const glm::vec3& scale);
+        TransformComponent(const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale);
 
-		glm::vec3 Translation{};
-		glm::vec3 Rotation{};
-		glm::vec3 Scale{1.0f};
+        glm::vec3 Translation{};
+        glm::vec3 Rotation{};
+        glm::vec3 Scale{1.0f};
 
-		[[nodiscard]] glm::mat4 GetTransform() const;
+        [[nodiscard]] glm::mat4 GetTransform() const;
     };
 
     struct Sprite2DComponent
-	{
-		Sprite2DComponent();
-		Sprite2DComponent(const Sprite2DComponent&);
+    {
+        Sprite2DComponent();
+        Sprite2DComponent(const Sprite2DComponent&);
 
-		Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D);
+        Sprite2DComponent(Renderer::GL::Sprite2D* sprite2D);
 
-		Renderer::GL::Sprite2D* Sprite2D{};
-	};
+        Renderer::GL::Sprite2D* Sprite2D{};
+    };
 
-	struct AnimationComponent
-	{
-		AnimationComponent();
-		AnimationComponent(const AnimationComponent&);
+    struct AnimationComponent
+    {
+        AnimationComponent();
+        AnimationComponent(const AnimationComponent&);
 
-		AnimationComponent(Animation::Animation* animation);
+        AnimationComponent(Animation::Animation* animation);
 
-		Animation::Animation* Animation{};
-	};
+        Animation::Animation* Animation{};
+    };
 
-	struct ModelComponent
-	{
-		ModelComponent();
-		ModelComponent(const ModelComponent&);
+    struct ModelComponent
+    {
+        ModelComponent();
+        ModelComponent(const ModelComponent&);
 
-		ModelComponent(Renderer::GL::Model* model);
+        ModelComponent(Renderer::GL::Model* model);
 
-		Renderer::GL::Model* Model;
-	};
+        Renderer::GL::Model* Model;
+    };
 
-	struct MainCameraComponent
-	{
-		glm::vec3 Position{}, Front{}, Up{}, WorldUp{}, Right{};
+    struct MainCameraComponent
+    {
+        glm::vec3 Position{}, Front{}, Up{}, WorldUp{}, Right{};
 
-		float Yaw{ -90.0f }, Pitch{};
+        float Yaw{-90.0f}, Pitch{};
 
-		float MovementSpeed{ 2.5f }, MouseSensitivity{ 0.1f };
+        float MovementSpeed{2.5f}, MouseSensitivity{0.1f};
 
-		float Near{ 0.1f }, Far{ 100.0f }, Fov{ 45.0f };
+        float PerspectiveNear{0.1f}, PerspectiveFar{100.0f}, Fov{45.0f};
+        float OrthoNear{-1.0f}, OrthoFar{1.0f};
 
-		MainCameraComponent();
+        MainCameraComponent();
 
-		void UpdateForward(float dt);
+        void UpdateForward(float dt);
 
-		void UpdateBackward(float dt);
+        void UpdateBackward(float dt);
 
-		void UpdateRight(float dt);
+        void UpdateRight(float dt);
 
-		void UpdateLeft(float dt);
+        void UpdateLeft(float dt);
 
-		[[nodiscard]] glm::mat4 GetViewMatrix() const;
+        [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
-		void UpdateMouse(float xPos, float yPos, bool constrainPitch = true);
+        void UpdateMouse(float xPos, float yPos, bool constrainPitch = true);
 
-		[[nodiscard]] glm::mat4 GetPerspectiveProjection() const;
+        [[nodiscard]] glm::mat4 GetPerspectiveProjection() const;
 
-		[[nodiscard]] glm::mat4 GetOrthoProjection() const;
-	private:
-		void UpdateCameraVectors();
+        [[nodiscard]] glm::mat4 GetOrthoProjection() const;
 
-		float mLastX{}, mLastY{};
-		bool mFirstMouse{ true };
-	};
-}
+      private:
+        void UpdateCameraVectors();
+        float mLastX{}, mLastY{};
+        bool mFirstMouse{true};
+    };
+} // namespace oe

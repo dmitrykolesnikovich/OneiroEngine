@@ -4,8 +4,8 @@
 //
 
 #include "Oneiro/Renderer/Vulkan/CommandPool.hpp"
-#include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
+#include "Oneiro/Renderer/Vulkan/PhysicalDevice.hpp"
 #include <stdexcept>
 
 #include "Oneiro/Renderer/Renderer.hpp"
@@ -14,17 +14,14 @@ namespace oe::Renderer::Vulkan
 {
     void CommandPool::Create()
     {
-        const auto [GraphicsFamily, PresentFamily] =
-                PhysicalDevice::FindQueueFamilies(GetPhysDevice()->Get());
+        const auto [GraphicsFamily, PresentFamily] = PhysicalDevice::FindQueueFamilies(GetPhysDevice()->Get());
 
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         poolInfo.queueFamilyIndex = GraphicsFamily.value();
 
-        VK_CHECK_RESULT(
-                vkCreateCommandPool(GetLogicalDevice()->Get(), &poolInfo, nullptr, &mCommandPool),
-                "Failed to create command pool!")
+        VK_CHECK_RESULT(vkCreateCommandPool(GetLogicalDevice()->Get(), &poolInfo, nullptr, &mCommandPool), "Failed to create command pool!")
     }
 
     void CommandPool::Destroy()
@@ -41,4 +38,4 @@ namespace oe::Renderer::Vulkan
     {
         return &mCommandPool;
     }
-}
+} // namespace oe::Renderer::Vulkan

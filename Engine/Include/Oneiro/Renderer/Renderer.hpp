@@ -7,39 +7,39 @@
 
 namespace oe::Renderer
 {
-	void PreInit();
-	void Init();
-	void Shutdown();
-}
+    void PreInit();
+    void Init();
+    void Shutdown();
+} // namespace oe::Renderer
 
 #ifndef OE_VULKAN_API
 
-#include <cstdint>
 #include "OpenGL/gl_core_4_5.hpp"
+#include <cstdint>
 
 namespace oe::Renderer::GL
 {
-	enum DrawMode
-	{
-		TRIANGLES = gl::TRIANGLES
-	};
+    enum DrawMode
+    {
+        TRIANGLES = gl::TRIANGLES
+    };
 
-	enum DataType
-	{
-		UNSIGNED_BYTE = gl::UNSIGNED_BYTE,
-		UNSIGNED_INT = gl::UNSIGNED_INT,
-		FLOAT = gl::FLOAT,
-		INT = gl::INT
-	};
+    enum DataType
+    {
+        UNSIGNED_BYTE = gl::UNSIGNED_BYTE,
+        UNSIGNED_INT = gl::UNSIGNED_INT,
+        FLOAT = gl::FLOAT,
+        INT = gl::INT
+    };
 
-	enum ClearType
-	{
-		COLOR_BUFFER = gl::COLOR_BUFFER_BIT,
-		DEPTH_BUFFER = gl::DEPTH_BUFFER_BIT,
-		STENCIL_BUFFER = gl::STENCIL_BUFFER_BIT
-	};
+    enum ClearType
+    {
+        COLOR_BUFFER = gl::COLOR_BUFFER_BIT,
+        DEPTH_BUFFER = gl::DEPTH_BUFFER_BIT,
+        STENCIL_BUFFER = gl::STENCIL_BUFFER_BIT
+    };
 
-	void DrawArrays(DrawMode mode, int first, int count);
+    void DrawArrays(DrawMode mode, int first, int count);
 
     void DrawArrays(DrawMode mode, int count);
 
@@ -50,8 +50,8 @@ namespace oe::Renderer::GL
     void Clear(uint32_t mask);
 
     void Viewport(GLint x, GLint y, GLsizei width, GLsizei height);
-	void Viewport(GLsizei width, GLsizei height);
-}
+    void Viewport(GLsizei width, GLsizei height);
+} // namespace oe::Renderer::GL
 #else
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
@@ -127,5 +127,5 @@ namespace oe::Renderer::Vulkan
     std::vector<VkVertexInputAttributeDescription>& GetVertexInputAttributeDescriptions();
     std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts();
     std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts3D();
-}
+} // namespace oe::Renderer::Vulkan
 #endif

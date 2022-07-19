@@ -8,31 +8,30 @@
 #include "DescriptorPool.hpp"
 #include "DescriptorSet.hpp"
 #include "DescriptorSetLayout.hpp"
-#include "Texture.hpp"
 #include "Oneiro/Core/Root.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Texture.hpp"
 
 namespace oe::Renderer::Vulkan
 {
     class UniformBuffer
     {
-    public:
+      public:
         void BeginLayouts();
         void AddLayout(int binding, VkDescriptorType type, VkShaderStageFlagBits stage);
         void EndLayouts(bool is3d);
 
         void BeginBindings(VkDeviceSize size, uint32_t bindingsCount);
-        void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage,
-                        const Texture* texture = nullptr);
+        void AddBinding(int binding, VkDeviceSize size, VkShaderStageFlagBits stage, const Texture* texture = nullptr);
         void EndBindings();
 
-        template<class T>
-        void PushData(const T& data) const;
+        template <class T> void PushData(const T& data) const;
 
         [[nodiscard]] VkBuffer Get() const;
 
         void Destroy();
-    private:
+
+      private:
         DescriptorSetLayout mSetLayout;
         DescriptorPool mDescriptorPool;
         DescriptorSet mDescriptorSet;
@@ -40,8 +39,7 @@ namespace oe::Renderer::Vulkan
         VkDeviceMemory mBufferMemory{};
     };
 
-    template<class T>
-    void UniformBuffer::PushData(const T& data) const
+    template <class T> void UniformBuffer::PushData(const T& data) const
     {
         void* memData;
         const auto device = GetLogicalDevice()->Get();
@@ -50,4 +48,4 @@ namespace oe::Renderer::Vulkan
         vkUnmapMemory(device, mBufferMemory);
         mDescriptorSet.Bind();
     }
-}
+} // namespace oe::Renderer::Vulkan

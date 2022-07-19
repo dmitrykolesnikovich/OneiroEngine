@@ -4,15 +4,14 @@
 //
 
 #include "Oneiro/Renderer/Vulkan/DescriptorSetLayout.hpp"
-#include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 #include "Oneiro/Renderer/Renderer.hpp"
+#include "Oneiro/Renderer/Vulkan/LogicalDevice.hpp"
 
 #include <stdexcept>
 
 namespace oe::Renderer::Vulkan
 {
-    void DescriptorSetLayout::AddBinding(int binding, VkDescriptorType type,
-                                         VkShaderStageFlagBits stage)
+    void DescriptorSetLayout::AddBinding(int binding, VkDescriptorType type, VkShaderStageFlagBits stage)
     {
         VkDescriptorSetLayoutBinding layout{};
         layout.binding = binding;
@@ -30,8 +29,7 @@ namespace oe::Renderer::Vulkan
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = mBindings.size();
         layoutInfo.pBindings = mBindings.data();
-        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, nullptr,
-                                                    &mDescriptorSetLayout),
+        VK_CHECK_RESULT(vkCreateDescriptorSetLayout(GetLogicalDevice()->Get(), &layoutInfo, nullptr, &mDescriptorSetLayout),
                         "Failed to create descriptor set layout!")
     }
 
@@ -49,4 +47,4 @@ namespace oe::Renderer::Vulkan
     {
         vkDestroyDescriptorSetLayout(GetLogicalDevice()->Get(), mDescriptorSetLayout, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan

@@ -16,8 +16,7 @@ namespace oe::Core
 
     float Timer::End() const
     {
-        return std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f * 0.001f *
-            0.001f * 1000.0f;
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - mStart).count() * 0.001f *
+               0.001f * 0.001f * 1000.0f;
     }
-}
+} // namespace oe::Core

@@ -9,7 +9,5 @@ namespace oe::Animation
 {
     Animation::~Animation() = default;
 
-    void Animation::Update(Renderer::GL::Sprite2D* sprite2D, float dt)
-    {
-    }
-}
+    void Animation::Update(Renderer::GL::Sprite2D* sprite2D, float dt) {}
+} // namespace oe::Animation

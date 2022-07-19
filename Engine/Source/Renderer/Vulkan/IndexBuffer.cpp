@@ -20,4 +20,4 @@ namespace oe::Renderer::Vulkan
         vkDestroyBuffer(device, mBuffer, nullptr);
         vkFreeMemory(device, mBufferMemory, nullptr);
     }
-}
+} // namespace oe::Renderer::Vulkan

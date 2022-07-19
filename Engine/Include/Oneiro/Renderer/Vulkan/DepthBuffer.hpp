@@ -11,7 +11,7 @@ namespace oe::Renderer::Vulkan
 {
     class DepthBuffer
     {
-    public:
+      public:
         void Create();
 
         static VkFormat FindDepthFormat();
@@ -22,12 +22,11 @@ namespace oe::Renderer::Vulkan
 
         void Destroy();
 
-    private:
-        static VkFormat FindSupportedFormat(const std::vector <VkFormat>& candidates,
-                                            VkImageTiling tiling, VkFormatFeatureFlags features);
+      private:
+        static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
         VkImage mImage{};
         VkDeviceMemory mImageMemory{};
         VkImageView mImageView{};
     };
-}
+} // namespace oe::Renderer::Vulkan

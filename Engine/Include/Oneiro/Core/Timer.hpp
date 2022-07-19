@@ -11,7 +11,7 @@ namespace oe::Core
 {
     class Timer
     {
-    public:
+      public:
         Timer();
         void Start();
 
@@ -19,7 +19,8 @@ namespace oe::Core
          * @return Returns total time in milliseconds
          */
         [[nodiscard]] float End() const;
-    private:
+
+      private:
         std::chrono::time_point<std::chrono::high_resolution_clock> mStart;
     };
-}
+} // namespace oe::Core

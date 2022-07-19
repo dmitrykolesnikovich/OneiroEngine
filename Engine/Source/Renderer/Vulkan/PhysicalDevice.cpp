@@ -14,8 +14,7 @@
 
 namespace oe::Renderer::Vulkan
 {
-    void PhysicalDevice::CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily,
-                                               VkDeviceQueueCreateInfo& queueCreateInfo)
+    void PhysicalDevice::CreateDeviceQueueInfo(const float* queuePriority, uint32_t queueFamily, VkDeviceQueueCreateInfo& queueCreateInfo)
     {
         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -30,12 +29,10 @@ namespace oe::Renderer::Vulkan
             if (CheckDeviceExtensionsSupport(device))
             {
                 const auto& formats = GetSurfaceFormats(device);
-                if (const auto& presentModes = GetPresentModes(device);
-                        !formats.empty() && !presentModes.empty())
+                if (const auto& presentModes = GetPresentModes(device); !formats.empty() && !presentModes.empty())
                 {
                     static constexpr float queuePriority = 1.0f;
-                    const std::set uniqueQueueFamilies =
-                            {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
+                    const std::set uniqueQueueFamilies = {indices.GraphicsFamily.value(), indices.PresentFamily.value()};
 
                     for (const uint32_t queueFamily : uniqueQueueFamilies)
                     {
@@ -57,11 +54,9 @@ namespace oe::Renderer::Vulkan
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,
-                                             availableExtensions.data());
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-        std::set<std::string>
-                requiredExtensions(mDeviceExtensions.cbegin(), mDeviceExtensions.cend());
+        std::set<std::string> requiredExtensions(mDeviceExtensions.cbegin(), mDeviceExtensions.cend());
 
         for (const auto& extension : availableExtensions)
             requiredExtensions.erase(extension.extensionName);
@@ -110,7 +105,6 @@ namespace oe::Renderer::Vulkan
             candidates.insert(std::make_pair(score, device));
         }
 
-
         if (candidates.rbegin()->first > 0)
         {
             mPhysicalDevice = candidates.rbegin()->second;
@@ -136,12 +130,10 @@ namespace oe::Renderer::Vulkan
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
         int i{};
-        for (const auto& [queueFlags, queueCount, timestampValidBits,
-                    minImageTransferGranularity] : queueFamilies)
+        for (const auto& [queueFlags, queueCount, timestampValidBits, minImageTransferGranularity] : queueFamilies)
         {
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface()->Get(),
-                                                 &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface()->Get(), &presentSupport);
 
             if (queueFlags & VK_QUEUE_GRAPHICS_BIT)
                 indices.GraphicsFamily = i;
@@ -149,7 +141,8 @@ namespace oe::Renderer::Vulkan
             if (presentSupport)
                 indices.PresentFamily = i;
 
-            if (indices.IsComplete()) break;
+            if (indices.IsComplete())
+                break;
 
             i++;
         }
@@ -231,10 +224,9 @@ namespace oe::Renderer::Vulkan
         if (presentModeCount != 0)
         {
             presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount,
-                                                      presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
         }
 
         return presentModes;
     }
-}
+} // namespace oe::Renderer::Vulkan

@@ -11,14 +11,15 @@ namespace oe::Renderer::Vulkan
 {
     class WindowSurface
     {
-    public:
+      public:
         void Destroy() const;
 
         [[nodiscard]] VkSurfaceKHR Get() const;
         [[nodiscard]] const VkSurfaceKHR* GetPtr() const;
 
         void Setup(GLFWwindow* window);
-    private:
+
+      private:
         VkSurfaceKHR mSurface{};
     };
-}
+} // namespace oe::Renderer::Vulkan
