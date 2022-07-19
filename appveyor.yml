@@ -9,7 +9,7 @@ image:
 
 clone_script:
 #- sh: git clone https://github.com/DezlowNG/OneiroEngine --recursive && cd OneiroEngine
-- cmd: git clone https://github.com/DezlowNG/OneiroEngine && cd OneiroEngine
+- cmd: git clone https://github.com/DezlowNG/OneiroEngine --recursive && cd OneiroEngine
 
 build_script:
 #- sh: cmake SandBox/ -DCMAKE_CXX23_EXTENSION_COMPILE_OPTION="-std=gnu++2a" && make
